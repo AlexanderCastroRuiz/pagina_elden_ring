@@ -1,25 +1,1619 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <title>Prueba Modelo</title>
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <style>
-      body { margin: 0; background-color: black; }
-      model-viewer {
-        width: 100vw;
-        height: 100vh;
-      }
-    </style>
-  </head>
-  <body>
-    <model-viewer 
-      src="Untitled.glb" 
-      alt="Modelo 3D"
-      camera-controls 
-      auto-rotate 
-      exposure="1"
-      shadow-intensity="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elden Armor</title>
+
+  <style>
+    @font-face {
+      font-family: 'FuentePersonalizada';
+      src: url('Fuente.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    /* --- Estilos generales y fondo --- */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'FuentePersonalizada', sans-serif;
+      background: black;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 39.45% 35.55% 25%;
+      grid-template-rows: 14.38% 73.29% 12.33%;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Filas */
+    .fila-c { grid-row: 3; grid-column: 1 / 4; color: white; padding: 20px 32px; z-index: 1; }
+    .fila-b { grid-row: 2; grid-column: 1 / 4; display: contents; }
+    .fila-a { grid-row: 1; grid-column: 1 / 4; color: white; padding: 20px 32px; z-index: 1; }
+
+    /* Columnas dentro de la fila B */
+    .columna-a { grid-row: 2; grid-column: 1; background: transparent; padding: 10px; position: relative; z-index: 1; }
+    .columna-b { grid-row: 2; grid-column: 2; background: transparent; padding: 10px; position: relative; z-index: 1; }
+    .columna-c { grid-row: 2; grid-column: 3; background: transparent; padding: 10px; position: relative; z-index: 1; }
+
+    /* Separadores */
+    .separator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      height: 100%;
+      width: 10px;
+      z-index: 2;
+      object-fit: contain;
+      left: 33.33vw; /* primer tercio */
+      transform: translateX(-50%);
+    }
+    .separator.second {
+      left: 66.66vw; /* segundo tercio */
+      transform: translateX(-50%);
+    }
+    .separator.middle {
+      left: 50vw; /* medio de la pantalla */
+      transform: translateX(-50%);
+    }
+
+    /* Capas de fondo */
+    .base-wallpaper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("Fondo.jpg") center/cover no-repeat;
+      z-index: -3;
+    }
+    .dark-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.89);
+      z-index: -2;
+    }
+    .overlay-wallpaper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("Fondo-inventario.png") center/cover no-repeat;
+      opacity: 0.7;
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
+
+    /* Barra-equipo dentro de fila-a */
+    .barra-equipo-container {
+      position: absolute;
+      left: 0;
+      top: 50%; /* centro vertical de la fila */
+      transform: translateY(-50%);
+      width: 39.45vw; /* igual al ancho de la columna A */
+      height: 66.66%; /* puedes ajustar si quieres menos alto */
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .barra-equipo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .fila-a {
+      position: relative;
+    }
+    .fila-c {
+      position: relative;
+    }
+    .fila-a-text {
+      position: absolute;
+      top: 33px;   /* Cambia este valor para mover el texto verticalmente */
+      left: 80px;  /* Cambia este valor para mover el texto horizontalmente */
+      margin: 0;
+      color: #C9BBA1;
+      text-shadow: 2px 2px 4px rgba(0,0,0,1);
+      z-index: 2;
+      font-size: 1.33em; /* Cambia este valor para modificar el tamaño del texto "Equipo" */
+    }
+    .fila-c-text {
+      position: absolute;
+      top: 20px;   /* Cambia este valor para mover el texto verticalmente */
+      left: 32px;  /* Cambia este valor para mover el texto horizontalmente */
+      margin: 0;
+      color: white;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8); /* sombra más suave */
+      z-index: 2;
+      font-size: 1.01em; /* Cambia este valor para modificar el tamaño del texto "Abajo" */
+      letter-spacing: 0.02em;
+    }
+    .fila-b p {
+      text-shadow: 2px 2px 4px rgba(0,0,0,1);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    .fila-a-text,
+    .fila-c-text,
+    .seleccionado-text,
+    .columna-a p,
+    .columna-b p,
+    .columna-c p,
+    .fila-b p {
+      font-family: 'FuentePersonalizada', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    #rectangulo-img {
+      position: absolute; /* Puedes cambiar a fixed si lo prefieres */
+      top: 110px;         /* Cambia este valor para mover verticalmente */
+      left: 23px;        /* Cambia este valor para mover horizontalmente */
+      width: auto;       /* Cambia este valor para modificar el ancho */
+      height: 460px;       /* Cambia este valor para modificar el alto, si lo deseas */
+      z-index: 20;        /* Asegura que esté por encima de otros elementos si es necesario */
+    }
+
+    .seleccionado-text {
+      position: absolute;
+      top: 0px;    /* Cambia este valor para mover verticalmente */
+      left: 30px;   /* Cambia este valor para mover horizontalmente */
+      color: #C9BBA1;
+      font-size: 1em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,1);
+      z-index: 21;
+      font-family: 'FuentePersonalizada', sans-serif;
+      pointer-events: none;
+    }
+
+    /* Estilos para las ranuras */
+    .ranura-btn {
+      width: 100%;
+      height: 100%;
+      z-index: 30;
+      cursor: pointer;
+    }
+    .ranura-btn-wrapper {
+      position: absolute;
+      width: var(--ranura-size, 64px);
+      height: var(--ranura-size, 64px);
+      z-index: 30;
+      /* Cambia top/left para ubicar cada ranura */
+    }
+    .ranura-dorado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 31;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .almacen-btn-wrapper {
+      position: absolute;
+      width: var(--almacen-size, 100px);
+      height: var(--almacen-size, 100px);
+      z-index: 40;
+      display: none; /* Oculto por defecto */
+    }
+    .almacen-btn {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 40;
+    }
+    .almacen-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 40; /* Debajo del dorado */
+      pointer-events: none;
+    }
+    .almacen-dorado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 41;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .equipada-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 30;
+      pointer-events: none;
+    }
+    .menu-btn-wrapper {
+      position: absolute;
+      width: var(--menu-btn-size, 64px);
+      height: var(--menu-btn-size, 64px);
+      z-index: 50;
+      /* Cambia top/left para ubicar cada botón */
+    }
+    .menu-btn-img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 50;
+      object-fit: contain;
+    }
+    .menu-btn-dorado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 51;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .menu-btn-wrapper:hover .menu-btn-dorado {
+      opacity: 1;
+    }
+    .menu-btn-tooltip {
+      position: absolute;
+      left: 50%;
+      top: -35px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #C9BBA1;
+      padding: 6px 18px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: 'FuentePersonalizada', sans-serif;
+      white-space: nowrap;
+      z-index: 52;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .menu-btn-wrapper.show-tooltip .menu-btn-tooltip {
+      opacity: 1;
+    }
+
+    /* Estilos individuales para cada atributo (puedes modificar left, top, font-size, width, etc. para cada uno) */
+    #atributo-img {
+      position: absolute;
+      display: none;
+      z-index: 4;
+      /* El tamaño y posición se ajustan dinámicamente por JS */
+    }
+    
+    #atributo-nombre          { position: absolute; left: -100px; top: -15px;  font-size: 1.5em;  width: 290px; color: #D0D0D0; }
+    #atributo-fisico          { position: absolute; left:   30px; top: 150px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-golpe           { position: absolute; left:   30px; top: 175px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-tajo            { position: absolute; left:   30px; top: 200px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-puncion         { position: absolute; left:   30px; top: 225px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-magico          { position: absolute; left:   30px; top: 250px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-sagrado         { position: absolute; left:   30px; top: 325px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-electrico       { position: absolute; left:   30px; top: 300px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fuego           { position: absolute; left:   30px; top: 275px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-inmunidad       { position: absolute; left:  250px; top: 150px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-robustez        { position: absolute; left:  250px; top: 175px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-concentracion   { position: absolute; left:  250px; top: 200px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-vitalidad       { position: absolute; left:  250px; top: 225px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-peso            { position: absolute; left:   30px; top:  92px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-postura         { position: absolute; left:  250px; top: 250px; font-size: 1em; width: 60px; color: #D0D0D0; }
+
+    #img-neutro               { position: absolute; left: -123px; top: 125px; height: auto; width: 20px;}
+    #img-resistencia          { position: absolute; left:   95px; top: 125px; height: auto; width: 20px;}
+    #texto-nombre             { position: absolute; left: -100px; top:   0px; font-size: 1.5em; width: 300px; color: #D0D0D0; }
+    #texto-neutro             { position: absolute; left: -100px; top: 125px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-resistencia        { position: absolute; left:  120px; top: 125px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-fisico             { position: absolute; left: -100px; top: 150px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-golpe              { position: absolute; left: -100px; top: 175px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-tajo               { position: absolute; left: -100px; top: 200px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-puncion            { position: absolute; left: -100px; top: 225px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-magico             { position: absolute; left: -100px; top: 250px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-sagrado            { position: absolute; left: -100px; top: 325px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-electrico          { position: absolute; left: -100px; top: 300px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-fuego              { position: absolute; left: -100px; top: 275px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-inmunidad          { position: absolute; left:  120px; top: 150px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-robustez           { position: absolute; left:  120px; top: 175px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-concentracion      { position: absolute; left:  120px; top: 200px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-vitalidad          { position: absolute; left:  120px; top: 225px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-peso               { position: absolute; left: -100px; top:  92px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-postura            { position: absolute; left:  120px; top: 250px; font-size: 1em; width: 200px; color: #D0D0D0; }
+
+
+    /* Atributos de armas */
+    #atributo-fisico_atq      { position: absolute; left:   30px; top: 153px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-magico_atq      { position: absolute; left:   30px; top: 178px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fuego_atq       { position: absolute; left:   30px; top: 203px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-electrico_atq   { position: absolute; left:   30px; top: 228px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-sagrado_atq     { position: absolute; left:   30px; top: 253px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-critico         { position: absolute; left:   30px; top: 278px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fisico_def      { position: absolute; left:  250px; top: 153px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-magico_def      { position: absolute; left:  250px; top: 178px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fuego_def       { position: absolute; left:  250px; top: 203px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-electrico_def   { position: absolute; left:  250px; top: 228px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-sagrado_def     { position: absolute; left:  250px; top: 253px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-aumento         { position: absolute; left:  250px; top: 278px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-dex_esc         { position: absolute; left:   30px; top: 355px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-str_esc         { position: absolute; left:   30px; top: 330px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fai_esc         { position: absolute; left:   30px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-int_esc         { position: absolute; left:   30px; top: 380px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-arc_esc         { position: absolute; left:   30px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-dex_req         { position: absolute; left:  250px; top: 355px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-str_req         { position: absolute; left:  250px; top: 330px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fai_req         { position: absolute; left:  250px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-int_req         { position: absolute; left:  250px; top: 380px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-arc_req         { position: absolute; left:  250px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-categoria       { position: absolute; left: -100px; top: 47px;  font-size: 1em; width: 200px; color: #D0D0D0; }
+    #atributo-tipo_ataque     { position: absolute; left: -100px; top: 70px;  font-size: 1em; width: 200px; color: #D0D0D0; }
+    
+    #img-poder                { position: absolute; left: -119px; top: 127px; height: auto; width: 17px;}
+    #img-negacion             { position: absolute; left:  100px; top: 125px; height: auto; width: 12px;}
+    #img-escalado             { position: absolute; left: -120px; top: 305px; height: auto; width: 17px;}
+    #img-requisito            { position: absolute; left:  100px; top: 305px; height: auto; width: 17px;}
+    #img-separador4           { position: absolute; left: -115px; top: 325px; width: 6px; height: 140px; z-index: 2;}
+    #img-separador5           { position: absolute; left:  105px; top: 325px; width: 6px; height: 140px; z-index: 2;}
+    #texto-poder              { position: absolute; left: -100px; top: 125px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-defensa            { position: absolute; left:  120px; top: 125px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-escalado           { position: absolute; left: -100px; top: 305px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-requisito          { position: absolute; left:  120px; top: 305px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-fisico_atq         { position: absolute; left: -100px; top: 150px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-magico_atq         { position: absolute; left: -100px; top: 175px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-fuego_atq          { position: absolute; left: -100px; top: 200px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-electrico_atq      { position: absolute; left: -100px; top: 225px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-sagrado_atq        { position: absolute; left: -100px; top: 250px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-critico            { position: absolute; left: -100px; top: 275px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-fisico_def         { position: absolute; left:  120px; top: 150px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-magico_def         { position: absolute; left:  120px; top: 175px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-fuego_def          { position: absolute; left:  120px; top: 200px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-electrico_def      { position: absolute; left:  120px; top: 225px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-sagrado_def        { position: absolute; left:  120px; top: 250px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-aumento            { position: absolute; left:  120px; top: 275px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-dex_esc            { position: absolute; left: -100px; top: 355px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-str_esc            { position: absolute; left: -100px; top: 330px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-fai_esc            { position: absolute; left: -100px; top: 380px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-int_esc            { position: absolute; left: -100px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-arc_esc            { position: absolute; left: -100px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-dex_req            { position: absolute; left:  120px; top: 355px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-str_req            { position: absolute; left:  120px; top: 330px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-fai_req            { position: absolute; left:  120px; top: 380px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-int_req            { position: absolute; left:  120px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #texto-arc_req            { position: absolute; left:  120px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    /* ...existing code... */
+  </style>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAxJpfGWnP4zACc8z4a9MwIu3MSDiPLV74",
+    authDomain: "base-de-datos-elden-ring.firebaseapp.com",
+    databaseURL: "https://base-de-datos-elden-ring-default-rtdb.firebaseio.com",
+    projectId: "base-de-datos-elden-ring",
+    storageBucket: "base-de-datos-elden-ring.firebasestorage.app",
+    messagingSenderId: "133314007833",
+    appId: "1:133314007833:web:c76169f5bca046ae736b88",
+    measurementId: "G-J844DKL4M3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</head>
+<body>
+  <div class="base-wallpaper"></div>
+  <div class="dark-overlay"></div>
+  <div class="overlay-wallpaper"></div>
+
+  <div class="main-grid">
+    <div class="fila-a">
+      <p class="fila-a-text">Equipo</p>
+      <div class="barra-equipo-container">
+        <img src="Barra-equipo.png" alt="Barra equipo" class="barra-equipo-img">
+      </div>
+    </div>
+    <div class="columna-a">
+      <!-- Aquí irá el texto de la variable "seleccionado" -->
+      <!-- Ejemplo de uso futuro: <span id="seleccionado-text"></span> -->
+      <span class="seleccionado-text" id="seleccionado-text"></span>
+    </div>
+    <div class="columna-b">
+    </div>
+    <div class="columna-c">
+      <div id="columna-c-contenido"></div>
+    </div>
+    <div class="fila-c">
+      <p class="fila-c-text">Selecciona una ranura para usar</p>
+    </div>
+    <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw;">
+    <img src="mini-separador.png" alt="Mini Separador" id="mini-separador-1" style="position: absolute; left: 66.66%; top: calc(50% - 37.5vh); transform: translateX(-50%); width: 6px; height: 140px; z-index: 2;">
+    <img src="mini-separador.png" alt="Mini Separador 2" id="mini-separador-2" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 66.5%; top: 240px;">
+    <img src="mini-separador.png" alt="Mini Separador 3" id="mini-separador-3" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 82.825vw; top: 240px;">
+    <!-- <img src="separador.png" alt="Separador 2" class="separator second"> Eliminado -->
+    <img src="rectangulo.png" alt="Rectángulo" id="rectangulo-img">
+    <!-- Ranuras como botones, listas para ubicar y cambiar tamaño -->
+    <div class="ranura-btn-wrapper" id="ranura-l" style="top: 437px; left: 160px; --ranura-size: 100px;">
+      <img src="ranura-l.png" alt="Ranura L" class="ranura-btn">
+      <img src="dorado.png" alt="Dorado" class="ranura-dorado">
+    </div>
+    <div class="ranura-btn-wrapper" id="ranura-a" style="top: 237px; left: 160px; --ranura-size: 100px;">
+      <img src="ranura-a.png" alt="Ranura A" class="ranura-btn">
+      <img src="dorado.png" alt="Dorado" class="ranura-dorado">
+    </div>
+    <div class="ranura-btn-wrapper" id="ranura-h" style="top: 137px; left: 160px; --ranura-size: 100px;">
+      <img src="ranura-h.png" alt="Ranura H" class="ranura-btn">
+      <img src="dorado.png" alt="Dorado" class="ranura-dorado">
+    </div>
+    <div class="ranura-btn-wrapper" id="ranura-g" style="top: 337px; left: 160px; --ranura-size: 100px;">
+      <img src="ranura-g.png" alt="Ranura G" class="ranura-btn">
+      <img src="dorado.png" alt="Dorado" class="ranura-dorado">
+    </div>
+    <div class="ranura-btn-wrapper" id="ranura-mano-izq" style="top: 287px; left: 58px; --ranura-size: 100px;">
+      <img src="ranura-mano-izq.png" alt="Ranura Mano Izq" class="ranura-btn">
+      <img src="dorado.png" alt="Dorado" class="ranura-dorado">
+    </div>
+    <div class="ranura-btn-wrapper" id="ranura-mano-der" style="top: 287px; left: 258px; --ranura-size: 100px;">
+      <img src="ranura-mano-der.png" alt="Ranura Mano Der" class="ranura-btn">
+      <img src="dorado.png" alt="Dorado" class="ranura-dorado">
+    </div>
+    <!-- Menú de almacen, oculto por defecto -->
+    <div class="almacen-btn-wrapper" id="almacen-1" style="top: 287px; left: 50px; --almacen-size: 100px;">
+      <img src="almacen.png" alt="Almacen 1" class="almacen-btn">
+      <img src="" alt="" class="almacen-img" id="almacen-img-1" style="display:none;">
+      <img src="dorado.png" alt="Dorado" class="almacen-dorado">
+    </div>
+    <div class="almacen-btn-wrapper" id="almacen-2" style="top: 287px; left: 155px; --almacen-size: 100px;">
+      <img src="almacen.png" alt="Almacen 2" class="almacen-btn">
+      <img src="" alt="" class="almacen-img" id="almacen-img-2" style="display:none;">
+      <img src="dorado.png" alt="Dorado" class="almacen-dorado">
+    </div>
+    <div class="almacen-btn-wrapper" id="almacen-3" style="top: 287px; left: 260px; --almacen-size: 100px;">
+      <img src="almacen.png" alt="Almacen 3" class="almacen-btn">
+      <img src="" alt="" class="almacen-img" id="almacen-img-3" style="display:none;">
+      <img src="dorado.png" alt="Dorado" class="almacen-dorado">
+    </div>
+    <!-- Botón Guardar -->
+    <div class="menu-btn-wrapper" id="btn-guardar" style="bottom: 50px; right: 50px; --menu-btn-size: 50px;">
+      <img src="save.png" alt="Guardar" class="menu-btn-img">
+      <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
+      <span class="menu-btn-tooltip">Guardar</span>
+    </div>
+    <!-- Botón Cargar -->
+    <div class="menu-btn-wrapper" id="btn-cargar" style="bottom: 50px; right: 130px; --menu-btn-size: 50px;">
+      <img src="load.png" alt="Cargar" class="menu-btn-img">
+      <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
+      <span class="menu-btn-tooltip">Cargar</span>
+    </div>
+    <img id="atributo-img" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4;">
+    <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3;">
+  </div>
+  <div class="modelo-3d-container">
+    <model-viewer
+      src="Sinluz.glb"
+      camera-controls
+      auto-rotate
+      id="modelo3d"
+      style="pointer-events:auto; "
+    >
+      <div style="color:white;background:#222;padding:2em;text-align:center;">
+        Si ves este mensaje, tu navegador no soporta <code>&lt;model-viewer&gt;</code>.<br>
+        Prueba en Chrome, Edge o Firefox moderno.
+      </div>
     </model-viewer>
-  </body>
+  </div>
+  <script>
+    // Variable seleccionada
+    var seleccionado = "";
+
+    // Referencia al texto
+    var seleccionadoText = document.getElementById("seleccionado-text");
+    var ranuraDoradoActual = null;
+
+    // Función para actualizar el texto
+    // Vinculación imagen-nombre
+    const imagenNombre = {
+      "bandit-s.png": "Bracamarte",
+      "carian-a.png": "Armadura de caballero de Caria",
+      "carian-g.png": "Guanteletes de caballero de Caria",
+      "carian-l.png": "Grebas de caballero de Caria",
+      "carian-h.png": "Yelmo de caballero de Caria",
+      "night-flame.png": "Espada de la Noche y la Flama",
+      "samurai-a.png": "Armadura de las Tierras del Cañaveral",
+      "samurai-h.png": "Yelmo de las Tierras del Cañaveral",
+      "samurai-l.png": "Grebas de las Tierras del Cañaveral",
+      "samurai-g.png": "Guanteletes de las Tierras del Cañaveral",
+      "uchigatana.png": "Uchigatana",
+      "wolf-a.png": "Armadura de Lobo Furioso",
+      "wolf-g.png": "Guanteletes de Lobo Furioso",
+      "wolf-h.png": "Yelmo de Lobo Furioso",
+      "wolf-l.png": "Grebas de Lobo Furioso"
+    };
+
+    // Variable para saber el tipo de menú secundario
+    let tipoMenuSecundario = "";
+
+    // Detecta la última ranura sobre la que pasó el mouse y define el tipo de menú secundario
+    function setSeleccionado(valor, wrapperId) {
+      seleccionado = valor;
+      seleccionadoText.textContent = seleccionado;
+      // Oculta el dorado anterior
+      if (ranuraDoradoActual) {
+        ranuraDoradoActual.style.opacity = "0";
+      }
+      // Muestra el dorado en la ranura actual
+      var wrapper = document.getElementById(wrapperId);
+      if (wrapper) {
+        var dorado = wrapper.querySelector('.ranura-dorado');
+        if (dorado) {
+          dorado.style.opacity = "1";
+          ranuraDoradoActual = dorado;
+        }
+      }
+      // Determina el tipo de menú secundario
+      if (["ranura-h", "ranura-a", "ranura-g", "ranura-l"].includes(wrapperId)) {
+        tipoMenuSecundario = "menú armaduras";
+      } else if (["ranura-mano-izq", "ranura-mano-der"].includes(wrapperId)) {
+        tipoMenuSecundario = "menú armas";
+      } else {
+        tipoMenuSecundario = "";
+      }
+    }
+
+    // Función para mostrar imágenes según ranura
+    function setAlmacenImages(tipo) {
+      var imgs = [
+        document.getElementById("almacen-img-1"),
+        document.getElementById("almacen-img-2"),
+        document.getElementById("almacen-img-3")
+      ];
+      // Oculta todas las imágenes primero
+      imgs.forEach(function(img) {
+        img.style.display = "none";
+        img.src = "";
+        img.alt = "";
+      });
+
+      if (tipo === "h") {
+        imgs[0].src = "wolf-h.png";      imgs[0].alt = "Wolf H";
+        imgs[1].src = "carian-h.png";    imgs[1].alt = "Carian H";
+        imgs[2].src = "samurai-h.png";   imgs[2].alt = "Samurai H";
+      } else if (tipo === "a") {
+        imgs[0].src = "wolf-a.png";      imgs[0].alt = "Wolf A";
+        imgs[1].src = "carian-a.png";    imgs[1].alt = "Carian A";
+        imgs[2].src = "samurai-a.png";   imgs[2].alt = "Samurai A";
+      } else if (tipo === "g") {
+        imgs[0].src = "wolf-g.png";      imgs[0].alt = "Wolf G";
+        imgs[1].src = "carian-g.png";    imgs[1].alt = "Carian G";
+        imgs[2].src = "samurai-g.png";   imgs[2].alt = "Samurai G";
+      } else if (tipo === "l") {
+        imgs[0].src = "wolf-l.png";      imgs[0].alt = "Wolf L";
+        imgs[1].src = "carian-l.png";    imgs[1].alt = "Carian L";
+        imgs[2].src = "samurai-l.png";   imgs[2].alt = "Samurai L";
+      } else if (tipo === "mano") {
+        imgs[0].src = "bandit-s.png";    imgs[0].alt = "Bandit S";
+        imgs[1].src = "night-flame.png"; imgs[1].alt = "Night Flame";
+        imgs[2].src = "uchigatana.png";  imgs[2].alt = "Uchigatana";
+      }
+      // Muestra las imágenes
+      imgs.forEach(function(img) {
+        if (img.src && img.src !== window.location.href) img.style.display = "block";
+      });
+    }
+
+    // Estado para saber qué menú mostrar
+    var menuActual = "";
+
+    // Mostrar menú almacen y ocultar ranuras al clickear cualquier ranura
+    function mostrarAlmacenMenu(tipo) {
+      // Oculta todas las ranuras
+      var ranuras = document.querySelectorAll('.ranura-btn-wrapper');
+      ranuras.forEach(function(r) { r.style.display = 'none'; });
+      // Muestra el menú de almacen
+      document.getElementById('almacen-1').style.display = 'block';
+      document.getElementById('almacen-2').style.display = 'block';
+      document.getElementById('almacen-3').style.display = 'block';
+      // Actualiza imágenes según ranura
+      setAlmacenImages(tipo);
+      menuActual = tipo;
+    }
+
+    // Asignar eventos a cada ranura
+    document.getElementById("ranura-h").addEventListener("mouseenter", function() {
+      setSeleccionado("Cabeza", "ranura-h");
+    });
+    document.getElementById("ranura-a").addEventListener("mouseenter", function() {
+      setSeleccionado("Pecho", "ranura-a");
+    });
+    document.getElementById("ranura-g").addEventListener("mouseenter", function() {
+      setSeleccionado("Brazos", "ranura-g");
+    });
+    document.getElementById("ranura-l").addEventListener("mouseenter", function() {
+      setSeleccionado("Piernas", "ranura-l");
+    });
+    document.getElementById("ranura-mano-izq").addEventListener("mouseenter", function() {
+      setSeleccionado("Armamento de mano izquierda", "ranura-mano-izq");
+    });
+    document.getElementById("ranura-mano-der").addEventListener("mouseenter", function() {
+      setSeleccionado("Armamento de mano derecha", "ranura-mano-der");
+    });
+
+    // Ya no se limpia el texto ni el dorado al salir del botón
+
+    // Asignar click a cada ranura
+    document.getElementById("ranura-h").addEventListener("click", function() {
+      mostrarAlmacenMenu("h");
+    });
+    document.getElementById("ranura-a").addEventListener("click", function() {
+      mostrarAlmacenMenu("a");
+    });
+    document.getElementById("ranura-g").addEventListener("click", function() {
+      mostrarAlmacenMenu("g");
+    });
+    document.getElementById("ranura-l").addEventListener("click", function() {
+      mostrarAlmacenMenu("l");
+    });
+    document.getElementById("ranura-mano-izq").addEventListener("click", function() {
+      mostrarAlmacenMenu("mano");
+    });
+    document.getElementById("ranura-mano-der").addEventListener("click", function() {
+      mostrarAlmacenMenu("mano");
+    });
+
+    // Efecto dorado en almacen
+    function setAlmacenDorado(wrapperId) {
+      document.querySelectorAll('.almacen-dorado').forEach(function(d){ d.style.opacity = "0"; });
+      var wrapper = document.getElementById(wrapperId);
+      if (wrapper) {
+        var dorado = wrapper.querySelector('.almacen-dorado');
+        if (dorado) dorado.style.opacity = "1";
+      }
+    }
+
+    document.getElementById("almacen-1").addEventListener("mouseenter", function() {
+      setAlmacenDorado("almacen-1");
+    });
+    document.getElementById("almacen-2").addEventListener("mouseenter", function() {
+      setAlmacenDorado("almacen-2");
+    });
+    document.getElementById("almacen-3").addEventListener("mouseenter", function() {
+      setAlmacenDorado("almacen-3");
+    });
+
+    // Volver al menú de ranuras con click derecho o tecla Esc
+    function volverMenuRanuras() {
+      // Oculta el menú de almacen
+      document.getElementById('almacen-1').style.display = 'none';
+      document.getElementById('almacen-2').style.display = 'none';
+      document.getElementById('almacen-3').style.display = 'none';
+      // Oculta las imágenes de almacen
+      ["almacen-img-1", "almacen-img-2", "almacen-img-3"].forEach(function(id){
+        var img = document.getElementById(id);
+        if (img) img.style.display = "none";
+      });
+      // Muestra las ranuras
+      var ranuras = document.querySelectorAll('.ranura-btn-wrapper');
+      ranuras.forEach(function(r) { r.style.display = 'block'; });
+      menuActual = "";
+      // Oculta dorado en almacen
+      document.querySelectorAll('.almacen-dorado').forEach(function(d){ d.style.opacity = "0"; });
+      limpiarColumnaC();
+    }
+
+    // Click derecho
+    document.getElementById('almacen-1').addEventListener("contextmenu", function(e){
+      e.preventDefault(); volverMenuRanuras();
+    });
+    document.getElementById('almacen-2').addEventListener("contextmenu", function(e){
+      e.preventDefault(); volverMenuRanuras();
+    });
+    document.getElementById('almacen-3').addEventListener("contextmenu", function(e){
+      e.preventDefault(); volverMenuRanuras();
+    });
+
+    // Tecla Esc
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape") volverMenuRanuras();
+    });
+
+    // Menú secundario para Casco, Pechera, Guantes y Pantalones
+    const almacenDatos = {
+      h: [
+        {
+          nombre: "Yelmo de Lobo Furioso",
+          fisico: 4.7, 
+          golpe: 4.1, 
+          tajo: 4.7, 
+          puncion: 4.5, 
+          magico: 3.5, 
+          sagrado: 3.3, 
+          electrico: 2.4, 
+          fuego: 3.9,
+          inmunidad: 14, 
+          robustez: 23, 
+          concentracion: 8, 
+          vitalidad: 8,
+          peso: 4.4, 
+          postura: 7,
+          descripcion: "Yelmo usado por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitó la Mesa Redonda. !! El sobrenombre de Vargram procede de la melena blanca de lobo que decora su yelmo."
+        },
+        {
+          nombre: "Yelmo de caballero de Caria",
+          fisico: 4.2, 
+          golpe: 3.8, 
+          tajo: 4.4, 
+          puncion: 4.2, 
+          magico: 4.4, 
+          sagrado: 4.2, 
+          electrico: 3.4, 
+          fuego: 4.2,
+          inmunidad: 12, 
+          robustez: 20, 
+          concentracion: 9, 
+          vitalidad: 10,
+          peso: 4.6, 
+          postura: 6,
+          descripcion: "Yelmos de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
+        },
+        {
+          nombre: "Yelmo de las Tierras del Cañaveral",
+          fisico: 3.1, 
+          golpe: 3.4, 
+          tajo: 4.8, 
+          puncion: 3.4, 
+          magico: 3.6, 
+          sagrado: 3.8, 
+          electrico: 4.2, 
+          fuego: 4,
+          inmunidad: 26, 
+          robustez: 22, 
+          concentracion: 22, 
+          vitalidad: 23,
+          peso: 3.6, 
+          postura: 5,
+          descripcion: "Yelmo hecho de tiras de hierro atadas. !! Lo usan los guerreros de las Tierras del Cañaveral. !! Las Tierras del Cañaveral llevan mucho tiempo atrapadas en una triste guerra civil, tiempo durante el cual han permanecido alienados de los poblados vecinos. No es de extrañar que toda la nación haya sucumbido a tal locura sangrienta, según se dice."
+        }
+      ],
+      a: [
+        {
+          nombre: "Armadura de Lobo Furioso",
+          fisico: 13.2,
+          golpe: 11.6,
+          tajo: 13.2,
+          puncion: 12.6,
+          magico: 9.9,
+          sagrado: 9.2,
+          electrico: 6.8,
+          fuego: 11.1,
+          inmunidad: 31,
+          robustez: 55,
+          concentracion: 17,
+          vitalidad: 17,
+          peso: 10.1,
+          postura: 21,
+          descripcion: "Armadura usada por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitó la Mesa Redonda. !! Según antiguas leyendas, los lobos son las sombras de los Empíreos, y eso es lo que Vargram aspiraba a ser."
+        },
+        {
+          nombre: "Armadura de caballero de Caria",
+          fisico: 11.8, 
+          golpe: 10.8, 
+          tajo: 12.3, 
+          puncion: 11.8, 
+          magico: 12.3, 
+          sagrado: 11.8, 
+          electrico: 9.4, 
+          fuego: 11.8,
+          inmunidad: 28, 
+          robustez: 46, 
+          concentracion: 21, 
+          vitalidad: 23,
+          peso: 10.4, 
+          postura: 19,
+          descripcion: "Armadura de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
+        },
+        {
+          nombre: "Armadura de la Tierra del Cañaveral",
+          fisico: 8.8, 
+          golpe: 9.5, 
+          tajo: 11.9, 
+          puncion: 9.5, 
+          magico: 10.2, 
+          sagrado: 10.9, 
+          electrico: 11.9, 
+          fuego: 11.4,
+          inmunidad: 60, 
+          robustez: 50, 
+          concentracion: 50, 
+          vitalidad: 55,
+          peso: 8.3, 
+          postura: 16,
+          descripcion: "Armadura elaborada con tiras de hierro atadas. !! La usan los guerreros de las Tierras del Cañaveral. !! La sucia túnica que la cubre está confeccionada con cañas del lugar natal de los guerreros. !! Quizás su comodidad se extiende a los pensamientos nostálgicos del terruño"
+        }
+      ],
+      g: [
+        {
+          nombre: "Guanteletes de Lobo Furioso",
+          fisico: 3.2, 
+          golpe: 2.8, 
+          tajo: 3.2, 
+          puncion: 3.1, 
+          magico: 2.4, 
+          sagrado: 2.2, 
+          electrico: 1.6, 
+          fuego: 2.7,
+          inmunidad: 11, 
+          robustez: 19, 
+          concentracion: 6, 
+          vitalidad: 6,
+          peso: 3.4, 
+          postura: 4,
+          descripcion: "Guanteletes usados por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitaron la Mesa Redonda. !! Según antiguas leyendas, los lobos son las sombras de los Empíreos, y eso es lo que Vargram aspiraba a ser."
+        },
+        {
+          nombre: "Guanteletes de soldado de Caria",
+          fisico: 2.9, 
+          golpe: 2.7, 
+          tajo: 3.1, 
+          puncion: 2.9, 
+          magico: 3.1, 
+          sagrado: 2.9, 
+          electrico: 2.3, 
+          fuego: 2.9,
+          inmunidad: 9, 
+          robustez: 15, 
+          concentracion: 7, 
+          vitalidad: 8,
+          peso: 3.5, 
+          postura: 4,
+          descripcion: "Guanteletes de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
+        },
+        {
+          nombre: "Guanteletes de la Tierra del Cañaveral",
+          fisico: 2.1, 
+          golpe: 2.3, 
+          tajo: 2.9, 
+          puncion: 2.3, 
+          magico: 2.5, 
+          sagrado: 2.7, 
+          electrico: 2.9, 
+          fuego: 2.8,
+          inmunidad: 20, 
+          robustez: 17, 
+          concentracion: 17, 
+          vitalidad: 18,
+          peso: 2.8, 
+          postura: 3,
+          descripcion: "Guanteletes envueltos en cuero resistente. !! Los usan los guerreros de las Tierras del Cañaveral."
+        }
+      ],
+      l: [
+        {
+          nombre: "Grebas de Lobo Furioso",
+          fisico: 7.5, 
+          golpe: 6.6, 
+          tajo: 7.5, 
+          puncion: 7.2, 
+          magico: 5.6, 
+          sagrado: 5.2, 
+          electrico: 3.8, 
+          fuego: 6.3,
+          inmunidad: 19, 
+          robustez: 34, 
+          concentracion: 11, 
+          vitalidad: 11,
+          peso: 6.3, 
+          postura: 12,
+          descripcion: "Grebas usadas por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitó la Mesa Redonda. !! Según antiguas leyendas, los lobos son las sombras de los Empíreos, y eso es lo que Vargram aspiraba a ser."
+        },
+        {
+          nombre: "Grebas de caballero de Caria",
+          fisico: 6.8, 
+          golpe: 6.2, 
+          tajo: 7.1, 
+          puncion: 6.8, 
+          magico: 7.1, 
+          sagrado: 6.8, 
+          electrico: 5.4, 
+          fuego: 6.8,
+          inmunidad: 17, 
+          robustez: 29, 
+          concentracion: 13, 
+          vitalidad: 14,
+          peso: 6.6, 
+          postura: 11,
+          descripcion: "Grebas de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
+        },
+        {
+          nombre: "Grebas de las Tierras del Cañaveral",
+          fisico: 5, 
+          golpe: 5.4, 
+          tajo: 6.8, 
+          puncion: 5.4, 
+          magico: 5.8, 
+          sagrado: 6.2, 
+          electrico: 6.8, 
+          fuego: 6.5,
+          inmunidad: 37, 
+          robustez: 31, 
+          concentracion: 31, 
+          vitalidad: 34,
+          peso: 5.1, 
+          postura: 10,
+          descripcion: "Grebas envueltas en cuero resistente. !! Las usan los guerreros de las Tierras del Cañaveral."
+        }
+      ]
+    };
+
+    // Menú secundario para Mano Izq y Mano Der (comparten datos)
+    const almacenDatosMano = [
+      {
+        nombre: "Bracamarte",
+        fisico_atq: 109, 
+        magico_atq: 0, 
+        fuego_atq: 0, 
+        electrico_atq: 0, 
+        sagrado_atq: 0, 
+        critico: 100,
+        fisico_def: 42, 
+        magico_def: 31, 
+        fuego_def: 31, 
+        electrico_def: 31, 
+        sagrado_def: 31, 
+        aumento: 26,
+        dex_esc: "D", 
+        str_esc: "D", 
+        fai_esc: "", 
+        int_esc: "", 
+        arc_esc: "",
+        dex_req: 13, 
+        str_req: 9, 
+        fai_req: 0, 
+        int_req: 0, 
+        arc_req: 0,
+        categoria: "Espada curva", 
+        peso: 3.5, 
+        tipo_ataque: "Tajo", 
+        descripcion: "Una espada curva con una hoja de un solo lado. !! Realiza ataques de corte con su hoja afilada, pero es ineficaz contra las armaduras gruesas y las pieles cubiertas de escamas duras. !! Los portadores del arma usan un estilo único que mejora los ataques con movimientos giratorios."
+      },
+      {
+        nombre: "Espada de la Noche y la Flama",
+        fisico_atq: 87, 
+        magico_atq: 56, 
+        fuego_atq: 56, 
+        electrico_atq: 0, 
+        sagrado_atq: 0, 
+        critico: 100,
+        fisico_def: 36, 
+        magico_def: 42, 
+        fuego_def: 42, 
+        electrico_def: 26, 
+        sagrado_def: 26, 
+        aumento: 31,
+        dex_esc: "E", 
+        str_esc: "E", 
+        fai_esc: "D", 
+        int_esc: "D", 
+        arc_esc: "",
+        dex_req: 12, 
+        str_req: 12, 
+        fai_req: 24, 
+        int_req: 24, 
+        arc_req: 0,
+        categoria: "Espada recta", 
+        peso: "4.0", 
+        tipo_ataque: "Estándar/Punción", 
+        descripcion: "Espada histórica y tesoro de la mansión de Caria. !! Uno de los armamentos legendarios. !! Los astrólogos, que precedieron a los hechiceros, se establecieron en las cimas de las montañas que casi tocaban el cielo y consideraron a los gigantes de fuego como sus vecinos."
+      },
+      {
+        nombre: "Espadón de la Luna Oscura",
+        fisico_atq: 82,
+        magico_atq: 98,
+        fuego_atq: 0,
+        electrico_atq: 0,
+        sagrado_atq: 0,
+        critico: 100,
+        fisico_def: 57,
+        magico_def: 63,
+        fuego_def: 31,
+        electrico_def: 31,
+        sagrado_def: 31,
+        aumento: 44,
+        dex_esc: "D",
+        str_esc: "D",
+        fai_esc: "",
+        int_esc: "C",
+        arc_esc: "",
+        dex_req: 11,
+        str_req: 16,
+        fai_req: 0,
+        int_req: 38,
+        arc_req: 0,
+        categoria: "Espadón",
+        peso: "10.0",
+        tipo_ataque: "Estándar/Punción",
+        descripcion: "Katana con una hoja larga y curva de un solo filo. !! Los samuráis de las Tierras del Cañaveral blanden esta arma única. !! El diseño ondulante de la hoja le otorga un filo excepcional. Sus ataques cortantes provocan hemorragia."
+      }
+    ];
+
+    // --- Equipar cosas en ranuras ---
+    // Mapeo de ranura a imagen equipada
+    const equipadas = {
+      h: null, a: null, g: null, l: null, mano_izq: null, mano_der: null
+    };
+
+    // Crea imágenes equipadas sobre las ranuras
+    function mostrarEquipada(ranura, imgSrc) {
+      let prev = document.getElementById('equipada-' + ranura);
+      if (prev) prev.remove();
+      // Busca el wrapper de la ranura
+      let wrapper = document.getElementById(
+        ranura === "mano_izq" ? "ranura-mano-izq" :
+        ranura === "mano_der" ? "ranura-mano-der" :
+        "ranura-" + ranura
+      );
+      if (wrapper) {
+        let img = document.createElement('img');
+        img.src = imgSrc;
+        img.className = 'equipada-img';
+        img.id = 'equipada-' + ranura;
+        img.style.position = 'absolute';
+        img.style.top = '0';
+        img.style.left = '0';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+        img.style.zIndex = '30';
+        wrapper.appendChild(img);
+        equipadas[ranura] = imgSrc;
+      }
+    }
+
+    // Intercambia los valores de las ranuras Mano Der y Mano Izq (excepto ubicación e imagen de ranura)
+    function intercambiarManos() {
+      // Guarda los valores equipados
+      let temp = equipadas.mano_izq;
+      equipadas.mano_izq = equipadas.mano_der;
+      equipadas.mano_der = temp;
+
+      // Actualiza las imágenes equipadas visualmente
+      mostrarEquipada('mano_izq', equipadas.mano_izq);
+      mostrarEquipada('mano_der', equipadas.mano_der);
+    }
+
+    // Puedes llamar a intercambiarManos() cuando lo necesites
+    // Ejemplo: intercambiarManos();
+
+    // Al clickear una imagen de almacen, equipa en la ranura correspondiente
+    function equiparAlmacen(idx) {
+      if (!menuActual) return;
+      let imgSrc = document.getElementById('almacen-img-' + (idx + 1)).src;
+      let ranura;
+      if (menuActual === 'mano') {
+        // Si la última ranura seleccionada fue Mano Izq, equipa en mano_izq, si fue Mano Der, equipa en mano_der
+        if (seleccionado === "Mano izquierda") {
+          ranura = 'mano_izq';
+        } else if (seleccionado === "Mano derecha") {
+          ranura = 'mano_der';
+        } else {
+          // Por defecto, si ambas están vacías, equipa en mano_der, si no, en mano_izq
+          if (!equipadas.mano_der) {
+            ranura = 'mano_der';
+          } else if (!equipadas.mano_izq) {
+            ranura = 'mano_izq';
+          } else {
+            ranura = 'mano_der';
+          }
+        }
+      } else {
+        ranura = menuActual;
+      }
+      mostrarEquipada(ranura, imgSrc);
+    }
+
+    // Asignar click a cada almacen
+    document.getElementById("almacen-1").addEventListener("click", function() { equiparAlmacen(0); });
+    document.getElementById("almacen-2").addEventListener("click", function() { equiparAlmacen(1); });
+    document.getElementById("almacen-3").addEventListener("click", function() { equiparAlmacen(2); });
+
+    // Tooltip para botones guardar/cargar
+    function setupMenuBtnTooltip(btnId) {
+      var btn = document.getElementById(btnId);
+      var timer = null;
+      btn.addEventListener("mouseenter", function() {
+        timer = setTimeout(function() {
+          btn.classList.add("show-tooltip");
+        }, 2000);
+      });
+      btn.addEventListener("mouseleave", function() {
+        clearTimeout(timer);
+        btn.classList.remove("show-tooltip");
+      });
+    }
+    setupMenuBtnTooltip("btn-guardar");
+    setupMenuBtnTooltip("btn-cargar");
+
+    // Utilidad para formatear saltos de línea en descripciones
+    function formatearDescripcion(texto) {
+      return texto.replace(/!!/g, "<br>");
+    }
+
+    // Menú armaduras (diseño)
+    function htmlArmadura(datos) {
+      // Si no hay datos, muestra valores vacíos
+      if (!datos) {
+        return `
+          <div id="atributo-nombre"></div>
+          <div id="atributo-fisico">0.0</div>
+          <div id="atributo-golpe">0.0</div>
+          <div id="atributo-tajo">0.0</div>
+          <div id="atributo-puncion">0.0</div>
+          <div id="atributo-magico">0.0</div>
+          <div id="atributo-sagrado">0.0</div>
+          <div id="atributo-electrico">0.0</div>
+          <div id="atributo-fuego">0.0</div>
+          <div id="atributo-inmunidad">0.0</div>
+          <div id="atributo-robustez">0.0</div>
+          <div id="atributo-concentracion">0.0</div>
+          <div id="atributo-vitalidad">0.0</div>
+          <div id="atributo-peso">0.0</div>
+          <div id="atributo-postura">0.0</div>
+          <img id="img-neutro" src="neutro.png" alt="Neutro">
+          <img id="img-resistencia" src="resistencia.png" alt="Resistencia">
+          <div id="texto-nombre"></div>
+          <div id="texto-neutro">Neutralización de daño</div>
+          <div id="texto-resistencia">Resistencia</div>
+          <div id="texto-fisico">Físico:</div>
+          <div id="texto-golpe">Vs golpe:</div>
+          <div id="texto-tajo">Vs tajo:</div>
+          <div id="texto-puncion">Vs punción:</div>
+          <div id="texto-magico">Magia:</div>
+          <div id="texto-sagrado">Sagrado:</div>
+          <div id="texto-electrico">Eléctrico:</div>
+          <div id="texto-fuego">Fuego:</div>
+          <div id="texto-inmunidad">Inmunidad:</div>
+          <div id="texto-robustez">Robustez:</div>
+          <div id="texto-concentracion">Concentración:</div>
+          <div id="texto-vitalidad">Vitalidad:</div>
+          <div id="texto-peso">Peso:</div>
+          <div id="texto-postura">Aplomo:</div>
+        `;
+      }
+      return `
+        <div id="atributo-nombre">${datos.nombre}</div>
+        <div id="atributo-fisico">${datos.fisico}</div>
+        <div id="atributo-golpe">${datos.golpe}</div>
+        <div id="atributo-tajo">${datos.tajo}</div>
+        <div id="atributo-puncion">${datos.puncion}</div>
+        <div id="atributo-magico">${datos.magico}</div>
+        <div id="atributo-sagrado">${datos.sagrado}</div>
+        <div id="atributo-electrico">${datos.electrico}</div>
+        <div id="atributo-fuego">${datos.fuego}</div>
+        <div id="atributo-inmunidad">${datos.inmunidad}</div>
+        <div id="atributo-robustez">${datos.robustez}</div>
+        <div id="atributo-concentracion">${datos.concentracion}</div>
+        <div id="atributo-vitalidad">${datos.vitalidad}</div>
+        <div id="atributo-peso">${datos.peso}</div>
+        <div id="atributo-postura">${datos.postura}</div>
+        <img id="img-neutro" src="neutro.png" alt="Neutro">
+        <img id="img-resistencia" src="resistencia.png" alt="Resistencia">
+        <div id="texto-nombre"></div>
+        <div id="texto-neutro">Neutralización de daño</div>
+        <div id="texto-resistencia">Resistencia</div>
+        <div id="texto-fisico">Físico:</div>
+        <div id="texto-golpe">Vs golpe:</div>
+        <div id="texto-tajo">Vs tajo:</div>
+        <div id="texto-puncion">Vs punción:</div>
+        <div id="texto-magico">Magia:</div>
+        <div id="texto-sagrado">Sagrado:</div>
+        <div id="texto-electrico">Eléctrico:</div>
+        <div id="texto-fuego">Fuego:</div>
+        <div id="texto-inmunidad">Inmunidad:</div>
+        <div id="texto-robustez">Robustez:</div>
+        <div id="texto-concentracion">Concentración:</div>
+        <div id="texto-vitalidad">Vitalidad:</div>
+        <div id="texto-peso">Peso:</div>
+        <div id="texto-postura">Aplomo:</div>
+      `;
+    }
+
+    // Menú armas (diseño)
+    function htmlArma(datos) {
+      // Si no hay datos, muestra valores vacíos
+      if (!datos) {
+        return `
+          <div id="atributo-nombre">Sin arma</div>
+          <div id="atributo-fisico_atq">20</div>
+          <div id="atributo-magico_atq">-</div>
+          <div id="atributo-fuego_atq">-</div>
+          <div id="atributo-electrico_atq">-</div>
+          <div id="atributo-sagrado_atq">-</div>
+          <div id="atributo-critico">100</div>
+          <div id="atributo-fisico_def">30.0</div>
+          <div id="atributo-magico_def">20.0</div>
+          <div id="atributo-fuego_def">20.0</div>
+          <div id="atributo-electrico_def">20.0</div>
+          <div id="atributo-sagrado_def">20.0</div>
+          <div id="atributo-aumento">10</div>
+          <div id="atributo-dex_esc">-</div>
+          <div id="atributo-str_esc">-</div>
+          <div id="atributo-fai_esc">-</div>
+          <div id="atributo-int_esc">-</div>
+          <div id="atributo-arc_esc">-</div>
+          <div id="atributo-dex_req">0</div>
+          <div id="atributo-str_req">0</div>
+          <div id="atributo-fai_req">0</div>
+          <div id="atributo-int_req">0</div>
+          <div id="atributo-arc_req">0</div>
+          <div id="atributo-categoria">Puño</div>
+          <div id="atributo-peso">0.0</div>
+          <div id="atributo-tipo_ataque">Golpe</div>
+          <img id="img-requisito" src="requisito.png" alt="Requisito">
+          <img id="img-negacion" src="negacion.png" alt="Negación">
+          <img id="img-poder" src="poder.png" alt="Poder">
+          <img id="img-escalado" src="escalado.png" alt="Escalado">
+          <img id="img-separador4" src="mini-separador.png" alt="mini-separador4">
+          <img id="img-separador5" src="mini-separador.png" alt="mini-separador5">
+          <div id="texto-nombre"></div>
+          <div id="texto-poder">Poder de ataque</div>
+          <div id="texto-defensa">Capacidad de defensa</div>
+          <div id="texto-escalado">Aumento de daño</div>
+          <div id="texto-requisito">Requisitos</div>
+          <div id="texto-fisico_atq">Físico:</div>
+          <div id="texto-magico_atq">Magia:</div>
+          <div id="texto-fuego_atq">Fuego:</div>
+          <div id="texto-electrico_atq">Rayo:</div>
+          <div id="texto-sagrado_atq">Sagrado:</div>
+          <div id="texto-critico">Crítico:</div>
+          <div id="texto-fisico_def">Físico:</div>
+          <div id="texto-magico_def">Magia:</div>
+          <div id="texto-fuego_def">Fuego:</div>
+          <div id="texto-electrico_def">Rayo:</div>
+          <div id="texto-sagrado_def">Sagrado:</div>
+          <div id="texto-aumento">Defensa:</div>
+          <div id="texto-dex_esc">Des:</div>
+          <div id="texto-str_esc">Fue:</div>
+          <div id="texto-fai_esc">Fe:</div>
+          <div id="texto-int_esc">Int:</div>
+          <div id="texto-arc_esc">Arc:</div>
+          <div id="texto-dex_req">Des:</div>
+          <div id="texto-str_req">Fue:</div>
+          <div id="texto-fai_req">Fe:</div>
+          <div id="texto-int_req">Int:</div>
+          <div id="texto-arc_req">Arc:</div>
+          <div id="texto-peso">Peso:</div>
+        `;
+      }
+      return `
+        <div id="atributo-nombre">${datos.nombre}</div>
+        <div id="atributo-fisico_atq">${datos.fisico_atq}</div>
+        <div id="atributo-magico_atq">${datos.magico_atq}</div>
+        <div id="atributo-fuego_atq">${datos.fuego_atq}</div>
+        <div id="atributo-electrico_atq">${datos.electrico_atq}</div>
+        <div id="atributo-sagrado_atq">${datos.sagrado_atq}</div>
+        <div id="atributo-critico">${datos.critico}</div>
+        <div id="atributo-fisico_def">${datos.fisico_def}</div>
+        <div id="atributo-magico_def">${datos.magico_def}</div>
+        <div id="atributo-fuego_def">${datos.fuego_def}</div>
+        <div id="atributo-electrico_def">${datos.electrico_def}</div>
+        <div id="atributo-sagrado_def">${datos.sagrado_def}</div>
+        <div id="atributo-aumento">${datos.aumento}</div>
+        <div id="atributo-dex_esc">${datos.dex_esc}</div>
+        <div id="atributo-str_esc">${datos.str_esc}</div>
+        <div id="atributo-fai_esc">${datos.fai_esc}</div>
+        <div id="atributo-int_esc">${datos.int_esc}</div>
+        <div id="atributo-arc_esc">${datos.arc_esc}</div>
+        <div id="atributo-dex_req">${datos.dex_req}</div>
+        <div id="atributo-str_req">${datos.str_req}</div>
+        <div id="atributo-fai_req">${datos.fai_req}</div>
+        <div id="atributo-int_req">${datos.int_req}</div>
+        <div id="atributo-arc_req">${datos.arc_req}</div>
+        <div id="atributo-categoria">${datos.categoria}</div>
+        <div id="atributo-peso">${datos.peso}</div>
+        <div id="atributo-tipo_ataque">${datos.tipo_ataque}</div>
+        <img id="img-requisito" src="requisito.png" alt="Requisito">
+        <img id="img-negacion" src="negacion.png" alt="Negación">
+        <img id="img-poder" src="poder.png" alt="Poder">
+        <img id="img-escalado" src="escalado.png" alt="Escalado">
+        <img id="img-separador4" src="mini-separador.png" alt="mini-separador4">
+        <img id="img-separador5" src="mini-separador.png" alt="mini-separador5">
+        <div id="texto-fisico_atq">Físico:</div>
+        <div id="texto-poder">Poder de ataque</div>
+        <div id="texto-defensa">Capacidad de defensa</div>
+        <div id="texto-escalado">Aumento de daño</div>
+        <div id="texto-requisito">Requisitos</div>
+        <div id="texto-magico_atq">Magia:</div>
+        <div id="texto-fuego_atq">Fuego:</div>
+        <div id="texto-electrico_atq">Rayo:</div>
+        <div id="texto-sagrado_atq">Sagrado:</div>
+        <div id="texto-critico">Crítico:</div>
+        <div id="texto-fisico_def">Físico:</div>
+        <div id="texto-magico_def">Magia:</div>
+        <div id="texto-fuego_def">Fuego:</div>
+        <div id="texto-electrico_def">Rayo:</div>
+        <div id="texto-sagrado_def">Sagrado:</div>
+        <div id="texto-aumento">Defensa:</div>
+        <div id="texto-dex_esc">Des:</div>
+        <div id="texto-str_esc">Fue:</div>
+        <div id="texto-fai_esc">Fe:</div>
+        <div id="texto-int_esc">Int:</div>
+        <div id="texto-arc_esc">Arc:</div>
+        <div id="texto-dex_req">Des:</div>
+        <div id="texto-str_req">Fue:</div>
+        <div id="texto-fai_req">Fe:</div>
+        <div id="texto-int_req">Int:</div>
+        <div id="texto-arc_req">Arc:</div>
+        <div id="texto-peso">Peso:</div>
+      `;
+    }
+
+    // Muestra la imagen vinculada a los atributos mostrados en columna C
+    function mostrarAtributoImg(tipo, idx) {
+      const img = document.getElementById("atributo-img");
+      let src = "";
+      let ranura = "";
+
+      if (tipo === "menú armaduras") {
+        if (menuActual === "h")      { src = ["wolf-h.png","carian-h.png","samurai-h.png"][idx]; ranura = "h"; }
+        else if (menuActual === "a") { src = ["wolf-a.png","carian-a.png","samurai-a.png"][idx]; ranura = "a"; }
+        else if (menuActual === "g") { src = ["wolf-g.png","carian-g.png","samurai-g.png"][idx]; ranura = "g"; }
+        else if (menuActual === "l") { src = ["wolf-l.png","carian-l.png","samurai-l.png"][idx]; ranura = "l"; }
+      } else if (tipo === "menú armas") {
+        src = ["bandit-s.png","night-flame.png","uchigatana.png"][idx];
+        ranura = "mano";
+      }
+      // Solo mostrar si hay tipo y src válido
+      if (tipo && src) {
+        img.src = src;
+        img.style.display = "block";
+        img.style.zIndex = "4";
+        // Ajusta tamaño y posición según la ranura
+        if (ranura === "h") {
+          img.style.left = "1180px";
+          img.style.top = "100px";
+          img.style.height = "100px";
+          img.style.width = "auto";
+        } else if (ranura === "a") {
+          img.style.left = "1193px";
+          img.style.top = "105px";
+          img.style.height = "90px";
+          img.style.width = "auto";
+        } else if (ranura === "g") {
+          img.style.left = "1185px";
+          img.style.top = "102px";
+          img.style.height = "100px";
+          img.style.width = "auto";
+        } else if (ranura === "l") {
+          img.style.left = "1187px";
+          img.style.top = "100px";
+          img.style.height = "100px";
+          img.style.width = "auto";
+        } else if (ranura === "mano") {
+          img.style.left = "1180px";
+          img.style.top = "90px";
+          img.style.height = "120px";
+          img.style.width = "auto";
+        }
+      } else {
+        img.src = "";
+        img.style.display = "none";
+      }
+    }
+
+    // Mostrar atributos en columna C en el menú principal según lo equipado en la última ranura sobre la que estuvo el mouse
+    function mostrarColumnaCPrincipal(wrapperId) {
+      let html = "";
+      let datos = null;
+      let tipoImg = "";
+      let idx = -1; // Cambiado a -1 para detectar si no hay match
+      // Detecta tipo y ranura
+      if (["ranura-h", "ranura-a", "ranura-g", "ranura-l"].includes(wrapperId)) {
+        let tipo = wrapperId.split('-')[1];
+        let imgSrc = equipadas[tipo];
+        if (imgSrc) {
+          if (tipo === "h") idx = ["wolf-h.png","carian-h.png","samurai-h.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "a") idx = ["wolf-a.png","carian-a.png","samurai-a.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "g") idx = ["wolf-g.png","carian-g.png","samurai-g.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "l") idx = ["wolf-l.png","carian-l.png","samurai-l.png"].indexOf(imgSrc.split('/').pop());
+          if (idx >= 0) datos = almacenDatos[tipo][idx];
+        }
+        html = htmlArmadura(datos);
+        tipoImg = "menú armaduras";
+      } else if (["ranura-mano-izq", "ranura-mano-der"].includes(wrapperId)) {
+        let imgSrc = equipadas[wrapperId === "ranura-mano-izq" ? "mano_izq" : "mano_der"];
+        if (imgSrc) {
+          idx = ["bandit-s.png","night-flame.png","uchigatana.png"].indexOf(imgSrc.split('/').pop());
+          if (idx >= 0) datos = almacenDatosMano[idx];
+        }
+        html = htmlArma(datos);
+        tipoImg = "menú armas";
+      } else {
+        limpiarColumnaC();
+        document.getElementById("atributo-img").style.display = "none";
+        return;
+      }
+      document.getElementById("columna-c-contenido").innerHTML = html;
+      // Solo mostrar imagen si hay datos válidos y el índice es válido
+      if (datos && idx >= 0) {
+        mostrarAtributoImg(tipoImg, idx);
+      } else {
+        document.getElementById("atributo-img").style.display = "none";
+      }
+    }
+
+    // Mostrar atributos en columna C según el menú secundario y selección
+    function mostrarColumnaC(tipo, idx) {
+      const cont = document.getElementById("columna-c-contenido");
+      let html = "";
+      if (tipo === "menú armaduras") {
+        let datos;
+        if (menuActual === "h") datos = almacenDatos.h[idx];
+        else if (menuActual === "a") datos = almacenDatos.a[idx];
+        else if (menuActual === "g") datos = almacenDatos.g[idx];
+        else if (menuActual === "l") datos = almacenDatos.l[idx];
+        if (datos) html = htmlArmadura(datos);
+      } else if (tipo === "menú armas") {
+        let datos = almacenDatosMano[idx];
+        if (datos) html = htmlArma(datos);
+      }
+      cont.innerHTML = html;
+      mostrarAtributoImg(tipo, idx);
+    }
+
+    // Mostrar atributos en columna C en el menú principal según lo equipado en la última ranura sobre la que estuvo el mouse
+    function mostrarColumnaCPrincipal(wrapperId) {
+      let html = "";
+      let datos = null;
+      let tipoImg = "";
+      let idx = -1; // Cambiado a -1 para detectar si no hay match
+      // Detecta tipo y ranura
+      if (["ranura-h", "ranura-a", "ranura-g", "ranura-l"].includes(wrapperId)) {
+        let tipo = wrapperId.split('-')[1];
+        let imgSrc = equipadas[tipo];
+        if (imgSrc) {
+          if (tipo === "h") idx = ["wolf-h.png","carian-h.png","samurai-h.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "a") idx = ["wolf-a.png","carian-a.png","samurai-a.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "g") idx = ["wolf-g.png","carian-g.png","samurai-g.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "l") idx = ["wolf-l.png","carian-l.png","samurai-l.png"].indexOf(imgSrc.split('/').pop());
+          if (idx >= 0) datos = almacenDatos[tipo][idx];
+        }
+        html = htmlArmadura(datos);
+        tipoImg = "menú armaduras";
+      } else if (["ranura-mano-izq", "ranura-mano-der"].includes(wrapperId)) {
+        let imgSrc = equipadas[wrapperId === "ranura-mano-izq" ? "mano_izq" : "mano_der"];
+        if (imgSrc) {
+          idx = ["bandit-s.png","night-flame.png","uchigatana.png"].indexOf(imgSrc.split('/').pop());
+          if (idx >= 0) datos = almacenDatosMano[idx];
+        }
+        html = htmlArma(datos);
+        tipoImg = "menú armas";
+      } else {
+        limpiarColumnaC();
+        document.getElementById("atributo-img").style.display = "none";
+        return;
+      }
+      document.getElementById("columna-c-contenido").innerHTML = html;
+      mostrarAtributoImg(tipoImg, idx);
+    }
+
+    // Agrega evento mouseenter para mostrar atributos en menú principal
+    document.getElementById("ranura-h").addEventListener("mouseenter", function() {
+      mostrarColumnaCPrincipal("ranura-h");
+    });
+    document.getElementById("ranura-a").addEventListener("mouseenter", function() {
+      mostrarColumnaCPrincipal("ranura-a");
+    });
+    document.getElementById("ranura-g").addEventListener("mouseenter", function() {
+      mostrarColumnaCPrincipal("ranura-g");
+    });
+    document.getElementById("ranura-l").addEventListener("mouseenter", function() {
+      mostrarColumnaCPrincipal("ranura-l");
+    });
+    document.getElementById("ranura-mano-izq").addEventListener("mouseenter", function() {
+      mostrarColumnaCPrincipal("ranura-mano-izq");
+    });
+    document.getElementById("ranura-mano-der").addEventListener("mouseenter", function() {
+      mostrarColumnaCPrincipal("ranura-mano-der");
+    });
+
+    // Limpiar columna C al salir de las ranuras en menú principal
+    document.getElementById("ranura-h").addEventListener("mouseleave", limpiarColumnaC);
+    document.getElementById("ranura-a").addEventListener("mouseleave", limpiarColumnaC);
+    document.getElementById("ranura-g").addEventListener("mouseleave", limpiarColumnaC);
+    document.getElementById("ranura-l").addEventListener("mouseleave", limpiarColumnaC);
+    document.getElementById("ranura-mano-izq").addEventListener("mouseleave", limpiarColumnaC);
+    document.getElementById("ranura-mano-der").addEventListener("mouseleave", limpiarColumnaC);
+
+    // Mostrar atributos al seleccionar imagen en almacen secundario
+    document.getElementById("almacen-1").addEventListener("mouseenter", function() {
+      mostrarColumnaC(tipoMenuSecundario, 0);
+    });
+    document.getElementById("almacen-2").addEventListener("mouseenter", function() {
+      mostrarColumnaC(tipoMenuSecundario, 1);
+    });
+    document.getElementById("almacen-3").addEventListener("mouseenter", function() {
+      mostrarColumnaC(tipoMenuSecundario, 2);
+    });
+
+    // Limpiar columna C al volver al menú principal
+    function limpiarColumnaC() {
+      document.getElementById("columna-c-contenido").innerHTML = "";
+      document.getElementById("atributo-img").style.display = "none";
+      // Mostrar la última ranura seleccionada
+      mostrarColumnaCPrincipal(ultimaRanuraSeleccionada);
+    }
+
+    // Nueva variable para la última ranura seleccionada en el menú principal
+    let ultimaRanuraSeleccionada = "ranura-h";
+
+    // Al cargar la página, selecciona la ranura H por defecto
+    window.addEventListener("DOMContentLoaded", function() {
+      mostrarColumnaCPrincipal(ultimaRanuraSeleccionada);
+      setSeleccionado("Cabeza", "ranura-h");
+    });
+
+    // Modifica los eventos mouseenter para actualizar la última ranura seleccionada
+    function seleccionarYMostrar(wrapperId, texto) {
+      ultimaRanuraSeleccionada = wrapperId;
+      setSeleccionado(texto, wrapperId);
+      mostrarColumnaCPrincipal(wrapperId);
+    }
+
+    document.getElementById("ranura-h").addEventListener("mouseenter", function() {
+      seleccionarYMostrar("ranura-h", "Cabeza");
+    });
+    document.getElementById("ranura-a").addEventListener("mouseenter", function() {
+      seleccionarYMostrar("ranura-a", "Pecho");
+    });
+    document.getElementById("ranura-g").addEventListener("mouseenter", function() {
+      seleccionarYMostrar("ranura-g", "Brazos");
+    });
+    document.getElementById("ranura-l").addEventListener("mouseenter", function() {
+      seleccionarYMostrar("ranura-l", "Piernas");
+    });
+    document.getElementById("ranura-mano-izq").addEventListener("mouseenter", function() {
+      seleccionarYMostrar("ranura-mano-izq", "Armamento de mano izquierda");
+    });
+    document.getElementById("ranura-mano-der").addEventListener("mouseenter", function() {
+      seleccionarYMostrar("ranura-mano-der", "Armamento de mano derecha");
+    });
+
+    // Al salir de una ranura, NO limpiar columna C ni cambiar la selección
+    document.getElementById("ranura-h").addEventListener("mouseleave", function(){});
+    document.getElementById("ranura-a").addEventListener("mouseleave", function(){});
+    document.getElementById("ranura-g").addEventListener("mouseleave", function(){});
+    document.getElementById("ranura-l").addEventListener("mouseleave", function(){});
+    document.getElementById("ranura-mano-izq").addEventListener("mouseleave", function(){});
+    document.getElementById("ranura-mano-der").addEventListener("mouseleave", function(){});
+  </script>
+</body>
 </html>
