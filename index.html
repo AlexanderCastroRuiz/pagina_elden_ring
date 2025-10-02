@@ -526,13 +526,23 @@
       camera-controls
       auto-rotate
       id="modelo3d"
-      style="height:80vh;width:auto;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:fixed;top:0;left:0;right:0;bottom:0;"
-      touch-action="none"
+      style="height:80vh;width:auto;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:fixed;top:0;left:0;right:0;bottom:0;cursor:grab;"
       interaction-prompt="auto"
       disable-zoom="false"
       disable-pan="false"
+      touch-action="none"
     ></model-viewer>
   </div>
+  <style>
+    /* ...existing code... */
+    model-viewer {
+      cursor: grab !important;
+    }
+    model-viewer:active {
+      cursor: grabbing !important;
+    }
+    /* ...existing code... */
+  </style>
   <script>
     // Variable seleccionada
     var seleccionado = "";
@@ -1622,11 +1632,3 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
-
