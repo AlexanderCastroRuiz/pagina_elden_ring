@@ -526,6 +526,7 @@
       camera-controls
       auto-rotate
       id="modelo3d"
+      style="height:75vh;width:auto;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:fixed;top:0;left:0;right:0;bottom:0;"
     ></model-viewer>
   </div>
   <script>
@@ -1115,10 +1116,10 @@
       let imgSrc = document.getElementById('almacen-img-' + (idx + 1)).src;
       let ranura;
       if (menuActual === 'mano') {
-        // Si la última ranura seleccionada fue Mano Izq, equipa en mano_izq, si fue Mano Der, equipa en mano_der
-        if (seleccionado === "Mano izquierda") {
+        // Corrige: usa ultimaRanuraSeleccionada para decidir la mano
+        if (ultimaRanuraSeleccionada === "ranura-mano-izq") {
           ranura = 'mano_izq';
-        } else if (seleccionado === "Mano derecha") {
+        } else if (ultimaRanuraSeleccionada === "ranura-mano-der") {
           ranura = 'mano_der';
         } else {
           // Por defecto, si ambas están vacías, equipa en mano_der, si no, en mano_izq
