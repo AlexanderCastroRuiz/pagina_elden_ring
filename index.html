@@ -530,12 +530,15 @@
       interaction-prompt="auto"
       disable-zoom="false"
       disable-pan="false"
+      /* touch-action="none" eliminado */
     ></model-viewer>
   </div>
   <style>
     /* ...existing code... */
     model-viewer {
       cursor: grab !important;
+      pointer-events: auto !important;
+      /* touch-action: none;  NO incluir esto */
     }
     model-viewer:active {
       cursor: grabbing !important;
@@ -1631,4 +1634,4 @@
 </body>
 
 </html>
-
+</html>
