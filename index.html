@@ -519,18 +519,31 @@
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3;">
   </div>
   <div class="modelo-3d-container">
-    <model-viewer
-      src="Sinluz.glb"
-      camera-controls
-      auto-rotate
-      id="modelo3d"
-      style="pointer-events:auto; "
-    >
-      <div style="color:white;background:#222;padding:2em;text-align:center;">
-        Si ves este mensaje, tu navegador no soporta <code>&lt;model-viewer&gt;</code>.<br>
-        Prueba en Chrome, Edge o Firefox moderno.
-      </div>
+    <!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Prueba Modelo</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+      body { margin: 0; background-color: black; }
+      model-viewer {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <model-viewer 
+      src="Sinluz.glb" 
+      alt="Modelo 3D"
+      camera-controls 
+      auto-rotate 
+      exposure="1"
+      shadow-intensity="1">
     </model-viewer>
+  </body>
+</html>
   </div>
   <script>
     // Variable seleccionada
@@ -1616,4 +1629,5 @@
     document.getElementById("ranura-mano-der").addEventListener("mouseleave", function(){});
   </script>
 </body>
+
 </html>
