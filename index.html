@@ -534,15 +534,20 @@
     </style>
   </head>
   <body>
-    <model-viewer 
-      src="Sinluz.glb" 
-      alt="Modelo 3D"
-      camera-controls 
-      auto-rotate 
-      exposure="1"
-      shadow-intensity="1">
-      style="pointer-events:auto; top: 50%; left: 50%;"
+  <div class="modelo-3d-container">
+    <model-viewer
+      src="Sinluz.glb"
+      camera-controls
+      auto-rotate
+      id="modelo3d"
+      style="pointer-events:auto; left: 50%; top: 50%;"
+    >
+      <div style="color:white;background:#222;padding:2em;text-align:center;">
+        Si ves este mensaje, tu navegador no soporta <code>&lt;model-viewer&gt;</code>.<br>
+        Prueba en Chrome, Edge o Firefox moderno.
+      </div>
     </model-viewer>
+  </div>
   </body>
 </html>
   </div>
@@ -1632,4 +1637,5 @@
 </body>
 
 </html>
+
 
