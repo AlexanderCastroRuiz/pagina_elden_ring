@@ -404,55 +404,106 @@
     #texto-int_req            { position: absolute; left:  120px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
     #texto-arc_req            { position: absolute; left:  120px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
     /* ...existing code... */
+    
     /* --- FIX: permitir la interacción del model-viewer sin romper la UI --- */
 
-/* Asegura que el contenedor 3D esté encima y reciba eventos */
-.modelo-3d-container {
-  position: fixed;      /* ya lo tenías, lo reforzamos */
-  inset: 0;             /* top:0;right:0;bottom:0;left:0; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;         /* muy por encima del fondo, pero por debajo de tooltips si hace falta */
-  pointer-events: auto; /* el contenedor acepta eventos */
-}
+    /* Asegura que el contenedor 3D esté encima y reciba eventos */
+    .modelo-3d-container {
+      position: fixed;      /* ya lo tenías, lo reforzamos */
+      inset: 0;             /* top:0;right:0;bottom:0;left:0; */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;         /* muy por encima del fondo, pero por debajo de tooltips si hace falta */
+      pointer-events: auto; /* el contenedor acepta eventos */
+    }
 
-/* El propio model-viewer debe recibir eventos y no permitir scroll en touch por accidente */
-model-viewer#modelo3d {
-  z-index: 1000 !important;    /* lo más arriba para que reciba los clicks */
-  pointer-events: auto !important;
-  touch-action: none;          /* evita gestos nativos de navegador que interfieren */
-  cursor: grab !important;
-}
+    /* El propio model-viewer debe recibir eventos y no permitir scroll en touch por accidente */
+    model-viewer#modelo3d {
+      z-index: 1000 !important;    /* lo más arriba para que reciba los clicks */
+      pointer-events: auto !important;
+      touch-action: none;          /* evita gestos nativos de navegador que interfieren */
+      cursor: grab !important;
+    }
 
-/* Por defecto, la capa principal (donde hay muchos elementos gráficos) no intercepta eventos,
-   así los clicks pasan al model-viewer. Luego re-habilitamos pointer-events sólo en los controles que querés interactivos. */
-.main-grid,
-.base-wallpaper,
-.dark-overlay,
-.overlay-wallpaper {
-  pointer-events: none !important;
-}
+    /* Por defecto, la capa principal (donde hay muchos elementos gráficos) no intercepta eventos,
+       así los clicks pasan al model-viewer. Luego re-habilitamos pointer-events sólo en los controles que querés interactivos. */
+    .main-grid,
+    .base-wallpaper,
+    .dark-overlay,
+    .overlay-wallpaper {
+      pointer-events: none !important;
+    }
 
-/* Elementos UI que deben seguir siendo clickeables: mantenelos en pointer-events:auto */
-.ranura-btn-wrapper,
-.ranura-btn,
-.menu-btn-wrapper,
-.menu-btn-img,
-.almacen-btn-wrapper,
-.almacen-btn,
-#btn-guardar,
-#btn-cargar,
-.ranura-btn,
-.menu-btn-wrapper * {
-  pointer-events: auto !important;
-  z-index: 1100; /* aseguran estar por encima del model-viewer si los querés encima visualmente */
-}
+    /* Elementos UI que deben seguir siendo clickeables: mantenelos en pointer-events:auto */
+    .ranura-btn-wrapper,
+    .ranura-btn,
+    .menu-btn-wrapper,
+    .menu-btn-img,
+    .almacen-btn-wrapper,
+    .almacen-btn,
+    #btn-guardar,
+    #btn-cargar,
+    .ranura-btn,
+    .menu-btn-wrapper * {
+      pointer-events: auto !important;
+      z-index: 1100; /* aseguran estar por encima del model-viewer si los querés encima visualmente */
+    }
 
-/* Si tenés tooltips que deben mostrarse por encima, mantendré menor z-index para model-viewer y mayor para tooltips */
-/* Ajustá estos valores si querés que ciertos botones aparezcan por encima del modelo */
-.menu-btn-wrapper { z-index: 1101; }
-.ranura-btn-wrapper { z-index: 1101; }
+    /* Si tenés tooltips que deben mostrarse por encima, mantendré menor z-index para model-viewer y mayor para tooltips */
+    /* Ajustá estos valores si querés que ciertos botones aparezcan por encima del modelo */
+    .menu-btn-wrapper { z-index: 1101; }
+    .ranura-btn-wrapper { z-index: 1101; }
+
+    /* --- SOLO INTERACCIÓN EN EL SEGUNDO TERCIO PARA EL MODELO 3D --- */
+    .modelo-3d-interaction-area {
+      position: fixed;
+      top: 0;
+      left: 39.45vw; /* Empieza donde termina la columna 1 */
+      width: 35.55vw; /* Segundo tercio */
+      height: 100vh;
+      z-index: 999;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modelo-3d-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none; /* Solo el interaction-area recibe eventos */
+    }
+    .modelo-3d-interaction-area model-viewer#modelo3d {
+      pointer-events: auto !important;
+      z-index: 1000 !important;
+      width: 100% !important;
+      height: 80vh !important;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: block;
+      background: transparent;
+      margin: auto;
+      position: relative;
+      cursor: grab !important;
+    }
+    /* El resto de la pantalla no permite interacción con el modelo */
+    .modelo-3d-container > model-viewer#modelo3d {
+      pointer-events: none !important;
+    }
+
+    /* --- CURSOR MANITA EN BOTONES INTERACTIVOS --- */
+    .ranura-btn,
+    .almacen-btn,
+    .menu-btn-img,
+    .menu-btn-wrapper,
+    .almacen-btn-wrapper,
+    .ranura-btn-wrapper {
+      cursor: pointer !important;
+    }
 
   </style>
   <!-- Firebase App (the core Firebase SDK) -->
@@ -570,18 +621,20 @@ model-viewer#modelo3d {
     <img id="atributo-img" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4; pointer-events: none;">
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
   </div>
+  <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
   <div class="modelo-3d-container">
-    <model-viewer
-      src="Sinluz.glb"
-      camera-controls
-      auto-rotate
-      id="modelo3d"
-      style="height:80vh;width:auto;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:fixed;top:0;left:0;right:0;bottom:0;cursor:grab;"
-      interaction-prompt="auto"
-      disable-zoom="false"
-      disable-pan="false"
-      /* touch-action="none" eliminado */
-    ></model-viewer>
+    <div class="modelo-3d-interaction-area">
+      <model-viewer
+        src="Sinluz.glb"
+        camera-controls
+        auto-rotate
+        id="modelo3d"
+        style="height:80vh;width:100%;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:relative;top:0;left:0;right:0;bottom:0;cursor:grab;"
+        interaction-prompt="auto"
+        disable-zoom="false"
+        disable-pan="false"
+      ></model-viewer>
+    </div>
   </div>
   <style>
     /* ...existing code... */
@@ -1685,6 +1738,5 @@ model-viewer#modelo3d {
 
 </html>
 </html>
-
 
 
