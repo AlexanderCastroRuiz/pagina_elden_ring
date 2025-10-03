@@ -404,6 +404,56 @@
     #texto-int_req            { position: absolute; left:  120px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
     #texto-arc_req            { position: absolute; left:  120px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
     /* ...existing code... */
+    /* --- FIX: permitir la interacción del model-viewer sin romper la UI --- */
+
+/* Asegura que el contenedor 3D esté encima y reciba eventos */
+.modelo-3d-container {
+  position: fixed;      /* ya lo tenías, lo reforzamos */
+  inset: 0;             /* top:0;right:0;bottom:0;left:0; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;         /* muy por encima del fondo, pero por debajo de tooltips si hace falta */
+  pointer-events: auto; /* el contenedor acepta eventos */
+}
+
+/* El propio model-viewer debe recibir eventos y no permitir scroll en touch por accidente */
+model-viewer#modelo3d {
+  z-index: 1000 !important;    /* lo más arriba para que reciba los clicks */
+  pointer-events: auto !important;
+  touch-action: none;          /* evita gestos nativos de navegador que interfieren */
+  cursor: grab !important;
+}
+
+/* Por defecto, la capa principal (donde hay muchos elementos gráficos) no intercepta eventos,
+   así los clicks pasan al model-viewer. Luego re-habilitamos pointer-events sólo en los controles que querés interactivos. */
+.main-grid,
+.base-wallpaper,
+.dark-overlay,
+.overlay-wallpaper {
+  pointer-events: none !important;
+}
+
+/* Elementos UI que deben seguir siendo clickeables: mantenelos en pointer-events:auto */
+.ranura-btn-wrapper,
+.ranura-btn,
+.menu-btn-wrapper,
+.menu-btn-img,
+.almacen-btn-wrapper,
+.almacen-btn,
+#btn-guardar,
+#btn-cargar,
+.ranura-btn,
+.menu-btn-wrapper * {
+  pointer-events: auto !important;
+  z-index: 1100; /* aseguran estar por encima del model-viewer si los querés encima visualmente */
+}
+
+/* Si tenés tooltips que deben mostrarse por encima, mantendré menor z-index para model-viewer y mayor para tooltips */
+/* Ajustá estos valores si querés que ciertos botones aparezcan por encima del modelo */
+.menu-btn-wrapper { z-index: 1101; }
+.ranura-btn-wrapper { z-index: 1101; }
+
   </style>
   <!-- Firebase App (the core Firebase SDK) -->
   <script type="module">
@@ -1635,5 +1685,6 @@
 
 </html>
 </html>
+
 
 
