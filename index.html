@@ -4,15 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personaje con Armadura</title>
-  <script type="module"
-    src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
-  </script>
+
+  <!-- Model Viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+
+  <!-- Three.js (necesario para cargar modelos adicionales manualmente) -->
+  <script type="module" src="https://unpkg.com/three@0.158.0/build/three.module.js"></script>
+  <script type="module" src="https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js"></script>
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* elimina la barra de scroll */
+      overflow: hidden;
       background-color: #000;
     }
     model-viewer {
@@ -22,20 +27,23 @@
     }
   </style>
 </head>
-<body>
 
-  <!-- Un solo visor que contendrá todo -->
+<body>
+  <!-- Escena principal -->
   <model-viewer id="visor"
+    src="Cuerpo.glb"
     camera-controls
-    environment-image="neutral"
-    exposure="1"
-    shadow-intensity="1"
     auto-rotate
-    src="Cuerpo.glb">
+    environment-image="neutral"
+    shadow-intensity="1"
+    exposure="1">
   </model-viewer>
 
-  <script>
-    const visor = document.getElementById('visor');
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
+
+    const visor = document.querySelector('#visor');
     const modelos = [
       'Cara.glb',
       'H_Raging_Wolf.glb',
@@ -48,14 +56,17 @@
       'A_Preceptor.glb'
     ];
 
-    // Espera a que el modelo principal esté cargado
     visor.addEventListener('load', async () => {
+      const threeScene = visor.scene; // escena interna de <model-viewer>
+      const loader = new GLTFLoader();
+
       for (const src of modelos) {
         try {
-          const mesh = await visor.addModel(src);
-          console.log(`Cargado: ${src}`);
-        } catch (e) {
-          console.warn(`No se pudo cargar ${src}:`, e);
+          const gltf = await loader.loadAsync(src);
+          threeScene.modelContainer.add(gltf.scene); // agrega cada modelo en el mismo espacio 3D
+          console.log(`Modelo cargado correctamente: ${src}`);
+        } catch (error) {
+          console.error(`Error al cargar ${src}:`, error);
         }
       }
     });
