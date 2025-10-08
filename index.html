@@ -622,44 +622,72 @@
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
   </div>
   <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
-   <div class="modelo-3d-container">
-    <div class="modelo-3d-interaction-area">
-<!-- Escena principal -->
-<model-viewer id="visor"
-  style="width: 100%; height: 100vh;"
-  camera-controls
-  environment-image="neutral"
-  exposure="1"
-  shadow-intensity="1"
-  auto-rotate>
-</model-viewer>
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personaje con Armadura</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background-color: black;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Un solo viewer compartido -->
+  <model-viewer id="visor"
+    camera-controls
+    environment-image="neutral"
+    exposure="1"
+    shadow-intensity="1"
+    disable-zoom>
+  </model-viewer>
 
-<script type="module">
-  const viewer = document.querySelector('#visor');
+  <script type="module">
+    import { Model } from 'https://unpkg.com/@google/model-viewer/lib/model-viewer.js';
 
-  // Lista de modelos a cargar
-  const modelos = [
-    'Cuerpo.glb',
-    'Cara.glb',
-    'H_Raging_Wolf.glb',
-    'A_Raging_Wolf.glb',
-    'G_Raging_Wolf.glb',
-    'L_Raging_Wolf.glb',
-    'L_Alberich.glb',
-    'A_Alberich.glb',
-    'L_Preceptor.glb',
-    'A_Preceptor.glb'
-  ];
+    const visor = document.querySelector('#visor');
 
-  // Cargar todos los modelos uno encima del otro
-  for (const src of modelos) {
-    const nuevaCapa = document.createElement('model-viewer');
-    nuevaCapa.src = src;
-    viewer.appendChild(nuevaCapa);
-  }
-</script>
+    // Modelo base
+    visor.src = 'Cuerpo.glb';
 
-  </div>
+    // Resto de modelos que se cargarán en la misma escena
+    const modelos = [
+      'Cara.glb',
+      'H_Raging_Wolf.glb',
+      'A_Raging_Wolf.glb',
+      'G_Raging_Wolf.glb',
+      'L_Raging_Wolf.glb',
+      'L_Alberich.glb',
+      'A_Alberich.glb',
+      'L_Preceptor.glb',
+      'A_Preceptor.glb'
+    ];
+
+    visor.addEventListener('load', async () => {
+      const scene = visor.scene;
+      const loader = visor.createModelLoader();
+
+      for (const src of modelos) {
+        try {
+          const mesh = await loader.load(src);
+          scene.modelContainer.add(mesh); // Los agrega al mismo espacio 3D
+        } catch (e) {
+          console.warn(`Error al cargar ${src}:`, e);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
   <style>
     /* ...existing code... */
     model-viewer {
@@ -1762,6 +1790,5 @@
 
 </html>
 </html>
-
 
 
