@@ -623,17 +623,26 @@
   </div>
   <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
   <div class="modelo-3d-container">
-    <div class="modelo-3d-interaction-area">
+    <div class="modelo-3d-interaction-area" style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; align-items: flex-start;">
       <model-viewer
-        src="Botas.glb"
+        src="Cuerpo.glb"
         camera-controls
         auto-rotate
-        id="modelo3d"
-        style="height:80vh;width:100%;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:relative;top:0;left:-14vh;right:0;bottom:0;cursor:grab;"
+        id="modelo3d-cuerpo"
+        style="height:40vh;width:22vw;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:relative;top:0;left:0;right:0;bottom:0;cursor:grab;"
         interaction-prompt="auto"
         disable-zoom="false"
         disable-pan="false"
       ></model-viewer>
+      <model-viewer src="Cara.glb" camera-controls auto-rotate id="modelo3d-cara" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="H_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-h-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="A_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-a-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="G_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-g-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="L_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-l-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="L_Alberich.glb" camera-controls auto-rotate id="modelo3d-l-alberich" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="A_Alberich.glb" camera-controls auto-rotate id="modelo3d-a-alberich" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="L_Preceptor.glb" camera-controls auto-rotate id="modelo3d-l-preceptor" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
+      <model-viewer src="A_Preceptor.glb" camera-controls auto-rotate id="modelo3d-a-preceptor" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
     </div>
   </div>
   <style>
@@ -1738,11 +1747,5 @@
 
 </html>
 </html>
-
-
-
-
-
-
 
 
