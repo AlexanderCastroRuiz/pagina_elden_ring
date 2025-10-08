@@ -622,28 +622,43 @@
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
   </div>
   <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
-  <div class="modelo-3d-container">
-    <div class="modelo-3d-interaction-area" style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; align-items: flex-start;">
-      <model-viewer
-        src="Cuerpo.glb"
-        camera-controls
-        auto-rotate
-        id="modelo3d-cuerpo"
-        style="height:40vh;width:22vw;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:relative;top:0;left:0;right:0;bottom:0;cursor:grab;"
-        interaction-prompt="auto"
-        disable-zoom="false"
-        disable-pan="false"
-      ></model-viewer>
-      <model-viewer src="Cara.glb" camera-controls auto-rotate id="modelo3d-cara" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="H_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-h-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="A_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-a-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="G_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-g-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="L_Raging_Wolf.glb" camera-controls auto-rotate id="modelo3d-l-raging-wolf" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="L_Alberich.glb" camera-controls auto-rotate id="modelo3d-l-alberich" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="A_Alberich.glb" camera-controls auto-rotate id="modelo3d-a-alberich" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="L_Preceptor.glb" camera-controls auto-rotate id="modelo3d-l-preceptor" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-      <model-viewer src="A_Preceptor.glb" camera-controls auto-rotate id="modelo3d-a-preceptor" style="height:40vh;width:22vw;display:block;background:transparent;cursor:grab;"></model-viewer>
-    </div>
+   <div class="modelo-3d-container">
+    <div class="modelo-3d-interaction-area">
+<!-- Escena principal -->
+<model-viewer id="visor"
+  style="width: 100%; height: 100vh;"
+  camera-controls
+  environment-image="neutral"
+  exposure="1"
+  shadow-intensity="1"
+  auto-rotate>
+</model-viewer>
+
+<script type="module">
+  const viewer = document.querySelector('#visor');
+
+  // Lista de modelos a cargar
+  const modelos = [
+    'Cuerpo.glb',
+    'Cara.glb',
+    'H_Raging_Wolf.glb',
+    'A_Raging_Wolf.glb',
+    'G_Raging_Wolf.glb',
+    'L_Raging_Wolf.glb',
+    'L_Alberich.glb',
+    'A_Alberich.glb',
+    'L_Preceptor.glb',
+    'A_Preceptor.glb'
+  ];
+
+  // Cargar todos los modelos uno encima del otro
+  for (const src of modelos) {
+    const nuevaCapa = document.createElement('model-viewer');
+    nuevaCapa.src = src;
+    viewer.appendChild(nuevaCapa);
+  }
+</script>
+
   </div>
   <style>
     /* ...existing code... */
@@ -1747,5 +1762,6 @@
 
 </html>
 </html>
+
 
 
