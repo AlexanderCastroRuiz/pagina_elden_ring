@@ -404,41 +404,158 @@
     #texto-int_req            { position: absolute; left:  120px; top: 405px; font-size: 1em; width: 60px; color: #D0D0D0; }
     #texto-arc_req            { position: absolute; left:  120px; top: 430px; font-size: 1em; width: 60px; color: #D0D0D0; }
     /* ...existing code... */
+    
+    /* --- FIX: permitir la interacción del model-viewer sin romper la UI --- */
+
+    /* Asegura que el contenedor 3D esté encima y reciba eventos */
+    .modelo-3d-container {
+      position: fixed;      /* ya lo tenías, lo reforzamos */
+      inset: 0;             /* top:0;right:0;bottom:0;left:0; */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;         /* muy por encima del fondo, pero por debajo de tooltips si hace falta */
+      pointer-events: auto; /* el contenedor acepta eventos */
+    }
+
+    /* El propio model-viewer debe recibir eventos y no permitir scroll en touch por accidente */
+    model-viewer#modelo3d {
+      z-index: 1000 !important;    /* lo más arriba para que reciba los clicks */
+      pointer-events: auto !important;
+      touch-action: none;          /* evita gestos nativos de navegador que interfieren */
+      cursor: grab !important;
+    }
+
+    /* Por defecto, la capa principal (donde hay muchos elementos gráficos) no intercepta eventos,
+       así los clicks pasan al model-viewer. Luego re-habilitamos pointer-events sólo en los controles que querés interactivos. */
+    .main-grid,
+    .base-wallpaper,
+    .dark-overlay,
+    .overlay-wallpaper {
+      pointer-events: none !important;
+    }
+
+    /* Elementos UI que deben seguir siendo clickeables: mantenelos en pointer-events:auto */
+    .ranura-btn-wrapper,
+    .ranura-btn,
+    .menu-btn-wrapper,
+    .menu-btn-img,
+    .almacen-btn-wrapper,
+    .almacen-btn,
+    #btn-guardar,
+    #btn-cargar,
+    .ranura-btn,
+    .menu-btn-wrapper * {
+      pointer-events: auto !important;
+      z-index: 1100; /* aseguran estar por encima del model-viewer si los querés encima visualmente */
+    }
+
+    /* Si tenés tooltips que deben mostrarse por encima, mantendré menor z-index para model-viewer y mayor para tooltips */
+    /* Ajustá estos valores si querés que ciertos botones aparezcan por encima del modelo */
+    .menu-btn-wrapper { z-index: 1101; }
+    .ranura-btn-wrapper { z-index: 1101; }
+
+    /* --- SOLO INTERACCIÓN EN EL SEGUNDO TERCIO PARA EL MODELO 3D --- */
+    .modelo-3d-interaction-area {
+      position: fixed;
+      top: 0;
+      left: 39.45vw; /* Empieza donde termina la columna 1 */
+      width: 35.55vw; /* Segundo tercio */
+      height: 100vh;
+      z-index: 999;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modelo-3d-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none; /* Solo el interaction-area recibe eventos */
+    }
+    .modelo-3d-interaction-area model-viewer#modelo3d {
+      pointer-events: auto !important;
+      z-index: 1000 !important;
+      width: 100% !important;
+      height: 80vh !important;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: block;
+      background: transparent;
+      margin: auto;
+      position: relative;
+      cursor: grab !important;
+    }
+    /* El resto de la pantalla no permite interacción con el modelo */
+    .modelo-3d-container > model-viewer#modelo3d {
+      pointer-events: none !important;
+    }
+
+    /* --- CURSOR MANITA EN BOTONES INTERACTIVOS --- */
+    .ranura-btn,
+    .almacen-btn,
+    .menu-btn-img,
+    .menu-btn-wrapper,
+    .almacen-btn-wrapper,
+    .ranura-btn-wrapper {
+      cursor: pointer !important;
+    }
+
   </style>
-  <!-- Firebase App (the core Firebase SDK) -->
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAxJpfGWnP4zACc8z4a9MwIu3MSDiPLV74",
-    authDomain: "base-de-datos-elden-ring.firebaseapp.com",
-    databaseURL: "https://base-de-datos-elden-ring-default-rtdb.firebaseio.com",
-    projectId: "base-de-datos-elden-ring",
-    storageBucket: "base-de-datos-elden-ring.firebasestorage.app",
-    messagingSenderId: "133314007833",
-    appId: "1:133314007833:web:c76169f5bca046ae736b88",
-    measurementId: "G-J844DKL4M3"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-<!-- Agrega esto en el <head> principal, NO dentro de un <div> ni de otro <html> -->
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
   <div class="base-wallpaper"></div>
   <div class="dark-overlay"></div>
   <div class="overlay-wallpaper"></div>
 
-  <div class="main-grid">
+  <!-- MENÚ INICIO MODAL -->
+  <div id="menu-inicio" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);">
+    <div style="background:rgba(30,30,30,0.98);border-radius:18px;padding:40px 32px;box-shadow:0 0 32px #000a;min-width:320px;display:flex;flex-direction:column;align-items:center;gap:24px;max-width:90vw;">
+      <h2 style="color:#C9BBA1;font-size:2em;margin-bottom:10px;">Bienvenido</h2>
+      <label for="usuario-inicio" style="color:#fff;font-size:1.1em;margin-bottom:6px;">Ingresa tu usuario:</label>
+      <input id="usuario-inicio" type="text" placeholder="Usuario" style="padding:10px 16px;font-size:1.1em;border-radius:8px;border:1px solid #C9BBA1;background:#222;color:#fff;width:220px;outline:none;">
+      <div style="display:flex;gap:18px;margin-top:18px;">
+        <button id="btn-identificar" style="padding:10px 28px;font-size:1.1em;background:#C9BBA1;color:#222;border:none;border-radius:8px;cursor:pointer;">Listo</button>
+        <button id="btn-omitir" style="padding:10px 28px;font-size:1.1em;background:#444;color:#C9BBA1;border:none;border-radius:8px;cursor:pointer;">Omitir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENÚ SELECCIÓN MODAL -->
+  <div id="menu-seleccion" style="display:none;position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);backdrop-filter:blur(1.5px);">
+    <!-- Elimina la ventana interna del menú selección -->
+    <!-- Solo se muestra el fondo y los separadores -->
+    <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw; z-index:2100;">
+    <img src="separador.png" alt="Separador 2" class="separator second" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 66.66vw; z-index:2100;">
+    <!-- Copias de rectángulo -->
+    <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: auto; height: 460px; z-index: 2200;">
+    <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
+    <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
+    <!-- Copias de ranuras (grupo 1: mismas posiciones originales) -->
+    <img id="ranura-h-copia-1" src="ranura-h.png" alt="Ranura H copia 1" style="position: absolute; top: 137px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-a-copia-1" src="ranura-a.png" alt="Ranura A copia 1" style="position: absolute; top: 237px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-g-copia-1" src="ranura-g.png" alt="Ranura G copia 1" style="position: absolute; top: 337px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-l-copia-1" src="ranura-l.png" alt="Ranura L copia 1" style="position: absolute; top: 437px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <button id="btn-cargar-1" style="position: absolute; top: 547px; left: 160px; width: 100px; z-index: 2202; padding: 10px 0; background: #C9BBA1; color: #222; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Cargar</button>
+    <!-- Copias de ranuras (grupo 2: centro horizontal, misma altura) -->
+    <img id="ranura-h-copia-2" src="ranura-h.png" alt="Ranura H copia 2" style="position: absolute; top: 137px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-a-copia-2" src="ranura-a.png" alt="Ranura A copia 2" style="position: absolute; top: 237px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-g-copia-2" src="ranura-g.png" alt="Ranura G copia 2" style="position: absolute; top: 337px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-l-copia-2" src="ranura-l.png" alt="Ranura L copia 2" style="position: absolute; top: 437px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
+    <button id="btn-cargar-2" style="position: absolute; top: 547px; left: 50vw; transform: translateX(-50%); width: 100px; z-index: 2202; padding: 10px 0; background: #C9BBA1; color: #222; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Cargar</button>
+    <!-- Copias de ranuras (grupo 3: lado opuesto horizontal, misma altura) -->
+    <img id="ranura-h-copia-3" src="ranura-h.png" alt="Ranura H copia 3" style="position: absolute; top: 137px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-a-copia-3" src="ranura-a.png" alt="Ranura A copia 3" style="position: absolute; top: 237px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-g-copia-3" src="ranura-g.png" alt="Ranura G copia 3" style="position: absolute; top: 337px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <img id="ranura-l-copia-3" src="ranura-l.png" alt="Ranura L copia 3" style="position: absolute; top: 437px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
+    <button id="btn-cargar-3" style="position: absolute; top: 547px; right: 160px; width: 100px; z-index: 2202; padding: 10px 0; background: #C9BBA1; color: #222; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer;">Cargar</button>
+  </div>
+
+  <div class="main-grid" id="main-content" style="display:none;">
     <div class="fila-a">
       <p class="fila-a-text">Equipo</p>
       <div class="barra-equipo-container">
@@ -458,7 +575,9 @@
     <div class="fila-c">
       <p class="fila-c-text">Selecciona una ranura para usar</p>
     </div>
-    <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw;">
+  <!-- Solo un separador en el menú principal -->
+  <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw;">
+  <!-- <img src="separador.png" alt="Separador 2" class="separator second" style="height: 75%; top: 83.33%; transform: translate(-50%, -50%); left: 66.66vw;"> -->
     <img src="mini-separador.png" alt="Mini Separador" id="mini-separador-1" style="position: absolute; left: 66.66%; top: calc(50% - 37.5vh); transform: translateX(-50%); width: 6px; height: 140px; z-index: 2;">
     <img src="mini-separador.png" alt="Mini Separador 2" id="mini-separador-2" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 66.5%; top: 240px;">
     <img src="mini-separador.png" alt="Mini Separador 3" id="mini-separador-3" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 82.825vw; top: 240px;">
@@ -520,19 +639,9 @@
     <img id="atributo-img" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4; pointer-events: none;">
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
   </div>
-  <div class="modelo-3d-container">
-    <model-viewer
-      src="Sinluz.glb"
-      camera-controls
-      auto-rotate
-      id="modelo3d"
-      style="height:80vh;width:auto;max-width:100vw;max-height:100vh;display:block;pointer-events:auto;background:transparent;margin:auto;position:fixed;top:0;left:0;right:0;bottom:0;cursor:grab;"
-      interaction-prompt="auto"
-      disable-zoom="false"
-      disable-pan="false"
-      /* touch-action="none" eliminado */
-    ></model-viewer>
-  </div>
+  <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
+
+
   <style>
     /* ...existing code... */
     model-viewer {
@@ -545,7 +654,147 @@
     }
     /* ...existing code... */
   </style>
-  <script>
+  <!-- Quita el <script type="module">...</script> del <head> -->
+  <!-- Agrega el script aquí, justo antes de </body> -->
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAxJpfGWnP4zACc8z4a9MwIu3MSDiPLV74",
+    authDomain: "base-de-datos-elden-ring.firebaseapp.com",
+    databaseURL: "https://base-de-datos-elden-ring-default-rtdb.firebaseio.com",
+    projectId: "base-de-datos-elden-ring",
+    storageBucket: "base-de-datos-elden-ring.firebasestorage.app",
+    messagingSenderId: "133314007833",
+    appId: "1:133314007833:web:c76169f5bca046ae736b88",
+    measurementId: "G-J844DKL4M3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+    // --- MENÚ INICIO ---
+    // --- INTEGRACIÓN FIREBASE REALTIME DATABASE ---
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+    // Función para guardar usuario en la base de datos
+    function guardarUsuario(usuario) {
+      const db = getDatabase();
+      set(ref(db, 'usuario/' + usuario), {
+        nombre: usuario,
+        fecha: new Date().toISOString()
+      })
+      .then(() => {
+        mostrarMensaje('Usuario guardado en Firebase: ' + usuario, true);
+      })
+      .catch((error) => {
+        mostrarMensaje('Error al guardar usuario: ' + error, false);
+      });
+    }
+
+    // Función para mostrar todos los usuarios en consola
+    function mostrarUsuariosEnConsola() {
+      const db = getDatabase();
+      get(child(ref(db), 'usuario')).then((snapshot) => {
+        if (snapshot.exists()) {
+          console.log('Usuarios en Firebase:', snapshot.val());
+        } else {
+          console.log('No hay usuarios en Firebase');
+        }
+      }).catch((error) => {
+        console.error('Error al leer usuarios:', error);
+      });
+    }
+
+    // --- VISIBILIDAD CENTRALIZADA DE MENÚS ---
+    function mostrarSoloMenu(menu) {
+      document.getElementById('menu-inicio').style.display = 'none';
+      document.getElementById('menu-seleccion').style.display = 'none';
+      document.getElementById('main-content').style.display = 'none';
+      if (menu === 'inicio') {
+        document.getElementById('menu-inicio').style.display = 'flex';
+      } else if (menu === 'seleccion') {
+        document.getElementById('menu-seleccion').style.display = 'flex';
+      } else if (menu === 'principal') {
+        document.getElementById('main-content').style.display = 'flex';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      mostrarSoloMenu('inicio');
+      // --- EVENTOS DE MENÚ INICIO ---
+      document.getElementById('btn-identificar').addEventListener('click', function() {
+        const usuario = document.getElementById('usuario-inicio').value.trim();
+        if (usuario) {
+          guardarUsuario(usuario);
+          mostrarUsuariosEnConsola();
+          setTimeout(function() {
+            mostrarSoloMenu('seleccion');
+          }, 500);
+        } else {
+          mostrarMensaje('Por favor, ingresa un usuario.', false);
+        }
+      });
+      document.getElementById('btn-omitir').addEventListener('click', function() {
+        mostrarSoloMenu('principal');
+      });
+      document.getElementById('usuario-inicio').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          document.getElementById('btn-identificar').click();
+        }
+      });
+    });
+
+    // Función para mostrar mensajes personalizados
+    function mostrarMensaje(mensaje, exito) {
+      // Elimina mensaje anterior si existe
+      let msg = document.getElementById('mensaje-usuario');
+      if (msg) msg.remove();
+      // Crea nuevo mensaje
+      msg = document.createElement('div');
+      msg.id = 'mensaje-usuario';
+      msg.textContent = mensaje;
+      msg.style.position = 'fixed';
+      msg.style.top = '20px';
+      msg.style.left = '50%';
+      msg.style.transform = 'translateX(-50%)';
+      msg.style.padding = '16px 32px';
+      msg.style.borderRadius = '12px';
+      msg.style.fontSize = '1.2em';
+      msg.style.zIndex = '3000';
+      msg.style.background = exito ? '#C9BBA1' : '#c94444';
+      msg.style.color = exito ? '#222' : '#fff';
+      msg.style.boxShadow = '0 2px 12px #000a';
+      document.body.appendChild(msg);
+      setTimeout(function() {
+        msg.remove();
+      }, 2500);
+    }
+
+    // --- EVENTOS DE MENÚ SELECCIÓN ---
+    ['btn-cargar-1','btn-cargar-2','btn-cargar-3'].forEach(function(id){
+      var btn = document.getElementById(id);
+      if (btn) {
+        btn.onclick = function() {
+          mostrarSoloMenu('principal');
+        };
+      }
+    });
+
+    // --- EVENTO BOTÓN CARGAR PRINCIPAL ---
+    var btnCargarPrincipal = document.getElementById('btn-cargar');
+    if (btnCargarPrincipal) {
+      btnCargarPrincipal.addEventListener('click', function() {
+        mostrarSoloMenu('seleccion');
+      });
+    }
     // Variable seleccionada
     var seleccionado = "";
 
@@ -556,17 +805,10 @@
     // Función para actualizar el texto
     // Vinculación imagen-nombre
     const imagenNombre = {
-      "bandit-s.png": "Bracamarte",
-      "carian-a.png": "Armadura de caballero de Caria",
-      "carian-g.png": "Guanteletes de caballero de Caria",
-      "carian-l.png": "Grebas de caballero de Caria",
-      "carian-h.png": "Yelmo de caballero de Caria",
-      "night-flame.png": "Espada de la Noche y la Flama",
-      "samurai-a.png": "Armadura de las Tierras del Cañaveral",
-      "samurai-h.png": "Yelmo de las Tierras del Cañaveral",
-      "samurai-l.png": "Grebas de las Tierras del Cañaveral",
-      "samurai-g.png": "Guanteletes de las Tierras del Cañaveral",
-      "uchigatana.png": "Uchigatana",
+      "carian-a.png": "Vestido de Alberich",
+      "carian-l.png": "Pantalones de Alberich",
+      "samurai-a.png": "Vestido de preceptor",
+      "samurai-l.png": "Pantalones de preceptor",
       "wolf-a.png": "Armadura de Lobo Furioso",
       "wolf-g.png": "Guanteletes de Lobo Furioso",
       "wolf-h.png": "Yelmo de Lobo Furioso",
@@ -778,43 +1020,6 @@
           vitalidad: 8,
           peso: 4.4, 
           postura: 7,
-          descripcion: "Yelmo usado por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitó la Mesa Redonda. !! El sobrenombre de Vargram procede de la melena blanca de lobo que decora su yelmo."
-        },
-        {
-          nombre: "Yelmo de caballero de Caria",
-          fisico: 4.2, 
-          golpe: 3.8, 
-          tajo: 4.4, 
-          puncion: 4.2, 
-          magico: 4.4, 
-          sagrado: 4.2, 
-          electrico: 3.4, 
-          fuego: 4.2,
-          inmunidad: 12, 
-          robustez: 20, 
-          concentracion: 9, 
-          vitalidad: 10,
-          peso: 4.6, 
-          postura: 6,
-          descripcion: "Yelmos de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
-        },
-        {
-          nombre: "Yelmo de las Tierras del Cañaveral",
-          fisico: 3.1, 
-          golpe: 3.4, 
-          tajo: 4.8, 
-          puncion: 3.4, 
-          magico: 3.6, 
-          sagrado: 3.8, 
-          electrico: 4.2, 
-          fuego: 4,
-          inmunidad: 26, 
-          robustez: 22, 
-          concentracion: 22, 
-          vitalidad: 23,
-          peso: 3.6, 
-          postura: 5,
-          descripcion: "Yelmo hecho de tiras de hierro atadas. !! Lo usan los guerreros de las Tierras del Cañaveral. !! Las Tierras del Cañaveral llevan mucho tiempo atrapadas en una triste guerra civil, tiempo durante el cual han permanecido alienados de los poblados vecinos. No es de extrañar que toda la nación haya sucumbido a tal locura sangrienta, según se dice."
         }
       ],
       a: [
@@ -834,10 +1039,9 @@
           vitalidad: 17,
           peso: 10.1,
           postura: 21,
-          descripcion: "Armadura usada por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitó la Mesa Redonda. !! Según antiguas leyendas, los lobos son las sombras de los Empíreos, y eso es lo que Vargram aspiraba a ser."
         },
         {
-          nombre: "Armadura de caballero de Caria",
+          nombre: "Vestido de Alberich",
           fisico: 11.8, 
           golpe: 10.8, 
           tajo: 12.3, 
@@ -852,10 +1056,9 @@
           vitalidad: 23,
           peso: 10.4, 
           postura: 19,
-          descripcion: "Armadura de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
         },
         {
-          nombre: "Armadura de la Tierra del Cañaveral",
+          nombre: "Vestido de preceptor",
           fisico: 8.8, 
           golpe: 9.5, 
           tajo: 11.9, 
@@ -870,10 +1073,9 @@
           vitalidad: 55,
           peso: 8.3, 
           postura: 16,
-          descripcion: "Armadura elaborada con tiras de hierro atadas. !! La usan los guerreros de las Tierras del Cañaveral. !! La sucia túnica que la cubre está confeccionada con cañas del lugar natal de los guerreros. !! Quizás su comodidad se extiende a los pensamientos nostálgicos del terruño"
         }
       ],
-      g: [
+           g: [
         {
           nombre: "Guanteletes de Lobo Furioso",
           fisico: 3.2, 
@@ -890,44 +1092,7 @@
           vitalidad: 6,
           peso: 3.4, 
           postura: 4,
-          descripcion: "Guanteletes usados por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitaron la Mesa Redonda. !! Según antiguas leyendas, los lobos son las sombras de los Empíreos, y eso es lo que Vargram aspiraba a ser."
         },
-        {
-          nombre: "Guanteletes de soldado de Caria",
-          fisico: 2.9, 
-          golpe: 2.7, 
-          tajo: 3.1, 
-          puncion: 2.9, 
-          magico: 3.1, 
-          sagrado: 2.9, 
-          electrico: 2.3, 
-          fuego: 2.9,
-          inmunidad: 9, 
-          robustez: 15, 
-          concentracion: 7, 
-          vitalidad: 8,
-          peso: 3.5, 
-          postura: 4,
-          descripcion: "Guanteletes de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
-        },
-        {
-          nombre: "Guanteletes de la Tierra del Cañaveral",
-          fisico: 2.1, 
-          golpe: 2.3, 
-          tajo: 2.9, 
-          puncion: 2.3, 
-          magico: 2.5, 
-          sagrado: 2.7, 
-          electrico: 2.9, 
-          fuego: 2.8,
-          inmunidad: 20, 
-          robustez: 17, 
-          concentracion: 17, 
-          vitalidad: 18,
-          peso: 2.8, 
-          postura: 3,
-          descripcion: "Guanteletes envueltos en cuero resistente. !! Los usan los guerreros de las Tierras del Cañaveral."
-        }
       ],
       l: [
         {
@@ -946,10 +1111,9 @@
           vitalidad: 11,
           peso: 6.3, 
           postura: 12,
-          descripcion: "Grebas usadas por Vargram el Lobo Furioso, uno de los primeros Sinluz que visitó la Mesa Redonda. !! Según antiguas leyendas, los lobos son las sombras de los Empíreos, y eso es lo que Vargram aspiraba a ser."
         },
         {
-          nombre: "Grebas de caballero de Caria",
+          nombre: "Pantalones de Alberich",
           fisico: 6.8, 
           golpe: 6.2, 
           tajo: 7.1, 
@@ -964,10 +1128,9 @@
           vitalidad: 14,
           peso: 6.6, 
           postura: 11,
-          descripcion: "Grebas de los caballeros encantados que solían servir a la familia real de Caria. !! Los caballeros encantados, consagrados por la Reina Lunar, eran todos héroes condecorados con los más altos honores, pero cayeron en desgracia con la decadencia de la familia real."
         },
         {
-          nombre: "Grebas de las Tierras del Cañaveral",
+          nombre: "Pantalones de preceptor",
           fisico: 5, 
           golpe: 5.4, 
           tajo: 6.8, 
@@ -982,7 +1145,6 @@
           vitalidad: 34,
           peso: 5.1, 
           postura: 10,
-          descripcion: "Grebas envueltas en cuero resistente. !! Las usan los guerreros de las Tierras del Cañaveral."
         }
       ]
     };
@@ -1505,42 +1667,6 @@
       mostrarAtributoImg(tipo, idx);
     }
 
-    // Mostrar atributos en columna C en el menú principal según lo equipado en la última ranura sobre la que estuvo el mouse
-    function mostrarColumnaCPrincipal(wrapperId) {
-      let html = "";
-      let datos = null;
-      let tipoImg = "";
-      let idx = -1; // Cambiado a -1 para detectar si no hay match
-      // Detecta tipo y ranura
-      if (["ranura-h", "ranura-a", "ranura-g", "ranura-l"].includes(wrapperId)) {
-        let tipo = wrapperId.split('-')[1];
-        let imgSrc = equipadas[tipo];
-        if (imgSrc) {
-          if (tipo === "h") idx = ["wolf-h.png","carian-h.png","samurai-h.png"].indexOf(imgSrc.split('/').pop());
-          else if (tipo === "a") idx = ["wolf-a.png","carian-a.png","samurai-a.png"].indexOf(imgSrc.split('/').pop());
-          else if (tipo === "g") idx = ["wolf-g.png","carian-g.png","samurai-g.png"].indexOf(imgSrc.split('/').pop());
-          else if (tipo === "l") idx = ["wolf-l.png","carian-l.png","samurai-l.png"].indexOf(imgSrc.split('/').pop());
-          if (idx >= 0) datos = almacenDatos[tipo][idx];
-        }
-        html = htmlArmadura(datos);
-        tipoImg = "menú armaduras";
-      } else if (["ranura-mano-izq", "ranura-mano-der"].includes(wrapperId)) {
-        let imgSrc = equipadas[wrapperId === "ranura-mano-izq" ? "mano_izq" : "mano_der"];
-        if (imgSrc) {
-          idx = ["bandit-s.png","night-flame.png","uchigatana.png"].indexOf(imgSrc.split('/').pop());
-          if (idx >= 0) datos = almacenDatosMano[idx];
-        }
-        html = htmlArma(datos);
-        tipoImg = "menú armas";
-      } else {
-        limpiarColumnaC();
-        document.getElementById("atributo-img").style.display = "none";
-        return;
-      }
-      document.getElementById("columna-c-contenido").innerHTML = html;
-      mostrarAtributoImg(tipoImg, idx);
-    }
-
     // Agrega evento mouseenter para mostrar atributos en menú principal
     document.getElementById("ranura-h").addEventListener("mouseenter", function() {
       mostrarColumnaCPrincipal("ranura-h");
@@ -1630,10 +1756,10 @@
     document.getElementById("ranura-l").addEventListener("mouseleave", function(){});
     document.getElementById("ranura-mano-izq").addEventListener("mouseleave", function(){});
     document.getElementById("ranura-mano-der").addEventListener("mouseleave", function(){});
-  </script>
+  
+</script>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </body>
-
-</html>
 </html>
 
 
