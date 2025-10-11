@@ -780,32 +780,30 @@
       mostrarSoloMenu('inicio');
       // --- EVENTOS DE MENÚ INICIO ---
       document.getElementById('btn-identificar').addEventListener('click', async function() {
-        const usuario = document.getElementById('usuario-inicio').value.trim();
-        if (!usuario) {
-          mostrarMensaje('Por favor, ingresa un usuario.', false);
-          return;
-        }
-        const db = getDatabase();
-        const usuarioRef = ref(db, 'usuario/' + usuario);
-        try {
-          const snapshot = await get(usuarioRef);
-          if (snapshot.exists()) {
-            // Usuario ya existe, cargar datos y mostrar mensaje
-            mostrarMensaje('¡Usuario cargado exitosamente!', true);
-            // Opcional: puedes cargar los datos del usuario aquí si lo necesitas
-            // Ejemplo: window.datosUsuario = snapshot.val();
-          } else {
-            // Usuario nuevo, guardar
-            guardarUsuario(usuario);
-            mostrarMensaje('¡Usuario guardado exitosamente!', true);
-          }
-          mostrarUsuariosEnConsola();
-          setTimeout(function() {
-            mostrarSoloMenu('seleccion');
-          }, 500);
-        } catch (error) {
-          mostrarMensaje('Error al acceder a Firebase: ' + error, false);
-        }
+  const usuario = document.getElementById('usuario-inicio').value.trim();
+  if (!usuario) {
+    mostrarMensaje('Por favor, ingresa un usuario.', false);
+    return;
+  }
+  const db = getDatabase();
+  const usuarioRef = ref(db, 'usuario/' + usuario);
+  try {
+    const snapshot = await get(usuarioRef);
+    if (snapshot.exists()) {
+      mostrarMensaje('¡Usuario cargado exitosamente!', true);
+      // Opcional: puedes cargar los datos del usuario aquí si lo necesitas
+      // Ejemplo: window.datosUsuario = snapshot.val();
+    } else {
+      guardarUsuario(usuario);
+      mostrarMensaje('¡Usuario guardado exitosamente!', true);
+    }
+    mostrarUsuariosEnConsola();
+    // Espera a que actualizarMenuSeleccionVisual termine antes de mostrar el menú selección
+    await actualizarMenuSeleccionVisual();
+    mostrarSoloMenu('seleccion');
+  } catch (error) {
+    mostrarMensaje('Error al acceder a Firebase: ' + error, false);
+  }
       });
       document.getElementById('btn-omitir').addEventListener('click', function() {
         mostrarSoloMenu('principal');
@@ -814,6 +812,11 @@
         if (e.key === 'Enter') {
           document.getElementById('btn-identificar').click();
         }
+      });
+
+      // --- AGREGA ESTE BLOQUE PARA EL BOTÓN "Cargar" DEL MENÚ PRINCIPAL ---
+      document.getElementById('btn-cargar').addEventListener('click', function() {
+        mostrarSoloMenu('seleccion');
       });
     });
 
@@ -844,22 +847,235 @@
     }
 
     // --- EVENTOS DE MENÚ SELECCIÓN ---
-    ['btn-cargar-1','btn-cargar-2','btn-cargar-3'].forEach(function(id){
-      var btn = document.getElementById(id);
-      if (btn) {
-        btn.onclick = function() {
-          mostrarSoloMenu('principal');
-        };
-      }
-    });
+    // Deja SOLO este bloque para los botones btn-cargar-1, btn-cargar-2, btn-cargar-3:
 
-    // --- EVENTO BOTÓN CARGAR PRINCIPAL ---
-    var btnCargarPrincipal = document.getElementById('btn-cargar');
-    if (btnCargarPrincipal) {
-      btnCargarPrincipal.addEventListener('click', function() {
-        mostrarSoloMenu('seleccion');
-      });
-    }
+    document.getElementById('btn-cargar-1').onclick = async function() {
+      sinluzSeleccionado = 'Sinluz1';
+      const usuario = document.getElementById('usuario-inicio').value.trim();
+      if (usuario) {
+        const db = getDatabase();
+        const usuarioRef = ref(db, 'usuario/' + usuario + '/Sinluz1');
+        try {
+          const snapshot = await get(usuarioRef);
+          let yelmo = "", armadura = "", guanteletes = "", botas = "";
+          if (snapshot.exists()) {
+            const datos = snapshot.val();
+            yelmo = datos.Yelmo || "";
+            armadura = datos.Armadura || "";
+            guanteletes = datos.Guanteletes || "";
+            botas = datos.Botas || "";
+          }
+          // Ranura H
+          const imgH = obtenerImagenPorNombre("h", yelmo);
+          let prevH = document.getElementById('equipada-h');
+          if (prevH) prevH.remove();
+          equipadas.h = null;
+          if (imgH) {
+            mostrarEquipada("h", imgH);
+          }
+          // Ranura A
+          const imgA = obtenerImagenPorNombre("a", armadura);
+          let prevA = document.getElementById('equipada-a');
+          if (prevA) prevA.remove();
+          equipadas.a = null;
+          if (imgA) {
+            mostrarEquipada("a", imgA);
+          }
+          // Ranura G
+          const imgG = obtenerImagenPorNombre("g", guanteletes);
+          let prevG = document.getElementById('equipada-g');
+          if (prevG) prevG.remove();
+          equipadas.g = null;
+          if (imgG) {
+            mostrarEquipada("g", imgG);
+          }
+          // Ranura L
+          const imgL = obtenerImagenPorNombre("l", botas);
+          let prevL = document.getElementById('equipada-l');
+          if (prevL) prevL.remove();
+          equipadas.l = null;
+          if (imgL) {
+            mostrarEquipada("l", imgL);
+          }
+          setTimeout(function() {
+            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+              mostrarColumnaCPrincipal("ranura-h");
+            }
+          }, 0);
+        } catch (e) {
+          let prevH = document.getElementById('equipada-h');
+          if (prevH) prevH.remove();
+          equipadas.h = null;
+          let prevA = document.getElementById('equipada-a');
+          if (prevA) prevA.remove();
+          equipadas.a = null;
+          let prevG = document.getElementById('equipada-g');
+          if (prevG) prevG.remove();
+          equipadas.g = null;
+          let prevL = document.getElementById('equipada-l');
+          if (prevL) prevL.remove();
+          equipadas.l = null;
+          setTimeout(function() {
+            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+              mostrarColumnaCPrincipal("ranura-h");
+            }
+          }, 0);
+        }
+      }
+      mostrarSoloMenu('principal');
+    };
+
+    document.getElementById('btn-cargar-2').onclick = async function() {
+      sinluzSeleccionado = 'Sinluz2';
+      const usuario = document.getElementById('usuario-inicio').value.trim();
+      if (usuario) {
+        const db = getDatabase();
+        const usuarioRef = ref(db, 'usuario/' + usuario + '/Sinluz2');
+        try {
+          const snapshot = await get(usuarioRef);
+          let yelmo = "", armadura = "", guanteletes = "", botas = "";
+          if (snapshot.exists()) {
+            const datos = snapshot.val();
+            yelmo = datos.Yelmo || "";
+            armadura = datos.Armadura || "";
+            guanteletes = datos.Guanteletes || "";
+            botas = datos.Botas || "";
+          }
+          // Ranura H
+          const imgH = obtenerImagenPorNombre("h", yelmo);
+          let prevH = document.getElementById('equipada-h');
+          if (prevH) prevH.remove();
+          equipadas.h = null;
+          if (imgH) {
+            mostrarEquipada("h", imgH);
+          }
+          // Ranura A
+          const imgA = obtenerImagenPorNombre("a", armadura);
+          let prevA = document.getElementById('equipada-a');
+          if (prevA) prevA.remove();
+          equipadas.a = null;
+          if (imgA) {
+            mostrarEquipada("a", imgA);
+          }
+          // Ranura G
+          const imgG = obtenerImagenPorNombre("g", guanteletes);
+          let prevG = document.getElementById('equipada-g');
+          if (prevG) prevG.remove();
+          equipadas.g = null;
+          if (imgG) {
+            mostrarEquipada("g", imgG);
+          }
+          // Ranura L
+          const imgL = obtenerImagenPorNombre("l", botas);
+          let prevL = document.getElementById('equipada-l');
+          if (prevL) prevL.remove();
+          equipadas.l = null;
+          if (imgL) {
+            mostrarEquipada("l", imgL);
+          }
+          setTimeout(function() {
+            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+              mostrarColumnaCPrincipal("ranura-h");
+            }
+          }, 0);
+        } catch (e) {
+          let prevH = document.getElementById('equipada-h');
+          if (prevH) prevH.remove();
+          equipadas.h = null;
+          let prevA = document.getElementById('equipada-a');
+          if (prevA) prevA.remove();
+          equipadas.a = null;
+          let prevG = document.getElementById('equipada-g');
+          if (prevG) prevG.remove();
+          equipadas.g = null;
+          let prevL = document.getElementById('equipada-l');
+          if (prevL) prevL.remove();
+          equipadas.l = null;
+          setTimeout(function() {
+            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+              mostrarColumnaCPrincipal("ranura-h");
+            }
+          }, 0);
+        }
+      }
+      mostrarSoloMenu('principal');
+    };
+
+    document.getElementById('btn-cargar-3').onclick = async function() {
+      sinluzSeleccionado = 'Sinluz3';
+      const usuario = document.getElementById('usuario-inicio').value.trim();
+      if (usuario) {
+        const db = getDatabase();
+        const usuarioRef = ref(db, 'usuario/' + usuario + '/Sinluz3');
+        try {
+          const snapshot = await get(usuarioRef);
+          let yelmo = "", armadura = "", guanteletes = "", botas = "";
+          if (snapshot.exists()) {
+            const datos = snapshot.val();
+            yelmo = datos.Yelmo || "";
+            armadura = datos.Armadura || "";
+            guanteletes = datos.Guanteletes || "";
+            botas = datos.Botas || "";
+          }
+          // Ranura H
+          const imgH = obtenerImagenPorNombre("h", yelmo);
+          let prevH = document.getElementById('equipada-h');
+          if (prevH) prevH.remove();
+          equipadas.h = null;
+          if (imgH) {
+            mostrarEquipada("h", imgH);
+          }
+          // Ranura A
+          const imgA = obtenerImagenPorNombre("a", armadura);
+          let prevA = document.getElementById('equipada-a');
+          if (prevA) prevA.remove();
+          equipadas.a = null;
+          if (imgA) {
+            mostrarEquipada("a", imgA);
+          }
+          // Ranura G
+          const imgG = obtenerImagenPorNombre("g", guanteletes);
+          let prevG = document.getElementById('equipada-g');
+          if (prevG) prevG.remove();
+          equipadas.g = null;
+          if (imgG) {
+            mostrarEquipada("g", imgG);
+          }
+          // Ranura L
+          const imgL = obtenerImagenPorNombre("l", botas);
+          let prevL = document.getElementById('equipada-l');
+          if (prevL) prevL.remove();
+          equipadas.l = null;
+          if (imgL) {
+            mostrarEquipada("l", imgL);
+          }
+          setTimeout(function() {
+            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+              mostrarColumnaCPrincipal("ranura-h");
+            }
+          }, 0);
+        } catch (e) {
+          let prevH = document.getElementById('equipada-h');
+          if (prevH) prevH.remove();
+          equipadas.h = null;
+          let prevA = document.getElementById('equipada-a');
+          if (prevA) prevA.remove();
+          equipadas.a = null;
+          let prevG = document.getElementById('equipada-g');
+          if (prevG) prevG.remove();
+          equipadas.g = null;
+          let prevL = document.getElementById('equipada-l');
+          if (prevL) prevL.remove();
+          equipadas.l = null;
+          setTimeout(function() {
+            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+              mostrarColumnaCPrincipal("ranura-h");
+            }
+          }, 0);
+        }
+      }
+      mostrarSoloMenu('principal');
+    };
     // Variable seleccionada
     var seleccionado = "";
 
@@ -1150,6 +1366,7 @@
         {
           nombre: "Guanteletes de Lobo Furioso",
           fisico: 3.2, 
+          
           golpe: 2.8, 
           tajo: 3.2, 
           puncion: 3.1, 
@@ -1804,83 +2021,69 @@
     document.getElementById("ranura-mano-der").addEventListener("mouseleave", function(){});
   
     // Variable global para saber qué Sinluz está seleccionado
-let sinluzSeleccionado = null;
-
-// Asigna el Sinluz seleccionado al hacer click en los botones de cargar
-document.getElementById('btn-cargar-1').onclick = function() {
-  sinluzSeleccionado = 'Sinluz1';
-  mostrarSoloMenu('principal');
-};
-document.getElementById('btn-cargar-2').onclick = function() {
-  sinluzSeleccionado = 'Sinluz2';
-  mostrarSoloMenu('principal');
-};
-document.getElementById('btn-cargar-3').onclick = function() {
-  sinluzSeleccionado = 'Sinluz3';
-  mostrarSoloMenu('principal');
-};
+    let sinluzSeleccionado = null;
 
   // Actualiza el nombre del Sinluz correspondiente en la base de datos
-function actualizarNombreSinluz(idx) {
-  const usuario = document.getElementById('usuario-inicio').value.trim();
-  if (!usuario) return;
-  const inputId = 'nombre-sinluz-' + idx;
-  const sinluzKey = 'Sinluz' + idx;
-  const nombre = document.getElementById(inputId).value.trim();
-  if (nombre) {
-    const db = getDatabase();
-    const path = `usuario/${usuario}/${sinluzKey}/Nombre`;
-    set(ref(db, path), nombre);
+  function actualizarNombreSinluz(idx) {
+    const usuario = document.getElementById('usuario-inicio').value.trim();
+    if (!usuario) return;
+    const inputId = 'nombre-sinluz-' + idx;
+    const sinluzKey = 'Sinluz' + idx;
+    const nombre = document.getElementById(inputId).value.trim();
+    if (nombre) {
+      const db = getDatabase();
+      const path = `usuario/${usuario}/${sinluzKey}/Nombre`;
+      set(ref(db, path), nombre);
+    }
   }
-}
 
-// Ajusta el ancho del input según el texto
-function ajustarInputWidth(input) {
-  // Crea un span invisible para medir el texto
-  let span = document.getElementById('medidor-input-span');
-  if (!span) {
-    span = document.createElement('span');
-    span.id = 'medidor-input-span';
-    span.style.visibility = 'hidden';
-    span.style.position = 'absolute';
-    span.style.whiteSpace = 'pre';
-    span.style.fontFamily = input.style.fontFamily || window.getComputedStyle(input).fontFamily;
-    span.style.fontSize = input.style.fontSize || window.getComputedStyle(input).fontSize;
-    document.body.appendChild(span);
+  // Ajusta el ancho del input según el texto
+  function ajustarInputWidth(input) {
+    // Crea un span invisible para medir el texto
+    let span = document.getElementById('medidor-input-span');
+    if (!span) {
+      span = document.createElement('span');
+      span.id = 'medidor-input-span';
+      span.style.visibility = 'hidden';
+      span.style.position = 'absolute';
+      span.style.whiteSpace = 'pre';
+      span.style.fontFamily = input.style.fontFamily || window.getComputedStyle(input).fontFamily;
+      span.style.fontSize = input.style.fontSize || window.getComputedStyle(input).fontSize;
+      document.body.appendChild(span);
+    }
+    span.textContent = input.value || input.placeholder;
+    // Suma un poco de espacio extra
+    input.style.width = Math.max(40, Math.min(span.offsetWidth + 24, 300)) + 'px';
   }
-  span.textContent = input.value || input.placeholder;
-  // Suma un poco de espacio extra
-  input.style.width = Math.max(40, Math.min(span.offsetWidth + 24, 300)) + 'px';
-}
 
-// Asigna eventos a cada input
-['1','2','3'].forEach(function(idx){
-  const input = document.getElementById('nombre-sinluz-' + idx);
-  // Ajusta el ancho al cargar
-  ajustarInputWidth(input);
-
-  // Ajusta el ancho al escribir
-  input.addEventListener('input', function() {
+  // Asigna eventos a cada input
+  ['1','2','3'].forEach(function(idx){
+    const input = document.getElementById('nombre-sinluz-' + idx);
+    // Ajusta el ancho al cargar
     ajustarInputWidth(input);
-  });
 
-  // Actualiza al presionar Enter
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
+    // Ajusta el ancho al escribir
+    input.addEventListener('input', function() {
+      ajustarInputWidth(input);
+    });
+
+    // Actualiza al presionar Enter
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        if (input.value.trim()) {
+          actualizarNombreSinluz(idx);
+          input.blur(); // quita el foco para disparar el evento blur también
+        }
+      }
+    });
+
+    // Actualiza al perder foco
+    input.addEventListener('blur', function() {
       if (input.value.trim()) {
         actualizarNombreSinluz(idx);
-        input.blur(); // quita el foco para disparar el evento blur también
       }
-    }
+    });
   });
-
-  // Actualiza al perder foco
-  input.addEventListener('blur', function() {
-    if (input.value.trim()) {
-      actualizarNombreSinluz(idx);
-    }
-  });
-});
 
   // Mapeo de nombre de armadura a imagen
 const imagenPorArmadura = {
