@@ -2437,8 +2437,15 @@ function actualizarModelos3DPorRanuraH() {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
     mostrarModelo('cabeza', './Cabeza.glb');
+    ocultarModelo('H_Raging_Wolf');
   } else {
     ocultarModelo('cabeza');
+    // Si la imagen equipada es wolf-h.png, muestra H_Raging_Wolf.glb
+    if (equipadas.h && equipadas.h.split('/').pop() === 'wolf-h.png') {
+      mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('H_Raging_Wolf');
+    }
   }
 
   // Pecho
@@ -2446,8 +2453,15 @@ function actualizarModelos3DPorRanuraH() {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
     mostrarModelo('pecho', './Pecho.glb');
+    ocultarModelo('A_Raging_Wolf');
   } else {
     ocultarModelo('pecho');
+    // Si la imagen equipada es wolf-a.png, muestra A_Raging_Wolf.glb
+    if (equipadas.a && equipadas.a.split('/').pop() === 'wolf-a.png') {
+      mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('A_Raging_Wolf');
+    }
   }
 
   // Manos
@@ -2455,8 +2469,15 @@ function actualizarModelos3DPorRanuraH() {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
     mostrarModelo('manos', './Manos.glb');
+    ocultarModelo('G_Raging_Wolf');
   } else {
     ocultarModelo('manos');
+    // Si la imagen equipada es wolf-g.png, muestra G_Raging_Wolf.glb
+    if (equipadas.g && equipadas.g.split('/').pop() === 'wolf-g.png') {
+      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('G_Raging_Wolf');
+    }
   }
 
   // Piernas
@@ -2464,11 +2485,22 @@ function actualizarModelos3DPorRanuraH() {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
     mostrarModelo('piernas', './Piernas.glb');
+    ocultarModelo('L_Raging_Wolf');
   } else {
     ocultarModelo('piernas');
+    // Si la imagen equipada es wolf-l.png, muestra L_Raging_Wolf.glb
+    if (equipadas.l && equipadas.l.split('/').pop() === 'wolf-l.png') {
+      mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('L_Raging_Wolf');
+    }
   }
 
-
+  // Si todas las ranuras están equipadas, oculta el canvas
+  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
+    renderer.domElement.style.display = 'none';
+    container.style.display = 'none';
+  }
 }
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
