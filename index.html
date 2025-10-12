@@ -23,7 +23,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
-
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
 
     .main-grid {
@@ -2288,8 +2292,10 @@ async function actualizarMenuSeleccionVisual() {
 // Cambia los imports a la versión ES correcta del CDN esm.sh (funciona en Github Pages):
 import * as THREE from 'https://esm.sh/three@0.153.0';
 import { GLTFLoader } from 'https://esm.sh/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
+// Agrega OrbitControls
+import { OrbitControls } from 'https://esm.sh/three@0.153.0/examples/jsm/controls/OrbitControls.js';
 
-let scene, camera, renderer, cabezaModel;
+let scene, camera, renderer, cabezaModel, controls;
 
 function initThreeJS() {
   const container = document.getElementById('threejs-container');
@@ -2312,11 +2318,33 @@ function initThreeJS() {
   dirLight.position.set(2, 5, 3);
   scene.add(dirLight);
 
+  // OrbitControls para mover la cámara con el mouse
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 2;
+  controls.maxDistance = 10;
+  controls.target.set(0, 1.5, 0);
+  controls.update();
+
+  // Cursor drag/dragging
+  renderer.domElement.style.cursor = 'grab';
+  renderer.domElement.addEventListener('mousedown', () => {
+    renderer.domElement.style.cursor = 'grabbing';
+  });
+  renderer.domElement.addEventListener('mouseup', () => {
+    renderer.domElement.style.cursor = 'grab';
+  });
+  renderer.domElement.addEventListener('mouseleave', () => {
+    renderer.domElement.style.cursor = 'grab';
+  });
+
   animate();
 }
 
 function animate() {
   requestAnimationFrame(animate);
+  controls && controls.update();
   renderer.render(scene, camera);
 }
 
@@ -2372,5 +2400,4 @@ window.addEventListener('DOMContentLoaded', function() {
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
-
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
