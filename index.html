@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                                                 txt.textContent = "Desequipar";
+                                                                                                 txt.textContent = "Desequipar";
   }
 }
 
@@ -2266,13 +2266,13 @@ async function actualizarMenuSeleccionVisual() {
         const imgH = obtenerImagenPorNombre("h", sinluz.Yelmo);
         if (imgH) mostrarEquipadaCopia("h", idx, imgH);
         // Muestra imagen equipada sobre copia de ranura A
-        const imgA = obtenerImagenPorNombre("a", sinluz.Armadura);
+        const imgA = obtenerImagenPorNombre("a", armadura);
         if (imgA) mostrarEquipadaCopia("a", idx, imgA);
         // Muestra imagen equipada sobre copia de ranura G
-        const imgG = obtenerImagenPorNombre("g", sinluz.Guanteletes);
+        const imgG = obtenerImagenPorNombre("g", guanteletes);
         if (imgG) mostrarEquipadaCopia("g", idx, imgG);
         // Muestra imagen equipada sobre copia de ranura L
-        const imgL = obtenerImagenPorNombre("l", sinluz.Botas);
+        const imgL = obtenerImagenPorNombre("l", botas);
         if (imgL) mostrarEquipadaCopia("l", idx, imgL);
       });
     }
@@ -2388,19 +2388,16 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
     ruta,
     function(gltf) {
       const model = gltf.scene;
-      // Opciones de posición/escala/rotación
+      // NO modificar posición, escala ni rotación por defecto
+      // Si quieres opciones personalizadas, descomenta y usa solo si se pasan explícitamente
       if (opciones.position) model.position.copy(opciones.position);
-      else model.position.set(0, 1.5, 0);
       if (opciones.scale) model.scale.copy(opciones.scale);
-      else model.scale.set(2.5, 2.5, 2.5);
       if (opciones.rotation) model.rotation.copy(opciones.rotation);
 
-      // Centrado automático
-      let box = new THREE.Box3().setFromObject(model);
-      let center = box.getCenter(new THREE.Vector3());
-      model.position.sub(center);
-      // Elimina el desplazamiento extra en Y
-      // model.position.y += 1.5; // El modelo ya está centrado
+      // Centrado automático: ELIMINADO para respetar la ubicación original del modelo
+      // let box = new THREE.Box3().setFromObject(model);
+      // let center = box.getCenter(new THREE.Vector3());
+      // model.position.sub(center);
 
       scene.add(model);
       modelos3D[nombre] = model;
