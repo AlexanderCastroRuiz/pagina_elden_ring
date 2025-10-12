@@ -1555,20 +1555,9 @@ function volverMenuRanuras() {
         img.style.zIndex = '30';
         wrapper.appendChild(img);
         equipadas[ranura] = imgSrc;
-
-        // Si ranura es "h", imagen es "wolf-h.png" y hay Sinluz seleccionado, actualiza en Firebase
-        if (
-          ranura === "h" &&
-          imgSrc.split('/').pop() === "wolf-h.png" &&
-          sinluzSeleccionado
-        ) {
-          // Busca el usuario actual (de menú inicio)
-          const usuario = document.getElementById('usuario-inicio').value.trim();
-          if (usuario) {
-            const db = getDatabase();
-            const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Yelmo`;
-            set(ref(db, sinluzPath), "Yelmo de Lobo Furioso");
-          }
+        // --- ACTUALIZA MODELO 3D SI ES RANURA H ---
+        if (ranura === "h") {
+          setTimeout(actualizarModelos3DPorRanuraH, 0);
         }
       }
     }
@@ -2352,6 +2341,8 @@ function initThreeJS() {
   });
 
   animate();
+  // --- FORZAR CARGA INICIAL DEL MODELO SI LA ranura H está vacía ---
+  setTimeout(actualizarModelos3DPorRanuraH, 100);
 }
 
 function animate() {
@@ -2411,7 +2402,6 @@ function actualizarModelos3DPorRanuraH() {
 
 
 // También llama a actualizarModelos3DPorRanuraH al quitar la imagen equipada (ya lo haces en la tecla R)
-// ...existing code...
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
