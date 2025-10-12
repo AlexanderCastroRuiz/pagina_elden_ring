@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                                                                                                 txt.textContent = "Desequipar";
+                                                                                                                                                                 txt.textContent = "Desequipar";
   }
 }
 
@@ -2378,10 +2378,10 @@ const modelos3D = {}; // { nombre: objeto3D }
 
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
-  // Si ya existe un modelo con ese nombre, elimínalo antes
+  // Si ya existe un modelo con ese nombre, solo lo ocultamos/mostramos, no lo eliminamos
   if (modelos3D[nombre]) {
-    scene.remove(modelos3D[nombre]);
-    delete modelos3D[nombre];
+    modelos3D[nombre].visible = true;
+    return; // No cargar de nuevo, solo usar el existente
   }
   const loader = new GLTFLoader();
   loader.load(
