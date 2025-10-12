@@ -2305,7 +2305,7 @@ function initThreeJS() {
   container.style.left = '0';
   container.style.width = '100%';
   container.style.height = '100%';
-  container.style.background = 'transparent';
+  container.style.background = 'transparent'; // <--- fondo transparente
   container.style.zIndex = '1000';
 
   // Usa el tamaño real de la columna-b
@@ -2313,14 +2313,14 @@ function initThreeJS() {
   const height = container.offsetHeight || 400;
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x000000);
+  scene.background = null; // <--- fondo transparente
 
   camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
   camera.position.set(0, 1.5, 4);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(width, height);
-  renderer.setClearColor(0x000000, 0);
+  renderer.setClearColor(0x000000, 0); // <--- alpha 0
   container.appendChild(renderer.domElement);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.7));
@@ -2335,6 +2335,7 @@ function initThreeJS() {
   controls.maxDistance = 10;
   controls.target.set(0, 1.5, 0);
   controls.update();
+  controls.enablePan = false; // <--- solo rotación y zoom
 
   renderer.domElement.style.cursor = 'grab';
   renderer.domElement.addEventListener('pointerdown', () => {
@@ -2359,7 +2360,7 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// Carga el modelo Cabeza.glb si la ranura H está vacía
+// Carga el modelo Cabeza.glb si la ranura H está vacía, lo elimina si está equipada
 function actualizarModelos3DPorRanuraH() {
   if (!scene) return;
   // Elimina modelo anterior si existe
@@ -2370,19 +2371,16 @@ function actualizarModelos3DPorRanuraH() {
   // Si la ranura H está vacía, muestra Cabeza.glb
   if (!equipadas.h) {
     const loader = new GLTFLoader();
-    // Usa ruta relativa correcta (asegúrate que el archivo esté aquí)
     loader.load(
       './Cabeza.glb',
       function(gltf) {
         cabezaModel = gltf.scene;
-        // Centra el modelo y ajusta tamaño
-        cabezaModel.position.set(0, 1.5, 0); // Y=1.5 para que esté a la altura de la cámara
-        cabezaModel.scale.set(2.5, 2.5, 2.5); // Ajusta el tamaño para que se vea bien
-        // Opcional: centra el modelo si está desplazado
+        cabezaModel.position.set(0, 1.5, 0);
+        cabezaModel.scale.set(2.5, 2.5, 2.5);
         let box = new THREE.Box3().setFromObject(cabezaModel);
         let center = box.getCenter(new THREE.Vector3());
-        cabezaModel.position.sub(center); // centra el modelo en el origen
-        cabezaModel.position.y += 1.5; // vuelve a subirlo a la altura de la cámara
+        cabezaModel.position.sub(center);
+        cabezaModel.position.y += 1.5;
         scene.add(cabezaModel);
       },
       undefined,
@@ -2407,13 +2405,17 @@ function actualizarModelos3DPorRanuraH() {
   }
 }
 
-// Inicializa Three.js al cargar el menú principal
-window.addEventListener('DOMContentLoaded', function() {
-  initThreeJS();
-  // Muestra el modelo si corresponde
-  setTimeout(actualizarModelos3DPorRanuraH, 200);
-});
+// Llama a actualizarModelos3DPorRanuraH cada vez que se equipa o desequipa la ranura H
+function mostrarEquipada(ranura, imgSrc) {
+  // ...existing code...
+  if (ranura === "h") {
+    actualizarModelos3DPorRanuraH();
+  }
+  // ...existing code...
+}
 
+// También llama a actualizarModelos3DPorRanuraH al quitar la imagen equipada (ya lo haces en la tecla R)
+// ...existing code...
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
