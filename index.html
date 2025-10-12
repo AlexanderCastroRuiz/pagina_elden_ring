@@ -23,6 +23,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
 
     .main-grid {
@@ -541,6 +546,8 @@
       <span class="seleccionado-text" id="seleccionado-text"></span>
     </div>
     <div class="columna-b">
+      <!-- NUEVO: Contenedor Three.js para modelos 3D -->
+      <div id="threejs-container" style="width:100%;height:80vh;position:relative;z-index:1000;"></div>
     </div>
     <div class="columna-c">
       <div id="columna-c-contenido"></div>
@@ -584,6 +591,11 @@
     </div>
     <div class="fila-c">
       <p class="fila-c-text">Selecciona una ranura para usar</p>
+      <!-- NUEVO: Contenedor Desequipar/Volver -->
+      <div id="desequipar-volver-container" style="position: absolute; left: -97px; bottom: 20px; display: flex; align-items: center; gap: 12px; z-index: 1200;">
+        <img id="desequipar-volver-img" src="erre.png" alt="Tecla R" style="height: 25px; width: auto;">
+        <span id="desequipar-volver-text" style="color: white; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 2px 2px 4px #000;">Desequipar</span>
+      </div>
     </div>
   <!-- Solo un separador en el menú principal -->
   <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw;">
@@ -639,13 +651,13 @@
     <div class="menu-btn-wrapper" id="btn-guardar" style="bottom: 30px; right: 50px; --menu-btn-size: 50px;">
       <img src="save.png" alt="Guardar" class="menu-btn-img">
       <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
-      <span class="menu-btn-tooltip">Guardar</span>
+      <span class="menu-btn-tooltip">Cerrar sesión</span>
     </div>
     <!-- Botón Cargar -->
     <div class="menu-btn-wrapper" id="btn-cargar" style="bottom: 30px; right: 130px; --menu-btn-size: 50px;">
       <img src="load.png" alt="Cargar" class="menu-btn-img">
       <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
-      <span class="menu-btn-tooltip">Cargar</span>
+      <span class="menu-btn-tooltip">Cargar Sinluz</span>
     </div>
     <img id="atributo-img" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4; pointer-events: none;">
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
@@ -814,10 +826,59 @@
         }
       });
 
-      // --- AGREGA ESTE BLOQUE PARA EL BOTÓN "Cargar" DEL MENÚ PRINCIPAL ---
-      document.getElementById('btn-cargar').addEventListener('click', function() {
-        mostrarSoloMenu('seleccion');
+      document.getElementById('btn-cargar').addEventListener('click', async function() {
+        // Primero carga y renderiza los datos de los Sinluz
+        await actualizarMenuSeleccionVisual();
+        // Luego muestra el menú selección
+        document.getElementById('menu-inicio').style.display = 'none';
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('menu-seleccion').style.display = 'flex';
       });
+
+      // --- NUEVO: Botón "Guardar" te lleva al menú inicio ---
+      document.getElementById('btn-guardar').addEventListener('click', function() {
+        mostrarSoloMenu('inicio');
+      });
+
+  // --- Quitar imagen equipada y actualizar base de datos al presionar R ---
+  document.addEventListener('keydown', async function(e) {
+    // Solo si estamos en el menú principal visible
+    if (
+      document.getElementById('main-content').style.display === 'flex' &&
+      (e.key === 'r' || e.key === 'R')
+    ) {
+      // Ranura seleccionada actualmente
+      const ranuraId = ultimaRanuraSeleccionada; // ej: "ranura-h"
+      if (!ranuraId) return;
+      const tipo = ranuraId.split('-')[1]; // "h", "a", "g", "l"
+      if (!["h", "a", "g", "l"].includes(tipo)) return;
+
+      // Si hay imagen equipada en esa ranura
+      const prev = document.getElementById('equipada-' + tipo);
+      if (prev) {
+        prev.remove();
+        equipadas[tipo] = null;
+        if (tipo === "h") actualizarModelos3DPorRanuraH();
+        // Actualiza en la base de datos si hay usuario y Sinluz seleccionado
+        const usuario = document.getElementById('usuario-inicio').value.trim();
+        if (usuario && sinluzSeleccionado) {
+          const db = getDatabase();
+          let campo = "";
+          if (tipo === "h") campo = "Yelmo";
+          else if (tipo === "a") campo = "Armadura";
+          else if (tipo === "g") campo = "Guanteletes";
+          else if (tipo === "l") campo = "Botas";
+          if (campo) {
+            const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/${campo}`;
+            await set(ref(db, sinluzPath), "");
+          }
+        }
+        // Actualiza la columna C visualmente
+        mostrarColumnaCPrincipal(ranuraId);
+      }
+    }
+  });
+
     });
 
     // Función para mostrar mensajes personalizados
@@ -1182,10 +1243,58 @@
       // Actualiza imágenes según ranura
       setAlmacenImages(tipo);
       menuActual = tipo;
+      actualizarDesequiparVolver();
     }
 
+    // Agrega esta función en tu script principal:
+function actualizarDesequiparVolver() {
+  const img = document.getElementById('desequipar-volver-img');
+  const txt = document.getElementById('desequipar-volver-text');
+  // Si el almacen está visible, muestra "Volver" y "esc.png"
+  if (
+    document.getElementById('almacen-1').style.display === 'block' ||
+    document.getElementById('almacen-2').style.display === 'block' ||
+    document.getElementById('almacen-3').style.display === 'block'
+  ) {
+    img.src = "esc.png";
+    txt.textContent = "Volver";
+  } else {
+    img.src = "erre.png";
+    txt.textContent = "Desequipar";
+  }
+}
+
+// Llama a la función después de mostrar/ocultar almacen:
+
+
+function volverMenuRanuras() {
+  // Oculta el menú de almacen
+  document.getElementById('almacen-1').style.display = 'none';
+  document.getElementById('almacen-2').style.display = 'none';
+  document.getElementById('almacen-3').style.display = 'none';
+  // Oculta las imágenes de almacen
+  ["almacen-img-1", "almacen-img-2", "almacen-img-3"].forEach(function(id){
+    var img = document.getElementById(id);
+    if (img) img.style.display = "none";
+  });
+  // Muestra las ranuras
+  var ranuras = document.querySelectorAll('.ranura-btn-wrapper');
+  ranuras.forEach(function(r) { r.style.display = 'block'; });
+  // Si tienes una función ocultarManosSiempre, llama aquí
+  if (typeof ocultarManosSiempre === "function") ocultarManosSiempre();
+  menuActual = "";
+  // Oculta dorado en almacen
+  document.querySelectorAll('.almacen-dorado').forEach(function(d){ d.style.opacity = "0"; });
+  limpiarColumnaC();
+  actualizarDesequiparVolver();
+  // Asegura que el menú principal esté visible
+  document.getElementById('main-content').style.display = 'flex';
+  document.getElementById('menu-inicio').style.display = 'none';
+  document.getElementById('menu-seleccion').style.display = 'none';
+}
     // Asignar eventos a cada ranura
     document.getElementById("ranura-h").addEventListener("mouseenter", function() {
+
       setSeleccionado("Cabeza", "ranura-h");
     });
     document.getElementById("ranura-a").addEventListener("mouseenter", function() {
@@ -1251,26 +1360,7 @@
       setAlmacenDorado("almacen-3");
     });
 
-    // Volver al menú de ranuras con click derecho o tecla Esc
-    function volverMenuRanuras() {
-      // Oculta el menú de almacen
-      document.getElementById('almacen-1').style.display = 'none';
-      document.getElementById('almacen-2').style.display = 'none';
-      document.getElementById('almacen-3').style.display = 'none';
-      // Oculta las imágenes de almacen
-      ["almacen-img-1", "almacen-img-2", "almacen-img-3"].forEach(function(id){
-        var img = document.getElementById(id);
-        if (img) img.style.display = "none";
-      });
-      // Muestra las ranuras
-      var ranuras = document.querySelectorAll('.ranura-btn-wrapper');
-      ranuras.forEach(function(r) { r.style.display = 'block'; });
-      ocultarManosSiempre(); // <-- fuerza ocultar las manos
-      menuActual = "";
-      // Oculta dorado en almacen
-      document.querySelectorAll('.almacen-dorado').forEach(function(d){ d.style.opacity = "0"; });
-      limpiarColumnaC();
-    }
+
 
     // Click derecho
     document.getElementById('almacen-1').addEventListener("contextmenu", function(e){
@@ -2085,24 +2175,24 @@
     });
   });
 
-  // Mapeo de nombre de armadura a imagen
+  // Mapeo de armadura a imagen
 const imagenPorArmadura = {
   "Armadura de Lobo Furioso": "wolf-a.png",
   "Vestido de Alberich": "carian-a.png",
   "Vestido de preceptor": "samurai-a.png",
 };
 
-// Mapeo de nombre de yelmo a imagen
+// Mapeo de yelmo a imagen
 const imagenPorYelmo = {
   "Yelmo de Lobo Furioso": "wolf-h.png",
 };
 
-// Mapeo de nombre de guanteletes a imagen
+// Mapeo de guanteletes a imagen
 const imagenPorGuanteletes = {
   "Guanteletes de Lobo Furioso": "wolf-g.png",
 };
 
-// Mapeo de nombre de botas a imagen
+// Mapeo de botas a imagen
 const imagenPorBotas = {
   "Grebas de Lobo Furioso": "wolf-l.png",
   "Pantalones de Alberich": "carian-l.png",
@@ -2196,5 +2286,148 @@ async function actualizarMenuSeleccionVisual() {
 }
 
   </script>
+  <!-- Agrega los scripts de Three.js y GLTFLoader justo antes del script principal -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script>
+  // --- THREE.JS ENTORNO 3D ---
+  let scene, camera, renderer;
+  let loadedModels = [];
+  let modelosCargados = false;
+  // Mapeo nombre a índice de modelo
+  const modelos3DMap = {
+    "Cabeza.glb": 0,
+    "modelo1.glb": 1,
+    "modelo2.glb": 2,
+    "modelo3.glb": 3
+    // Agrega más si tienes más modelos
+  };
+
+  function initThreeJS() {
+    // Elimina el canvas anterior si existe
+    const prevCanvas = document.querySelector('#threejs-container canvas');
+    if (prevCanvas) prevCanvas.remove();
+
+    // Escena
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+
+    // Cámara
+    const width = document.getElementById('threejs-container').clientWidth;
+    const height = document.getElementById('threejs-container').clientHeight;
+    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 1.5, 4);
+
+    // Renderer
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0);
+    document.getElementById('threejs-container').appendChild(renderer.domElement);
+
+    // Luz ambiental y direccional
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    dirLight.position.set(2, 5, 3);
+    scene.add(dirLight);
+
+    // Animación
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  function cargarTodosModelosGLB(rutas) {
+    if (modelosCargados) return;
+    const loader = new THREE.GLTFLoader();
+    rutas.forEach((ruta, idx) => {
+      loader.load(ruta, function(gltf) {
+        gltf.scene.position.x = idx * 1.5 - (rutas.length-1)*0.75;
+        gltf.scene.visible = false; // Ocultos por defecto
+        scene.add(gltf.scene);
+        loadedModels.push(gltf.scene);
+      });
+    });
+    modelosCargados = true;
+  }
+
+  function mostrarModelos3D() {
+    loadedModels.forEach(obj => obj.visible = true);
+  }
+
+  function ocultarModelos3D() {
+    loadedModels.forEach(obj => obj.visible = false);
+  }
+
+  function setModelo3DVisible(idx, visible) {
+    if (loadedModels[idx]) loadedModels[idx].visible = visible;
+  }
+
+  // Inicializa Three.js y carga modelos solo una vez
+  window.addEventListener('DOMContentLoaded', function() {
+    initThreeJS();
+    // Asegúrate de que "Cabeza.glb" sea el primer modelo en la lista
+    cargarTodosModelosGLB([
+      'Cabeza.glb',
+      'modelo1.glb',
+      'modelo2.glb',
+      'modelo3.glb'
+    ]);
+  });
+
+  // Mostrar solo el modelo "Cabeza.glb" si ranura H está vacía
+  function mostrarSoloMenu(menu) {
+    // ...existing code...
+    if (menu === 'principal') {
+      document.getElementById('main-content').style.display = 'flex';
+      // Oculta todos los modelos
+      ocultarModelos3D();
+      // Si ranura H está vacía, muestra solo "Cabeza.glb"
+      if (!equipadas.h) {
+        setModelo3DVisible(modelos3DMap["Cabeza.glb"], true);
+      } else {
+        // Si tienes lógica para mostrar otros modelos según lo equipado, agrégala aquí
+        // Ejemplo: mostrarModelos3D(); // si quieres mostrar todos
+      }
+    } else {
+      ocultarModelos3D();
+    }
+    // ...existing code...
+  }
+
+  // Si equipas/des-equipas en ranura H, actualiza la visibilidad del modelo 3D
+  function actualizarModelos3DPorRanuraH() {
+    ocultarModelos3D();
+    if (!equipadas.h) {
+      setModelo3DVisible(modelos3DMap["Cabeza.glb"], true);
+    }
+    // Si tienes lógica para mostrar otros modelos según lo equipado, agrégala aquí
+  }
+
+  // Llama a actualizarModelos3DPorRanuraH cada vez que se equipa/desequipa en ranura H
+  // Modifica mostrarEquipada y el evento de quitar imagen equipada:
+  // ...dentro de mostrarEquipada...
+  function mostrarEquipada(ranura, imgSrc) {
+    // ...existing code...
+    equipadas[ranura] = imgSrc;
+    if (ranura === "h") actualizarModelos3DPorRanuraH();
+    // ...existing code...
+  }
+  // ...dentro del evento de quitar imagen equipada (tecla R)...
+  document.addEventListener('keydown', async function(e) {
+    // ...existing code...
+    if (prev) {
+      prev.remove();
+      equipadas[tipo] = null;
+      if (tipo === "h") actualizarModelos3DPorRanuraH();
+      // ...existing code...
+    }
+    // ...existing code...
+  });
+
+    // ...existing code...
+</script>
 </body>
 </html>
