@@ -23,6 +23,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
 
     .main-grid {
@@ -2247,6 +2252,10 @@ async function actualizarMenuSeleccionVisual() {
   const usuarioRef = ref(db, 'usuario/' + usuario);
   try {
     const snapshot = await get(usuarioRef);
+    // Limpia todas las imágenes equipadas sobre las copias de ranura antes de mostrar nuevas
+    [1,2,3].forEach(idx => {
+      ["h","a","g","l"].forEach(tipo => limpiarEquipadaCopiaPorRanura(tipo, idx));
+    });
     if (snapshot.exists()) {
       const datos = snapshot.val();
       // Para cada Sinluz (1,2,3)
@@ -2283,5 +2292,4 @@ async function actualizarMenuSeleccionVisual() {
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
-
   <!-- ...existing code... -->
