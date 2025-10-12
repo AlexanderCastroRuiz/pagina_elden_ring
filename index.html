@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                                                                                                                                                                 txt.textContent = "Desequipar";
+                                                                    txt.textContent = "Desequipar";
   }
 }
 
@@ -2378,10 +2378,10 @@ const modelos3D = {}; // { nombre: objeto3D }
 
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
-  // Si ya existe un modelo con ese nombre, solo lo ocultamos/mostramos, no lo eliminamos
+  // Si ya existe un modelo con ese nombre, elimínalo antes
   if (modelos3D[nombre]) {
-    modelos3D[nombre].visible = true;
-    return; // No cargar de nuevo, solo usar el existente
+    scene.remove(modelos3D[nombre]);
+    delete modelos3D[nombre];
   }
   const loader = new GLTFLoader();
   loader.load(
@@ -2468,10 +2468,13 @@ function actualizarModelos3DPorRanuraH() {
     ocultarModelo('piernas');
   }
 
-  // Si todas las ranuras están equipadas, oculta el canvas
+  // Oculta el canvas solo si TODAS las ranuras están equipadas
   if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
+  } else {
+    renderer.domElement.style.display = 'block';
+    container.style.display = 'block';
   }
 }
   </script>
