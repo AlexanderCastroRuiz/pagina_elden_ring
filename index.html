@@ -23,7 +23,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
-
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
 
     .main-grid {
@@ -484,7 +488,7 @@
     <!-- Solo se muestra el fondo y los separadores -->
     <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw; z-index:2100;">
     <img src="separador.png" alt="Separador 2" class="separator second" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 66.66vw; z-index:2100;">
-    <!-- Barra-equipo igual que en menú principal -->
+    <!-- Barra-equipo igual que in menú principal -->
     <div class="barra-equipo-container" style="position: absolute; left: 0; top: 7%; width: 39.45vw; height: 66.66%; z-index: 2101; pointer-events: none;">
       <img src="Barra-equipo.png" alt="Barra equipo" class="barra-equipo-img">
     </div>
@@ -2331,12 +2335,34 @@ function actualizarModelos3DPorRanuraH() {
   // Si la ranura H está vacía, muestra Cabeza.glb
   if (!equipadas.h) {
     const loader = new GLTFLoader();
-    loader.load('Cabeza.glb', function(gltf) {
-      cabezaModel = gltf.scene;
-      cabezaModel.position.set(0, 0, 0);
-      cabezaModel.scale.set(1, 1, 1);
-      scene.add(cabezaModel);
-    });
+    // Usa ruta relativa correcta (asegúrate que el archivo esté aquí)
+    loader.load(
+      './Cabeza.glb',
+      function(gltf) {
+        cabezaModel = gltf.scene;
+        cabezaModel.position.set(0, 0, 0);
+        cabezaModel.scale.set(1, 1, 1);
+        scene.add(cabezaModel);
+      },
+      undefined,
+      function(error) {
+        console.error('Error cargando Cabeza.glb:', error);
+        // Opcional: muestra mensaje visual
+        const msg = document.createElement('div');
+        msg.textContent = 'No se pudo cargar el modelo Cabeza.glb';
+        msg.style.position = 'fixed';
+        msg.style.top = '50px';
+        msg.style.left = '50%';
+        msg.style.transform = 'translateX(-50%)';
+        msg.style.background = '#c94444';
+        msg.style.color = '#fff';
+        msg.style.padding = '12px 24px';
+        msg.style.zIndex = '4000';
+        msg.style.borderRadius = '8px';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }
+    );
   }
 }
 
@@ -2350,5 +2376,4 @@ window.addEventListener('DOMContentLoaded', function() {
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
-
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
