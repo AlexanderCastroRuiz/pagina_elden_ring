@@ -2214,7 +2214,35 @@ function limpiarEquipadaCopiaPorRanura(tipo, idx) {
   if (prev) prev.remove();
 }
 
-
+// Muestra imagen equipada sobre la copia de ranura
+function mostrarEquipadaCopia(tipo, idx, imgSrc) {
+  limpiarEquipadaCopiaPorRanura(tipo, idx);
+  // Elige el ranura-copia-X según tipo y idx
+  let ranuraId = "";
+  if (tipo === "h") ranuraId = `ranura-h-copia-${idx}`;
+  if (tipo === "a") ranuraId = `ranura-a-copia-${idx}`;
+  if (tipo === "g") ranuraId = `ranura-g-copia-${idx}`;
+  if (tipo === "l") ranuraId = `ranura-l-copia-${idx}`;
+  const ranuraElem = document.getElementById(ranuraId);
+  if (ranuraElem && imgSrc) {
+    const img = document.createElement("img");
+    img.src = imgSrc;
+    img.id = `equipada-copia-${tipo}-${idx}`;
+    img.style.position = "absolute";
+    img.style.top = ranuraElem.style.top || ranuraElem.style.top;
+    img.style.left = ranuraElem.style.left || ranuraElem.style.left;
+    img.style.width = ranuraElem.style.width || "100px";
+    img.style.height = ranuraElem.style.height || "100px";
+    img.style.zIndex = "2250";
+    img.style.pointerEvents = "none";
+    img.style.objectFit = "contain";
+    // Ajusta posición si ranura usa right o transform
+    if (ranuraElem.style.right) img.style.right = ranuraElem.style.right;
+    if (ranuraElem.style.transform) img.style.transform = ranuraElem.style.transform;
+    // Inserta en el mismo contenedor que ranuraElem
+    ranuraElem.parentNode.appendChild(img);
+  }
+}
 
 // Actualiza los valores visuales del menú selección para los Sinluz cargados
 async function actualizarMenuSeleccionVisual() {
@@ -2378,13 +2406,9 @@ function actualizarModelos3DPorRanuraH() {
 }
 
 // Llama a actualizarModelos3DPorRanuraH cada vez que se equipa o desequipa la ranura H
-function mostrarEquipada(ranura, imgSrc) {
+
   // ...existing code...
-  if (ranura === "h") {
-    actualizarModelos3DPorRanuraH();
-  }
-  // ...existing code...
-}
+
 
 // También llama a actualizarModelos3DPorRanuraH al quitar la imagen equipada (ya lo haces en la tecla R)
 // ...existing code...
