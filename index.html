@@ -2288,6 +2288,68 @@ async function actualizarMenuSeleccionVisual() {
   }
 }
 
+// --- THREE.JS INTEGRACIÓN PARA MODELO 3D DE CABEZA ---
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
+
+let scene, camera, renderer, cabezaModel;
+
+function initThreeJS() {
+  const container = document.getElementById('threejs-container');
+  const width = container.offsetWidth;
+  const height = container.offsetHeight;
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+
+  camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+  camera.position.set(0, 1.5, 4);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(width, height);
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+  dirLight.position.set(2, 5, 3);
+  scene.add(dirLight);
+
+  animate();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+// Carga el modelo Cabeza.glb si la ranura H está vacía
+function actualizarModelos3DPorRanuraH() {
+  if (!scene) return;
+  // Elimina modelo anterior si existe
+  if (cabezaModel) {
+    scene.remove(cabezaModel);
+    cabezaModel = null;
+  }
+  // Si la ranura H está vacía, muestra Cabeza.glb
+  if (!equipadas.h) {
+    const loader = new GLTFLoader();
+    loader.load('Cabeza.glb', function(gltf) {
+      cabezaModel = gltf.scene;
+      cabezaModel.position.set(0, 0, 0);
+      cabezaModel.scale.set(1, 1, 1);
+      scene.add(cabezaModel);
+    });
+  }
+}
+
+// Inicializa Three.js al cargar el menú principal
+window.addEventListener('DOMContentLoaded', function() {
+  initThreeJS();
+  // Muestra el modelo si corresponde
+  setTimeout(actualizarModelos3DPorRanuraH, 200);
+});
+
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
