@@ -2468,14 +2468,7 @@ function actualizarModelos3DPorRanuraH() {
     ocultarModelo('piernas');
   }
 
-  // Oculta el canvas solo si TODAS las ranuras están equipadas
-  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
-    renderer.domElement.style.display = 'none';
-    container.style.display = 'none';
-  } else {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
-  }
+
 }
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
