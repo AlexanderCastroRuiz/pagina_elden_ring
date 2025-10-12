@@ -23,6 +23,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
 
     .main-grid {
@@ -2294,18 +2299,16 @@ let scene, camera, renderer, cabezaModel, controls;
 
 function initThreeJS() {
   const container = document.getElementById('threejs-container');
-  // --- FIX: Forzar tamaño y visibilidad del canvas ---
-  container.style.display = 'block';
+  // Ajusta el contenedor para que no desplace otros elementos
+  container.style.position = 'absolute';
+  container.style.top = '0';
+  container.style.left = '0';
   container.style.width = '100%';
-  container.style.height = '80vh';
-  container.style.background = 'rgba(0,0,0,0.95)';
+  container.style.height = '100%';
+  container.style.background = 'transparent';
+  container.style.zIndex = '1000';
 
-  // Si el contenedor está oculto, forzalo a visible
-  if (container.offsetWidth === 0 || container.offsetHeight === 0) {
-    container.style.width = '600px';
-    container.style.height = '400px';
-  }
-
+  // Usa el tamaño real de la columna-b
   const width = container.offsetWidth || 600;
   const height = container.offsetHeight || 400;
 
@@ -2325,7 +2328,6 @@ function initThreeJS() {
   dirLight.position.set(2, 5, 3);
   scene.add(dirLight);
 
-  // OrbitControls para mover la cámara con el mouse
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
@@ -2334,7 +2336,6 @@ function initThreeJS() {
   controls.target.set(0, 1.5, 0);
   controls.update();
 
-  // --- FIX: Cursor drag/dragging ---
   renderer.domElement.style.cursor = 'grab';
   renderer.domElement.addEventListener('pointerdown', () => {
     renderer.domElement.style.cursor = 'grabbing';
@@ -2348,15 +2349,6 @@ function initThreeJS() {
   renderer.domElement.addEventListener('pointercancel', () => {
     renderer.domElement.style.cursor = 'grab';
   });
-
-  // --- DEBUG: Muestra mensaje si el canvas se agrega correctamente ---
-  setTimeout(() => {
-    if (renderer.domElement && renderer.domElement.parentNode === container) {
-      console.log('Three.js canvas cargado correctamente');
-    } else {
-      console.error('Three.js canvas NO se agregó al contenedor');
-    }
-  }, 500);
 
   animate();
 }
@@ -2383,8 +2375,14 @@ function actualizarModelos3DPorRanuraH() {
       './Cabeza.glb',
       function(gltf) {
         cabezaModel = gltf.scene;
-        cabezaModel.position.set(0, 0, 0);
-        cabezaModel.scale.set(1, 1, 1);
+        // Centra el modelo y ajusta tamaño
+        cabezaModel.position.set(0, 1.5, 0); // Y=1.5 para que esté a la altura de la cámara
+        cabezaModel.scale.set(2.5, 2.5, 2.5); // Ajusta el tamaño para que se vea bien
+        // Opcional: centra el modelo si está desplazado
+        let box = new THREE.Box3().setFromObject(cabezaModel);
+        let center = box.getCenter(new THREE.Vector3());
+        cabezaModel.position.sub(center); // centra el modelo en el origen
+        cabezaModel.position.y += 1.5; // vuelve a subirlo a la altura de la cámara
         scene.add(cabezaModel);
       },
       undefined,
@@ -2419,5 +2417,4 @@ window.addEventListener('DOMContentLoaded', function() {
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
-
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
