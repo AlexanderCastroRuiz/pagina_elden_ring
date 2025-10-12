@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                                                                    txt.textContent = "Desequipar";
+                                                                                                                                       txt.textContent = "Desequipar";
   }
 }
 
@@ -2263,16 +2263,16 @@ async function actualizarMenuSeleccionVisual() {
           ajustarInputWidth(input);
         }
         // Muestra imagen equipada sobre copia de ranura H
-        const imgH = obtenerImagenPorNombre("h", sinluz.Yelmo);
+        const imgH = obtenerImagenPorNombre("h", sinluz.Yelmo || "");
         if (imgH) mostrarEquipadaCopia("h", idx, imgH);
         // Muestra imagen equipada sobre copia de ranura A
-        const imgA = obtenerImagenPorNombre("a", armadura);
+        const imgA = obtenerImagenPorNombre("a", sinluz.Armadura || "");
         if (imgA) mostrarEquipadaCopia("a", idx, imgA);
         // Muestra imagen equipada sobre copia de ranura G
-        const imgG = obtenerImagenPorNombre("g", guanteletes);
+        const imgG = obtenerImagenPorNombre("g", sinluz.Guanteletes || "");
         if (imgG) mostrarEquipadaCopia("g", idx, imgG);
         // Muestra imagen equipada sobre copia de ranura L
-        const imgL = obtenerImagenPorNombre("l", botas);
+        const imgL = obtenerImagenPorNombre("l", sinluz.Botas || "");
         if (imgL) mostrarEquipadaCopia("l", idx, imgL);
       });
     }
