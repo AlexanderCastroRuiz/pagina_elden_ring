@@ -2278,7 +2278,7 @@ async function actualizarMenuSeleccionVisual() {
         const imgG = obtenerImagenPorNombre("g", sinluz.Guanteletes);
         if (imgG) mostrarEquipadaCopia("g", idx, imgG);
         // Muestra imagen equipada sobre copia de ranura L
-        const imgL = obtenerImagenPorNombre("l", botas);
+        const imgL = obtenerImagenPorNombre("l", sinluz.Botas);
         if (imgL) mostrarEquipadaCopia("l", idx, imgL);
       });
     }
@@ -2289,9 +2289,9 @@ async function actualizarMenuSeleccionVisual() {
 }
 
 // --- THREE.JS INTEGRACIÓN PARA MODELO 3D DE CABEZA ---
-// Cambia los imports a la versión ES correcta del CDN Skypack (más compatible con Github Pages):
-import * as THREE from 'https://unpkg.com/three@0.153.0/build/three.module.js';
-import { GLTFLoader } from 'https://unpkg.com/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
+// Cambia los imports a la versión ES correcta del CDN esm.sh (funciona en Github Pages):
+import * as THREE from 'https://esm.sh/three@0.153.0';
+import { GLTFLoader } from 'https://esm.sh/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
 
 let scene, camera, renderer, cabezaModel;
 
