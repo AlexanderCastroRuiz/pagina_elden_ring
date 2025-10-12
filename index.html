@@ -547,7 +547,7 @@
     </div>
     <div class="columna-b">
       <!-- NUEVO: Contenedor Three.js para modelos 3D -->
-      <div id="threejs-container" style="width:100%;height:80vh;position:relative;z-index:1000;"></div>
+      <div id="threejs-container" style="position:absolute; left:39.45vw; top:0; width:35.55vw; height:100vh; z-index:1000; background:transparent;"></div>
     </div>
     <div class="columna-c">
       <div id="columna-c-contenido"></div>
@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-    txt.textContent = "Desequipar";
+       txt.textContent = "Desequipar";
   }
 }
 
@@ -2296,19 +2296,19 @@ function initThreeJS() {
   if (threejsInicializado) return; // <-- evita doble inicialización
   threejsInicializado = true;
   const container = document.getElementById('threejs-container');
-  // Centra el contenedor en la columna-b
+  // Ubica el entorno 3D en el segundo tercio de la pantalla
   container.style.position = 'absolute';
-  container.style.top = '50%';
-  container.style.left = '50%';
-  container.style.transform = 'translate(-50%, -50%)';
-  container.style.width = '80%';
-  container.style.height = '80%';
+  container.style.left = '39.45vw';
+  container.style.top = '0';
+  container.style.width = '35.55vw';
+  container.style.height = '100vh';
   container.style.background = 'transparent';
   container.style.zIndex = '1000';
+  container.style.display = 'block';
 
   // Usa el tamaño real del contenedor
-  const width = container.offsetWidth || 600;
-  const height = container.offsetHeight || 400;
+  const width = container.offsetWidth || container.clientWidth || 600;
+  const height = container.offsetHeight || container.clientHeight || 400;
 
   scene = new THREE.Scene();
   scene.background = null;
@@ -2320,11 +2320,11 @@ function initThreeJS() {
   renderer.setSize(width, height);
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.style.display = 'block';
-  renderer.domElement.style.margin = '0 auto';
   renderer.domElement.style.position = 'absolute';
-  renderer.domElement.style.top = '50%';
-  renderer.domElement.style.left = '50%';
-  renderer.domElement.style.transform = 'translate(-50%, -50%)';
+  renderer.domElement.style.top = '0';
+  renderer.domElement.style.left = '0';
+  renderer.domElement.style.width = '100%';
+  renderer.domElement.style.height = '100%';
   container.appendChild(renderer.domElement);
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.7));
@@ -2339,7 +2339,7 @@ function initThreeJS() {
   controls.maxDistance = 10;
   controls.target.set(0, 1.5, 0);
   controls.update();
-  controls.enablePan = false; // <--- solo rotación y zoom
+  controls.enablePan = false;
 
   renderer.domElement.style.cursor = 'grab';
   renderer.domElement.addEventListener('pointerdown', () => {
@@ -2366,54 +2366,71 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// Carga el modelo Cabeza.glb si la ranura H está vacía, lo elimina si está equipada
+// Permite cargar varios modelos GLB en la misma escena
+const modelos3D = {}; // { nombre: objeto3D }
+
+function cargarModeloGLB(ruta, nombre, opciones = {}) {
+  if (!scene) return;
+  // Si ya existe un modelo con ese nombre, elimínalo antes
+  if (modelos3D[nombre]) {
+    scene.remove(modelos3D[nombre]);
+    delete modelos3D[nombre];
+  }
+  const loader = new GLTFLoader();
+  loader.load(
+    ruta,
+    function(gltf) {
+      const model = gltf.scene;
+      // Opciones de posición/escala/rotación
+      if (opciones.position) model.position.copy(opciones.position);
+      else model.position.set(0, 1.5, 0);
+      if (opciones.scale) model.scale.copy(opciones.scale);
+      else model.scale.set(2.5, 2.5, 2.5);
+      if (opciones.rotation) model.rotation.copy(opciones.rotation);
+
+      // Centrado automático
+      let box = new THREE.Box3().setFromObject(model);
+      let center = box.getCenter(new THREE.Vector3());
+      model.position.sub(center);
+      model.position.y += 1.5;
+
+      scene.add(model);
+      modelos3D[nombre] = model;
+    },
+    undefined,
+    function(error) {
+      console.error('Error cargando modelo:', ruta, error);
+    }
+  );
+}
+
+// Ejemplo de uso para cargar varios modelos:
+// cargarModeloGLB('./Cabeza.glb', 'cabeza');
+// cargarModeloGLB('./OtroModelo.glb', 'otro', { position: new THREE.Vector3(0,2,0), scale: new THREE.Vector3(1,1,1) });
+
 function actualizarModelos3DPorRanuraH() {
   if (!scene || !renderer) return;
   const container = document.getElementById('threejs-container');
   // Elimina modelo anterior si existe
-  if (cabezaModel) {
-    scene.remove(cabezaModel);
-    cabezaModel = null;
+  if (modelos3D['cabeza']) {
+    scene.remove(modelos3D['cabeza']);
+    delete modelos3D['cabeza'];
   }
   // Si la ranura H está vacía, muestra Cabeza.glb y canvas
   if (!equipadas.h) {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
-    const loader = new GLTFLoader();
-    loader.load(
-      './Cabeza.glb',
-      function(gltf) {
-        cabezaModel = gltf.scene;
-        cabezaModel.position.set(0, 1.5, 0);
-        cabezaModel.scale.set(2.5, 2.5, 2.5);
-        let box = new THREE.Box3().setFromObject(cabezaModel);
-        let center = box.getCenter(new THREE.Vector3());
-        cabezaModel.position.sub(center);
-        cabezaModel.position.y += 1.5;
-        scene.add(cabezaModel);
-      },
-      undefined,
-      function(error) {
-        console.error('Error cargando Cabeza.glb:', error);
-        const msg = document.createElement('div');
-        msg.textContent = 'No se pudo cargar el modelo Cabeza.glb';
-        msg.style.position = 'fixed';
-        msg.style.top = '50px';
-        msg.style.left = '50%';
-        msg.style.transform = 'translateX(-50%)';
-        msg.style.background = '#c94444';
-        msg.style.color = '#fff';
-        msg.style.padding = '12px 24px';
-        msg.style.zIndex = '4000';
-        msg.style.borderRadius = '8px';
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 3000);
-      }
-    );
+    cargarModeloGLB('./Cabeza.glb', 'cabeza');
+    // Puedes cargar más modelos aquí si lo deseas
+    // cargarModeloGLB('./OtroModelo.glb', 'otro');
   } else {
-    // Si hay algo equipado, oculta el canvas
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
+    // Opcional: elimina otros modelos si lo deseas
+    // Object.keys(modelos3D).forEach(nombre => {
+    //   scene.remove(modelos3D[nombre]);
+    //   delete modelos3D[nombre];
+    // });
   }
 }
   </script>
