@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                         txt.textContent = "Desequipar";
+                                                 txt.textContent = "Desequipar";
   }
 }
 
@@ -2419,26 +2419,62 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
 function actualizarModelos3DPorRanuraH() {
   if (!scene || !renderer) return;
   const container = document.getElementById('threejs-container');
-  // Elimina modelo anterior si existe
-  if (modelos3D['cabeza']) {
-    scene.remove(modelos3D['cabeza']);
-    delete modelos3D['cabeza'];
+
+  // Helper para mostrar/ocultar modelos
+  function mostrarModelo(nombre, ruta) {
+    if (!modelos3D[nombre]) {
+      cargarModeloGLB(ruta, nombre);
+    }
+    if (modelos3D[nombre]) {
+      modelos3D[nombre].visible = true;
+    }
   }
-  // Si la ranura H está vacía, muestra Cabeza.glb y canvas
+  function ocultarModelo(nombre) {
+    if (modelos3D[nombre]) {
+      modelos3D[nombre].visible = false;
+    }
+  }
+
+  // Cabeza
   if (!equipadas.h) {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
-    cargarModeloGLB('./Cabeza.glb', 'cabeza');
-    // Puedes cargar más modelos aquí si lo deseas
-    // cargarModeloGLB('./OtroModelo.glb', 'otro');
+    mostrarModelo('cabeza', './Cabeza.glb');
   } else {
+    ocultarModelo('cabeza');
+  }
+
+  // Pecho
+  if (!equipadas.a) {
+    renderer.domElement.style.display = 'block';
+    container.style.display = 'block';
+    mostrarModelo('pecho', './Pecho.glb');
+  } else {
+    ocultarModelo('pecho');
+  }
+
+  // Manos
+  if (!equipadas.g) {
+    renderer.domElement.style.display = 'block';
+    container.style.display = 'block';
+    mostrarModelo('manos', './Manos.glb');
+  } else {
+    ocultarModelo('manos');
+  }
+
+  // Piernas
+  if (!equipadas.l) {
+    renderer.domElement.style.display = 'block';
+    container.style.display = 'block';
+    mostrarModelo('piernas', './Piernas.glb');
+  } else {
+    ocultarModelo('piernas');
+  }
+
+  // Si todas las ranuras están equipadas, oculta el canvas
+  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
-    // Opcional: elimina otros modelos si lo deseas
-    // Object.keys(modelos3D).forEach(nombre => {
-    //   scene.remove(modelos3D[nombre]);
-    //   delete modelos3D[nombre];
-    // });
   }
 }
   </script>
