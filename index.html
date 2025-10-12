@@ -2299,8 +2299,20 @@ let scene, camera, renderer, cabezaModel, controls;
 
 function initThreeJS() {
   const container = document.getElementById('threejs-container');
-  const width = container.offsetWidth;
-  const height = container.offsetHeight;
+  // --- FIX: Forzar tamaño y visibilidad del canvas ---
+  container.style.display = 'block';
+  container.style.width = '100%';
+  container.style.height = '80vh';
+  container.style.background = 'rgba(0,0,0,0.95)';
+
+  // Si el contenedor está oculto, forzalo a visible
+  if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+    container.style.width = '600px';
+    container.style.height = '400px';
+  }
+
+  const width = container.offsetWidth || 600;
+  const height = container.offsetHeight || 400;
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000000);
@@ -2327,17 +2339,29 @@ function initThreeJS() {
   controls.target.set(0, 1.5, 0);
   controls.update();
 
-  // Cursor drag/dragging
+  // --- FIX: Cursor drag/dragging ---
   renderer.domElement.style.cursor = 'grab';
-  renderer.domElement.addEventListener('mousedown', () => {
+  renderer.domElement.addEventListener('pointerdown', () => {
     renderer.domElement.style.cursor = 'grabbing';
   });
-  renderer.domElement.addEventListener('mouseup', () => {
+  renderer.domElement.addEventListener('pointerup', () => {
     renderer.domElement.style.cursor = 'grab';
   });
-  renderer.domElement.addEventListener('mouseleave', () => {
+  renderer.domElement.addEventListener('pointerleave', () => {
     renderer.domElement.style.cursor = 'grab';
   });
+  renderer.domElement.addEventListener('pointercancel', () => {
+    renderer.domElement.style.cursor = 'grab';
+  });
+
+  // --- DEBUG: Muestra mensaje si el canvas se agrega correctamente ---
+  setTimeout(() => {
+    if (renderer.domElement && renderer.domElement.parentNode === container) {
+      console.log('Three.js canvas cargado correctamente');
+    } else {
+      console.error('Three.js canvas NO se agregó al contenedor');
+    }
+  }, 500);
 
   animate();
 }
