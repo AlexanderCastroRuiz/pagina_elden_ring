@@ -2278,7 +2278,7 @@ async function actualizarMenuSeleccionVisual() {
         const imgG = obtenerImagenPorNombre("g", sinluz.Guanteletes);
         if (imgG) mostrarEquipadaCopia("g", idx, imgG);
         // Muestra imagen equipada sobre copia de ranura L
-        const imgL = obtenerImagenPorNombre("l", sinluz.Botas);
+        const imgL = obtenerImagenPorNombre("l", botas);
         if (imgL) mostrarEquipadaCopia("l", idx, imgL);
       });
     }
@@ -2289,9 +2289,9 @@ async function actualizarMenuSeleccionVisual() {
 }
 
 // --- THREE.JS INTEGRACIÓN PARA MODELO 3D DE CABEZA ---
-// Solo deben estar estos imports (NO uses "three" ni "three/examples/..."):
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
-import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
+// Cambia los imports a la versión ES correcta del CDN Skypack (más compatible con Github Pages):
+import * as THREE from 'https://unpkg.com/three@0.153.0/build/three.module.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.153.0/examples/jsm/loaders/GLTFLoader.js';
 
 let scene, camera, renderer, cabezaModel;
 
@@ -2355,4 +2355,3 @@ window.addEventListener('DOMContentLoaded', function() {
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
-  <!-- ...existing code... -->
