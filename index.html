@@ -809,10 +809,18 @@
         // Si Three.js aún no está inicializado, inicialízalo (pero no ocultes el canvas)
         initThreeJS(function() {
           // ...no ocultar el canvas aquí...
+          // Fuerza mostrar el canvas y contenedor 3D
+          const container = document.getElementById('threejs-container');
+          if (container) container.style.display = 'block';
+          if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
           actualizarModelos3DPorRanuraH();
         });
         // Si ya está inicializado, fuerza el render y visibilidad
         if (typeof actualizarModelos3DPorRanuraH === "function") {
+          // Fuerza mostrar el canvas y contenedor 3D
+          const container = document.getElementById('threejs-container');
+          if (container) container.style.display = 'block';
+          if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
           actualizarModelos3DPorRanuraH();
         }
       }
@@ -2503,8 +2511,6 @@ function cargarModeloGLB(ruta, nombre, opciones = {}, onLoadCallback) {
 }
 
 // MODIFICAR: initThreeJS para precargar modelos antes de mostrar el menú principal
-
-
 
 
 
