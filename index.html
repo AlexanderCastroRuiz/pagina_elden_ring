@@ -465,6 +465,15 @@
   </style>
 </head>
 <body>
+  <!-- NUEVO: Loader visual -->
+  <div id="loader-modelos" style="position:fixed;z-index:3000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);">
+    <div style="color:#C9BBA1;font-size:2em;font-family:'FuentePersonalizada',sans-serif;text-align:center;">
+      Cargando modelos 3D...
+      <br>
+      <span id="loader-modelos-porcentaje" style="font-size:1.2em;color:#fff;">0%</span>
+    </div>
+  </div>
+
   <div class="base-wallpaper"></div>
   <div class="dark-overlay"></div>
   <div class="overlay-wallpaper"></div>
@@ -784,16 +793,23 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
-        document.getElementById('main-content').style.display = 'flex';
-        // Inicializa Three.js solo la primera vez
-        initThreeJS();
-        // Actualiza el modelo si la ranura H está vacía
-        actualizarModelos3DPorRanuraH();
+        // Solo muestra el menú principal cuando los modelos estén listos
+        initThreeJS(function() {
+          document.getElementById('main-content').style.display = 'flex';
+          actualizarModelos3DPorRanuraH();
+        });
       }
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-      mostrarSoloMenu('inicio');
+      // Muestra loader visual
+      document.getElementById('loader-modelos').style.display = 'flex';
+      loaderMostrado = true;
+      // Inicializa Three.js y espera a que los modelos estén listos antes de mostrar el menú principal
+      initThreeJS(function() {
+        // Cuando los modelos estén listos, muestra el menú de inicio
+        mostrarSoloMenu('inicio');
+      });
       // --- EVENTOS DE MENÚ INICIO ---
       document.getElementById('btn-identificar').addEventListener('click', async function() {
   const usuario = document.getElementById('usuario-inicio').value.trim();
@@ -2364,7 +2380,21 @@ function initThreeJS() {
   });
 
   animate();
-  actualizarModelos3DPorRanuraH();
+
+  // Muestra loader visual
+  document.getElementById('loader-modelos').style.display = 'flex';
+  loaderMostrado = true;
+
+  // Precarga todos los modelos
+  precargarTodosLosModelos(function() {
+    // Oculta loader visual
+    document.getElementById('loader-modelos').style.display = 'none';
+    loaderMostrado = false;
+    // Ahora sí muestra el menú principal
+    if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
+    // Renderiza los modelos según lo equipado
+    actualizarModelos3DPorRanuraH();
+  });
 }
 
 function animate() {
@@ -2375,6 +2405,167 @@ function animate() {
 
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
+
+// NUEVO: Lista de modelos a precargar
+const modelosParaPrecargar = [
+  { ruta: './Cabeza.glb', nombre: 'cabeza' },
+  { ruta: './H_Raging_Wolf.glb', nombre: 'H_Raging_Wolf' },
+  { ruta: './Pecho.glb', nombre: 'pecho' },
+  { ruta: './A_Raging_Wolf.glb', nombre: 'A_Raging_Wolf' },
+  { ruta: './Manos.glb', nombre: 'manos' },
+  { ruta: './G_Raging_Wolf.glb', nombre: 'G_Raging_Wolf' },
+  { ruta: './Piernas.glb', nombre: 'piernas' },
+  { ruta: './L_Raging_Wolf.glb', nombre: 'L_Raging_Wolf' }
+];
+
+// NUEVO: Estado de carga de modelos
+let modelosCargados = {};
+let totalModelos = modelosParaPrecargar.length;
+let modelosListos = 0;
+let loaderMostrado = false;
+
+// NUEVO: Precarga todos los modelos al iniciar la página
+function precargarTodosLosModelos(callback) {
+  modelosListos = 0;
+  modelosParaPrecargar.forEach((m, idx) => {
+    cargarModeloGLB(m.ruta, m.nombre, {}, function() {
+      modelosCargados[m.nombre] = true;
+      modelosListos++;
+      // Actualiza porcentaje en loader
+      const porcentaje = Math.round((modelosListos / totalModelos) * 100);
+      const loaderPorcentaje = document.getElementById('loader-modelos-porcentaje');
+      if (loaderPorcentaje) loaderPorcentaje.textContent = porcentaje + "%";
+      // Cuando todos estén listos, llama al callback
+      if (modelosListos === totalModelos) {
+        callback && callback();
+      }
+    });
+  });
+}
+
+// MODIFICAR: cargarModeloGLB para aceptar callback cuando termina de cargar
+function cargarModeloGLB(ruta, nombre, opciones = {}, onLoadCallback) {
+  if (!scene) return;
+  if (modelos3D[nombre]) {
+    scene.remove(modelos3D[nombre]);
+    delete modelos3D[nombre];
+  }
+  const loader = new GLTFLoader();
+  loader.load(
+    ruta,
+    function(gltf) {
+      const model = gltf.scene;
+      if (opciones.position) model.position.copy(opciones.position);
+      if (opciones.scale) model.scale.copy(opciones.scale);
+      if (opciones.rotation) model.rotation.copy(opciones.rotation);
+      scene.add(model);
+      modelos3D[nombre] = model;
+      // Por defecto, oculta todos los modelos al inicio
+      model.visible = false;
+      if (typeof onLoadCallback === "function") onLoadCallback();
+    },
+    undefined,
+    function(error) {
+      console.error('Error cargando modelo:', ruta, error);
+      if (typeof onLoadCallback === "function") onLoadCallback();
+    }
+  );
+}
+
+// MODIFICAR: initThreeJS para precargar modelos antes de mostrar el menú principal
+function initThreeJS(callbackMostrarMenu) {
+  if (threejsInicializado) return;
+  threejsInicializado = true;
+  const container = document.getElementById('threejs-container');
+  container.style.position = 'absolute';
+  container.style.left = '39.45vw';
+  container.style.top = '0';
+  container.style.width = '35.55vw';
+  container.style.height = '100vh';
+  container.style.background = 'transparent';
+  container.style.zIndex = '1000';
+  container.style.display = 'block';
+
+  // Usa el tamaño real del contenedor en píxeles
+  const rect = container.getBoundingClientRect();
+  const width = rect.width;
+  const height = rect.height;
+
+  scene = new THREE.Scene();
+  scene.background = null;
+
+  camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+  camera.position.set(0, 1.5, 7); // Más lejos para ver el modelo completo
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(width, height);
+  renderer.setClearColor(0x000000, 0);
+  renderer.domElement.style.display = 'block';
+  renderer.domElement.style.position = 'absolute';
+  renderer.domElement.style.top = '0';
+  renderer.domElement.style.left = '0';
+  renderer.domElement.style.width = '100%';
+  renderer.domElement.style.height = '100%';
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+  dirLight.position.set(2, 5, 3);
+  scene.add(dirLight);
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 2;
+  controls.maxDistance = 20;
+  controls.target.set(0, 1.5, 0);
+  controls.update();
+  controls.enablePan = true; // Permite rotar la cámara
+
+  renderer.domElement.style.cursor = 'grab';
+  renderer.domElement.addEventListener('pointerdown', () => {
+    renderer.domElement.style.cursor = 'grabbing';
+  });
+  renderer.domElement.addEventListener('pointerup', () => {
+    renderer.domElement.style.cursor = 'grab';
+  });
+  renderer.domElement.addEventListener('pointerleave', () => {
+    renderer.domElement.style.cursor = 'grab';
+  });
+  renderer.domElement.addEventListener('pointercancel', () => {
+    renderer.domElement.style.cursor = 'grab';
+  });
+
+  // Redimensiona el entorno 3D si la ventana cambia de tamaño
+  window.addEventListener('resize', () => {
+    const rect = container.getBoundingClientRect();
+    camera.aspect = rect.width / rect.height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(rect.width, rect.height);
+  });
+
+  animate();
+  // Muestra loader visual
+  document.getElementById('loader-modelos').style.display = 'flex';
+  loaderMostrado = true;
+
+  // Precarga todos los modelos
+  precargarTodosLosModelos(function() {
+    // Oculta loader visual
+    document.getElementById('loader-modelos').style.display = 'none';
+    loaderMostrado = false;
+    // Ahora sí muestra el menú principal
+    if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
+    // Renderiza los modelos según lo equipado
+    actualizarModelos3DPorRanuraH();
+  });
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls && controls.update();
+  renderer.render(scene, camera);
+}
 
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
@@ -2503,6 +2694,4 @@ function actualizarModelos3DPorRanuraH() {
   }
 }
   </script>
-  <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
+<!-- ...existing code... -->
