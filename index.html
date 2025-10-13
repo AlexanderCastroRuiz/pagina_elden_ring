@@ -315,7 +315,7 @@
       z-index: 4;
       /* El tamaño y posición se ajustan dinámicamente por JS */
     }
-    
+
     #atributo-nombre          { position: absolute; left: 790px; top: 97px;  font-size: 1.5em;  width: 290px; color: #D0D0D0; }
     #atributo-fisico          { position: absolute; left:   920px; top: 247px; font-size: 1em; width: 60px; color: #D0D0D0; }
     #atributo-golpe           { position: absolute; left:  920px; top: 272px; font-size: 1em; width: 60px; color: #D0D0D0; }
@@ -475,7 +475,7 @@
     </div>
     <div class="columna-b">
       <!-- NUEVO: Contenedor Three.js para modelos 3D -->
-      <div id="threejs-container" style="position:absolute; left:39.45vw; top:0; width:35.55vw; height:100vh; z-index:1000; background:transparent; display:none;"></div>
+      <div id="threejs-container" style="position:absolute; left:39.45vw; top:0; width:35.55vw; height:100vh; z-index:1000; background:transparent;"></div>
     </div>
     <div class="columna-c">
       <div id="columna-c-contenido"></div>
@@ -695,7 +695,6 @@
       document.getElementById('menu-inicio').style.display = 'none';
       document.getElementById('menu-seleccion').style.display = 'none';
       document.getElementById('main-content').style.display = 'none';
-      document.getElementById('threejs-container').style.display = 'none';
       if (menu === 'inicio') {
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
@@ -703,29 +702,15 @@
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
         document.getElementById('main-content').style.display = 'flex';
-        document.getElementById('threejs-container').style.display = 'block';
-        // Fuerza la actualización y visibilidad de los modelos 3D
+        // Inicializa Three.js solo la primera vez
+        initThreeJS();
+        // Actualiza el modelo si la ranura H está vacía
         actualizarModelos3DPorRanuraH();
-        // Asegura que el renderer esté visible
-        if (renderer && renderer.domElement) {
-          renderer.domElement.style.display = 'block';
-        }
-        // Si no hay nada equipado, fuerza la carga de modelos base
-        if (
-          (!equipadas.h && !equipadas.a && !equipadas.g && !equipadas.l) ||
-          (!equipadas.h && !equipadas.a && !equipadas.g) ||
-          (!equipadas.h && !equipadas.a) ||
-          (!equipadas.h)
-        ) {
-          actualizarModelos3DPorRanuraH();
-        }
       }
     }
 
     window.addEventListener('DOMContentLoaded', function() {
       mostrarSoloMenu('inicio');
-      // Inicializa Three.js al inicio de la página
-      initThreeJS();
       // --- EVENTOS DE MENÚ INICIO ---
       document.getElementById('btn-identificar').addEventListener('click', async function() {
   const usuario = document.getElementById('usuario-inicio').value.trim();
@@ -1195,6 +1180,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
+
     txt.textContent = "Desequipar";
   }
 }
@@ -1391,7 +1377,7 @@ function volverMenuRanuras() {
         {
           nombre: "Guanteletes de Lobo Furioso",
           fisico: 3.2, 
-          
+
           golpe: 2.8, 
           tajo: 3.2, 
           puncion: 3.1, 
@@ -1575,7 +1561,7 @@ function volverMenuRanuras() {
             const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Guanteletes`;
             set(ref(db, sinluzPath), "Guanteletes de Lobo Furioso");
           }
-      
+
         }
 
         // Actualiza Botas en la base de datos si corresponde
@@ -2034,7 +2020,7 @@ function volverMenuRanuras() {
     document.getElementById("ranura-l").addEventListener("mouseleave", function(){});
     document.getElementById("ranura-mano-izq").addEventListener("mouseleave", function(){});
     document.getElementById("ranura-mano-der").addEventListener("mouseleave", function(){});
-  
+
     // Variable global para saber qué Sinluz está seleccionado
     let sinluzSeleccionado = null;
 
@@ -2235,6 +2221,7 @@ function initThreeJS() {
   container.style.height = '100vh';
   container.style.background = 'transparent';
   container.style.zIndex = '1000';
+  container.style.display = 'block';
 
   // Usa el tamaño real del contenedor en píxeles
   const rect = container.getBoundingClientRect();
@@ -2245,7 +2232,7 @@ function initThreeJS() {
   scene.background = null;
 
   camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-  camera.position.set(0, 1.5, 2.8); // <--- Acerca el zoom (antes era 3)
+  camera.position.set(0, 1.5, 2.8); // Más lejos para ver el modelo completo
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(width, height);
@@ -2369,7 +2356,7 @@ function actualizarModelos3DPorRanuraH() {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
   } else {
-    ocultarModelo('cabeza');
+    ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
     if (equipadas.h.split('/').pop() === 'wolf-h.png') {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
     } else {
@@ -2445,16 +2432,17 @@ function actualizarModelos3DPorRanuraH() {
     }
   }
 
-  // Siempre muestra el entorno y modelos si estamos en el menú principal
-  if (document.getElementById('main-content').style.display === 'flex') {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
-  } else {
+  // Si todas las ranuras están equipadas, puedes ocultar el canvas si lo deseas
+  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
+  } else {
+    renderer.domElement.style.display = 'block';
+    container.style.display = 'block';
   }
 }
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
+
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
