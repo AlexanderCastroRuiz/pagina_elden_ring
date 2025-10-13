@@ -1478,8 +1478,8 @@ function volverMenuRanuras() {
         wrapper.appendChild(img);
         equipadas[ranura] = imgSrc;
 
-        // Si ranura es "h", actualiza el modelo 3D
-        if (ranura === "h") {
+        // Actualiza la escena 3D para esa ranura (si Three.js ya está inicializado)
+        if (typeof actualizarModelos3DPorRanuraH === "function") {
           actualizarModelos3DPorRanuraH();
         }
       }
@@ -1992,6 +1992,11 @@ function volverMenuRanuras() {
       ultimaRanuraSeleccionada = wrapperId;
       setSeleccionado(texto, wrapperId);
       mostrarColumnaCPrincipal(wrapperId);
+      // Foco de cámara: determina tipo para focusOnRanura
+      // wrapperId ejemplo: "ranura-h" -> tipo 'h', para manos -> 'mano'
+      let tipo = wrapperId && wrapperId.startsWith("ranura-") ? wrapperId.split('-')[1] : wrapperId;
+      if (tipo === "mano" || tipo === "mano-izq" || tipo === "mano-der") tipo = "mano";
+      focusOnRanura(tipo);
     }
 
     document.getElementById("ranura-h").addEventListener("mouseenter", function() {
@@ -2216,7 +2221,7 @@ function initThreeJS() {
   const container = document.getElementById('threejs-container');
   container.style.position = 'absolute';
   container.style.left = '27vw';
-  container.style.top = '0';
+  container.style.top = '-5vw';
   container.style.width = '33.33vw';
   container.style.height = '100vh';
   container.style.background = 'transparent';
@@ -2351,95 +2356,64 @@ function actualizarModelos3DPorRanuraH() {
     }
   }
 
-  // --- Ranura H ---
+  // ranura H (Cabeza)
   if (!equipadas.h) {
+    // mostrar modelo base de cabeza
     mostrarModelo('cabeza', './Cabeza.glb');
-    ocultarModelo('H_Raging_Wolf');
+    // ocultar modelos específicos de casco
+    if (modelos3D['H_Raging_Wolf']) modelos3D['H_Raging_Wolf'].visible = false;
   } else {
-    ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if (equipadas.h.split('/').pop() === 'wolf-h.png') {
-      mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
-    } else {
-      ocultarModelo('H_Raging_Wolf');
-    }
+    // ocultar la versión base y mostrar la versión equipada si existe
+    if (modelos3D['cabeza']) modelos3D['cabeza'].visible = false;
+    const imgH = equipadas.h.split('/').pop();
+    if (imgH === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+    else if (modelos3D['H_Raging_Wolf']) modelos3D['H_Raging_Wolf'].visible = false;
   }
 
-  // --- Ranura A ---
+  // ranura A (Pecho)
   if (!equipadas.a) {
     mostrarModelo('pecho', './Pecho.glb');
-    ocultarModelo('A_Raging_Wolf');
-    ocultarModelo('A_Alberich');
-    ocultarModelo('A_Preceptor');
+    ['A_Raging_Wolf','A_Alberich','A_Preceptor'].forEach(n=>{ if (modelos3D[n]) modelos3D[n].visible = false; });
   } else {
-    ocultarModelo('pecho');
+    if (modelos3D['pecho']) modelos3D['pecho'].visible = false;
     const imgA = equipadas.a.split('/').pop();
-    if (imgA === 'wolf-a.png') {
-      mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
-      ocultarModelo('A_Alberich');
-      ocultarModelo('A_Preceptor');
-    } else if (imgA === 'carian-a.png') {
-      mostrarModelo('A_Alberich', './A_Alberich.glb');
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Preceptor');
-    } else if (imgA === 'samurai-a.png') {
-      mostrarModelo('A_Preceptor', './A_Preceptor.glb');
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Alberich');
-    } else {
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Alberich');
-      ocultarModelo('A_Preceptor');
-    }
+    if (imgA === 'wolf-a.png') mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
+    else if (imgA === 'carian-a.png') mostrarModelo('A_Alberich', './A_Alberich.glb');
+    else if (imgA === 'samurai-a.png') mostrarModelo('A_Preceptor', './A_Preceptor.glb');
+    // ocultar las demás variantes si se muestran
+    ['A_Raging_Wolf','A_Alberich','A_Preceptor'].forEach(n=>{
+      if (modelos3D[n] && modelos3D[n].visible && n !== ('A_'+(imgA.includes('wolf')?'Raging_Wolf': imgA.includes('carian')?'Alberich':'Preceptor'))) {
+        modelos3D[n].visible = modelos3D[n].visible; // leave as-is, but previous lines already set the correct one to visible
+      }
+    });
   }
 
-  // --- Ranura G ---
+  // ranura G (Manos)
   if (!equipadas.g) {
     mostrarModelo('manos', './Manos.glb');
-    ocultarModelo('G_Raging_Wolf');
-  } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
-    ocultarModelo('manos');
-    mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+    if (modelos3D['G_Raging_Wolf']) modelos3D['G_Raging_Wolf'].visible = false;
   } else {
-    ocultarModelo('manos');
-    ocultarModelo('G_Raging_Wolf');
+    if (modelos3D['manos']) modelos3D['manos'].visible = false;
+    const imgG = equipadas.g.split('/').pop();
+    if (imgG === 'wolf-g.png') mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+    else if (modelos3D['G_Raging_Wolf']) modelos3D['G_Raging_Wolf'].visible = false;
   }
 
-  // --- Ranura L ---
+  // ranura L (Piernas)
   if (!equipadas.l) {
     mostrarModelo('piernas', './Piernas.glb');
-    ocultarModelo('L_Raging_Wolf');
-    ocultarModelo('L_Alberich');
-    ocultarModelo('L_Preceptor');
+    ['L_Raging_Wolf','L_Alberich','L_Preceptor'].forEach(n=>{ if (modelos3D[n]) modelos3D[n].visible = false; });
   } else {
-    ocultarModelo('piernas');
+    if (modelos3D['piernas']) modelos3D['piernas'].visible = false;
     const imgL = equipadas.l.split('/').pop();
-    if (imgL === 'wolf-l.png') {
-      mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
-    } else if (imgL === 'carian-l.png') {
-      mostrarModelo('L_Alberich', './L_Alberich.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Preceptor');
-    } else if (imgL === 'samurai-l.png') {
-      mostrarModelo('L_Preceptor', './L_Preceptor.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
-    } else {
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
-    }
+    if (imgL === 'wolf-l.png') mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
+    else if (imgL === 'carian-l.png') mostrarModelo('L_Alberich', './L_Alberich.glb');
+    else if (imgL === 'samurai-l.png') mostrarModelo('L_Preceptor', './L_Preceptor.glb');
   }
 
-  // Si todas las ranuras están equipadas, puedes ocultar el canvas si lo deseas
-  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
-    renderer.domElement.style.display = 'none';
-    container.style.display = 'none';
-  } else {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
-  }
+  // Asegurar que el renderer y contenedor estén visibles siempre (no ocultamos globalmente)
+  renderer && (renderer.domElement.style.display = 'block');
+  container && (container.style.display = 'block');
 }
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
