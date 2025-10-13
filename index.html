@@ -789,18 +789,32 @@
       document.getElementById('main-content').style.display = 'none';
       if (menu === 'inicio') {
         document.getElementById('menu-inicio').style.display = 'flex';
+        // Oculta el canvas y contenedor 3D si no es el menú principal
+        const container = document.getElementById('threejs-container');
+        if (container) container.style.display = 'none';
+        if (renderer && renderer.domElement) renderer.domElement.style.display = 'none';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
+        // Oculta el canvas y contenedor 3D si no es el menú principal
+        const container = document.getElementById('threejs-container');
+        if (container) container.style.display = 'none';
+        if (renderer && renderer.domElement) renderer.domElement.style.display = 'none';
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
-        // Asegura que el contenedor y canvas 3D estén visibles al mostrar el menú principal
+        // Muestra el menú principal y el canvas/3D
+        document.getElementById('main-content').style.display = 'flex';
+        const container = document.getElementById('threejs-container');
+        if (container) container.style.display = 'block';
+        if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
+        // Si Three.js aún no está inicializado, inicialízalo (pero no ocultes el canvas)
         initThreeJS(function() {
-          document.getElementById('main-content').style.display = 'flex';
-          const container = document.getElementById('threejs-container');
-          if (container) container.style.display = 'block';
-          if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
+          // ...no ocultar el canvas aquí...
           actualizarModelos3DPorRanuraH();
         });
+        // Si ya está inicializado, fuerza el render y visibilidad
+        if (typeof actualizarModelos3DPorRanuraH === "function") {
+          actualizarModelos3DPorRanuraH();
+        }
       }
     }
 
@@ -2401,6 +2415,7 @@ function initThreeJS(callbackMostrarMenu) {
     document.getElementById('loader-modelos').style.display = 'none';
     loaderMostrado = false;
     // Muestra el contenedor y canvas 3D
+    const container = document.getElementById('threejs-container');
     if (container) {
       container.style.display = 'block';
       if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
