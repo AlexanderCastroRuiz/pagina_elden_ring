@@ -475,7 +475,7 @@
     </div>
     <div class="columna-b">
       <!-- NUEVO: Contenedor Three.js para modelos 3D -->
-      <div id="threejs-container" style="position:absolute; left:39.45vw; top:0; width:35.55vw; height:100vh; z-index:1000; background:transparent"></div>
+      <div id="threejs-container" style="position:absolute; left:39.45vw; top:0; width:35.55vw; height:100vh; z-index:1000; background:transparent; display:none;"></div>
     </div>
     <div class="columna-c">
       <div id="columna-c-contenido"></div>
@@ -2225,7 +2225,6 @@ function initThreeJS() {
   container.style.height = '100vh';
   container.style.background = 'transparent';
   container.style.zIndex = '1000';
-  container.style.display = 'block';
 
   // Usa el tamaño real del contenedor en píxeles
   const rect = container.getBoundingClientRect();
@@ -2448,5 +2447,4 @@ function actualizarModelos3DPorRanuraH() {
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
-
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
