@@ -2332,6 +2332,12 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
 
       scene.add(model);
       modelos3D[nombre] = model;
+      // --- NUEVO: fuerza visibilidad si el menú principal está activo ---
+      if (document.getElementById('main-content').style.display === 'flex') {
+        model.visible = true;
+      } else {
+        model.visible = false;
+      }
     },
     undefined,
     function(error) {
