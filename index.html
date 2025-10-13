@@ -2298,40 +2298,24 @@ const modelos3D = {}; // { nombre: objeto3D }
 
 // NUEVO: decide si un modelo debe mostrarse según el estado actual de `equipadas`
 function modeloDebeEstarVisible(nombre) {
-  // normalizar nombre para comparaciones insensibles a mayúsculas/minúsculas y sufijos
-  const n = String(nombre || "").toLowerCase();
   // Ranura H
-  if (n.includes('cabeza') || n.includes('head')) return !equipadas.h;
-  if (n.includes('h_raging_wolf'.toLowerCase()) || n.includes('raging_wolf') || n.includes('h_raging')) return (equipadas.h && equipadas.h.split('/').pop() === 'wolf-h.png');
+  if (nombre === 'cabeza') return !equipadas.h;
+  if (nombre === 'H_Raging_Wolf') return (equipadas.h && equipadas.h.split('/').pop() === 'wolf-h.png');
   // Ranura A
-  if (n.includes('pecho') || n.includes('chest') || n.includes('torso')) return !equipadas.a;
-  if (n.includes('a_raging_wolf'.toLowerCase()) || n.includes('a_raging') ) return (equipadas.a && equipadas.a.split('/').pop() === 'wolf-a.png');
-  if (n.includes('a_alberich') || n.includes('alberich')) return (equipadas.a && equipadas.a.split('/').pop() === 'carian-a.png');
-  if (n.includes('a_preceptor') || n.includes('preceptor') || n.includes('samurai')) return (equipadas.a && equipadas.a.split('/').pop() === 'samurai-a.png');
+  if (nombre === 'pecho') return !equipadas.a;
+  if (nombre === 'A_Raging_Wolf') return (equipadas.a && equipadas.a.split('/').pop() === 'wolf-a.png');
+  if (nombre === 'A_Alberich') return (equipadas.a && equipadas.a.split('/').pop() === 'carian-a.png');
+  if (nombre === 'A_Preceptor') return (equipadas.a && equipadas.a.split('/').pop() === 'samurai-a.png');
   // Ranura G
-  if (n.includes('manos') || n.includes('hands')) return !equipadas.g;
-  if (n.includes('g_raging_wolf') || n.includes('g_raging') ) return (equipadas.g && equipadas.g.split('/').pop() === 'wolf-g.png');
+  if (nombre === 'manos') return !equipadas.g;
+  if (nombre === 'G_Raging_Wolf') return (equipadas.g && equipadas.g.split('/').pop() === 'wolf-g.png');
   // Ranura L
-  if (n.includes('piernas') || n.includes('legs')) return !equipadas.l;
-  if (n.includes('l_raging_wolf') || n.includes('l_raging') ) return (equipadas.l && equipadas.l.split('/').pop() === 'wolf-l.png');
-  if (n.includes('l_alberich') || n.includes('alberich')) return (equipadas.l && equipadas.l.split('/').pop() === 'carian-l.png');
-  if (n.includes('l_preceptor') || n.includes('preceptor') || n.includes('samurai')) return (equipadas.l && equipadas.l.split('/').pop() === 'samurai-l.png');
+  if (nombre === 'piernas') return !equipadas.l;
+  if (nombre === 'L_Raging_Wolf') return (equipadas.l && equipadas.l.split('/').pop() === 'wolf-l.png');
+  if (nombre === 'L_Alberich') return (equipadas.l && equipadas.l.split('/').pop() === 'carian-l.png');
+  if (nombre === 'L_Preceptor') return (equipadas.l && equipadas.l.split('/').pop() === 'samurai-l.png');
   // Por defecto, oculto hasta que se decida
   return false;
-}
-
-// NUEVO: actualiza la visibilidad de todos los modelos cargados según la lógica
-function actualizarModelos3D() {
-  try {
-    Object.keys(modelos3D).forEach(nombre => {
-      const modelo = modelos3D[nombre];
-      if (!modelo) return;
-      // decide visibilidad por nombre (la función es robusta ante mayúsculas/minúsculas y sufijos)
-      modelo.visible = modeloDebeEstarVisible(nombre);
-    });
-  } catch (e) {
-    console.error('Error en actualizarModelos3D:', e);
-  }
 }
 
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
@@ -2360,8 +2344,6 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
       // Ajusta visibilidad final según la lógica de equipadas (si corresponde)
       try {
         modelos3D[nombre].visible = modeloDebeEstarVisible(nombre);
-        // Asegura coherencia entre todos los modelos (ocultar base cuando exista su variante equipada)
-        actualizarModelos3D();
       } catch (e) {
         // no bloqueamos la carga por errores de visibilidad
         console.error('Error ajustando visibilidad del modelo', nombre, e);
