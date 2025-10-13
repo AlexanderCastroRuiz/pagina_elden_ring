@@ -1263,7 +1263,8 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                                                                                                                                       txt.textContent = "Desequipar";
+                                                                                                                                
+    txt.textContent = "Desequipar";
   }
 }
 
@@ -2432,74 +2433,93 @@ function actualizarModelos3DPorRanuraH() {
     }
   }
 
-  // Cabeza
+  // --- Ranura H ---
   if (!equipadas.h) {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
+  } else if (equipadas.h.split('/').pop() === 'wolf-h.png') {
+    ocultarModelo('cabeza');
+    mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
   } else {
     ocultarModelo('cabeza');
-    // Si la imagen equipada es wolf-h.png, muestra H_Raging_Wolf.glb
-    if (equipadas.h && equipadas.h.split('/').pop() === 'wolf-h.png') {
-      mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
-    } else {
-      ocultarModelo('H_Raging_Wolf');
-    }
+    ocultarModelo('H_Raging_Wolf');
   }
 
-  // Pecho
+  // --- Ranura A ---
   if (!equipadas.a) {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
     mostrarModelo('pecho', './Pecho.glb');
     ocultarModelo('A_Raging_Wolf');
+    ocultarModelo('A_Alberich');
+    ocultarModelo('A_Preceptor');
   } else {
     ocultarModelo('pecho');
-    // Si la imagen equipada es wolf-a.png, muestra A_Raging_Wolf.glb
-    if (equipadas.a && equipadas.a.split('/').pop() === 'wolf-a.png') {
+    const imgA = equipadas.a.split('/').pop();
+    if (imgA === 'wolf-a.png') {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
+      ocultarModelo('A_Alberich');
+      ocultarModelo('A_Preceptor');
+    } else if (imgA === 'carian-a.png') {
+      mostrarModelo('A_Alberich', './A_Alberich.glb');
+      ocultarModelo('A_Raging_Wolf');
+      ocultarModelo('A_Preceptor');
+    } else if (imgA === 'samurai-a.png') {
+      mostrarModelo('A_Preceptor', './A_Preceptor.glb');
+      ocultarModelo('A_Raging_Wolf');
+      ocultarModelo('A_Alberich');
     } else {
       ocultarModelo('A_Raging_Wolf');
+      ocultarModelo('A_Alberich');
+      ocultarModelo('A_Preceptor');
     }
   }
 
-  // Manos
+  // --- Ranura G ---
   if (!equipadas.g) {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
+  } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
+    ocultarModelo('manos');
+    mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
   } else {
     ocultarModelo('manos');
-    // Si la imagen equipada es wolf-g.png, muestra G_Raging_Wolf.glb
-    if (equipadas.g && equipadas.g.split('/').pop() === 'wolf-g.png') {
-      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
-    } else {
-      ocultarModelo('G_Raging_Wolf');
-    }
+    ocultarModelo('G_Raging_Wolf');
   }
 
-  // Piernas
+  // --- Ranura L ---
   if (!equipadas.l) {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
     mostrarModelo('piernas', './Piernas.glb');
     ocultarModelo('L_Raging_Wolf');
+    ocultarModelo('L_Alberich');
+    ocultarModelo('L_Preceptor');
   } else {
     ocultarModelo('piernas');
-    // Si la imagen equipada es wolf-l.png, muestra L_Raging_Wolf.glb
-    if (equipadas.l && equipadas.l.split('/').pop() === 'wolf-l.png') {
+    const imgL = equipadas.l.split('/').pop();
+    if (imgL === 'wolf-l.png') {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
+    } else if (imgL === 'carian-l.png') {
+      mostrarModelo('L_Alberich', './L_Alberich.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Preceptor');
+    } else if (imgL === 'samurai-l.png') {
+      mostrarModelo('L_Preceptor', './L_Preceptor.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
     } else {
       ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
     }
   }
 
-  // Si todas las ranuras están equipadas, oculta el canvas
+  // Si todas las ranuras están equipadas, puedes ocultar el canvas si lo deseas
   if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
+  } else {
+    renderer.domElement.style.display = 'block';
+    container.style.display = 'block';
   }
 }
   </script>
