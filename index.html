@@ -1492,10 +1492,8 @@ function volverMenuRanuras() {
         wrapper.appendChild(img);
         equipadas[ranura] = imgSrc;
 
-        // Si ranura es "h", actualiza el modelo 3D
-        if (ranura === "h") {
-          actualizarModelos3DPorRanuraH();
-        }
+        // Fuerza la actualización de modelos 3D para cualquier ranura
+        actualizarModelos3DPorRanuraH();
       }
     }
 
@@ -2449,9 +2447,13 @@ function actualizarModelos3DPorRanuraH() {
   if (document.getElementById('main-content').style.display === 'flex') {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
+    // Fuerza la visibilidad de todos los modelos cargados
+    Object.values(modelos3D).forEach(model => { if (model) model.visible = true; });
   } else {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
+    // Oculta todos los modelos si no estamos en el menú principal
+    Object.values(modelos3D).forEach(model => { if (model) model.visible = false; });
   }
 }
   </script>
