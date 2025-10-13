@@ -2232,7 +2232,7 @@ function initThreeJS() {
   scene.background = null;
 
   camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-  camera.position.set(0, 1.5, 4); // Más lejos para ver el modelo completo
+  camera.position.set(0, 1.5, 2.5); // Más lejos para ver el modelo completo
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(width, height);
@@ -2446,6 +2446,7 @@ function actualizarModelos3DPorRanuraH() {
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
 
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
+
 
 
 
