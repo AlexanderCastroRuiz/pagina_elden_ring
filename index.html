@@ -2295,20 +2295,63 @@ function animate() {
 
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
+// NUEVO: tokens de carga para evitar callbacks obsoletos
+const cargaTokens = {}; // { nombre: token }
 
+// NUEVO: función para liberar geometrías/materiales de un objeto THREE
+function disposeObject3D(obj) {
+  if (!obj) return;
+  obj.traverse((child) => {
+    if (child.isMesh) {
+      if (child.geometry) {
+        child.geometry.dispose();
+      }
+      if (child.material) {
+        const mat = child.material;
+        // material puede ser array o único
+        if (Array.isArray(mat)) {
+          mat.forEach(m => {
+            if (m.map) { m.map.dispose(); }
+            m.dispose();
+          });
+        } else {
+          if (mat.map) { mat.map.dispose(); }
+          mat.dispose();
+        }
+      }
+    }
+  });
+}
+
+// NUEVO: función para cargar modelos GLB con token y limpieza de callbacks obsoletos
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
-  // Si ya existe un modelo con ese nombre, elimínalo antes
+  // Genera token único para esta carga
+  const token = Symbol(nombre);
+  cargaTokens[nombre] = token;
+
+  // Si ya existe un modelo registrado, elimínalo y distribuye recursos
   if (modelos3D[nombre]) {
-    scene.remove(modelos3D[nombre]);
+    try {
+      scene.remove(modelos3D[nombre]);
+      disposeObject3D(modelos3D[nombre]);
+    } catch (e) { /* ignore */ }
     delete modelos3D[nombre];
   }
+
   const loader = new GLTFLoader();
   loader.load(
     ruta,
     function(gltf) {
+      // Si el token actual cambió, descartar este resultado (carga obsoleta)
+      if (cargaTokens[nombre] !== token) {
+        // No añadir a la escena ni conservar referencias
+        return;
+      }
+
       const model = gltf.scene;
-      // NO modificar posición, escala ni rotación por defecto
+
+      // Aplica opciones si vienen
       if (opciones.position) model.position.copy(opciones.position);
       if (opciones.scale) model.scale.copy(opciones.scale);
       if (opciones.rotation) model.rotation.copy(opciones.rotation);
@@ -2322,44 +2365,19 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
 
       let visible = true;
       switch (nombre) {
-        case 'cabeza':
-          visible = !hImg;
-          break;
-        case 'H_Raging_Wolf':
-          visible = hImg === 'wolf-h.png';
-          break;
-        case 'pecho':
-          visible = !aImg;
-          break;
-        case 'A_Raging_Wolf':
-          visible = aImg === 'wolf-a.png';
-          break;
-        case 'A_Alberich':
-          visible = aImg === 'carian-a.png';
-          break;
-        case 'A_Preceptor':
-          visible = aImg === 'samurai-a.png';
-          break;
-        case 'manos':
-          visible = !gImg;
-          break;
-        case 'G_Raging_Wolf':
-          visible = gImg === 'wolf-g.png';
-          break;
-        case 'piernas':
-          visible = !lImg;
-          break;
-        case 'L_Raging_Wolf':
-          visible = lImg === 'wolf-l.png';
-          break;
-        case 'L_Alberich':
-          visible = lImg === 'carian-l.png';
-          break;
-        case 'L_Preceptor':
-          visible = lImg === 'samurai-l.png';
-          break;
-        default:
-          visible = true;
+        case 'cabeza': visible = !hImg; break;
+        case 'H_Raging_Wolf': visible = hImg === 'wolf-h.png'; break;
+        case 'pecho': visible = !aImg; break;
+        case 'A_Raging_Wolf': visible = aImg === 'wolf-a.png'; break;
+        case 'A_Alberich': visible = aImg === 'carian-a.png'; break;
+        case 'A_Preceptor': visible = aImg === 'samurai-a.png'; break;
+        case 'manos': visible = !gImg; break;
+        case 'G_Raging_Wolf': visible = gImg === 'wolf-g.png'; break;
+        case 'piernas': visible = !lImg; break;
+        case 'L_Raging_Wolf': visible = lImg === 'wolf-l.png'; break;
+        case 'L_Alberich': visible = lImg === 'carian-l.png'; break;
+        case 'L_Preceptor': visible = lImg === 'samurai-l.png'; break;
+        default: visible = true;
       }
 
       model.visible = visible;
@@ -2377,6 +2395,8 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
     },
     undefined,
     function(error) {
+      // Si la carga falla y el token sigue siendo el actual, limpia token para evitar retries obsoletos
+      if (cargaTokens[nombre] === token) delete cargaTokens[nombre];
       console.error('Error cargando modelo:', ruta, error);
     }
   );
