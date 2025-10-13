@@ -710,9 +710,12 @@
         if (renderer && renderer.domElement) {
           renderer.domElement.style.display = 'block';
         }
-        // Fuerza mostrar modelos base si no hay nada equipado
+        // Si no hay nada equipado, fuerza la carga de modelos base
         if (
-          !equipadas.h && !equipadas.a && !equipadas.g && !equipadas.l
+          (!equipadas.h && !equipadas.a && !equipadas.g && !equipadas.l) ||
+          (!equipadas.h && !equipadas.a && !equipadas.g) ||
+          (!equipadas.h && !equipadas.a) ||
+          (!equipadas.h)
         ) {
           actualizarModelos3DPorRanuraH();
         }
@@ -1248,7 +1251,7 @@ function volverMenuRanuras() {
     // Ya no se limpia el texto ni el dorado al salir del botón
 
     // Asignar click a cada ranura
-    document.getElementId("ranura-h").addEventListener("click", function() {
+    document.getElementById("ranura-h").addEventListener("click", function() {
       mostrarAlmacenMenu("h");
     });
     document.getElementById("ranura-a").addEventListener("click", function() {
@@ -2446,15 +2449,6 @@ function actualizarModelos3DPorRanuraH() {
   if (document.getElementById('main-content').style.display === 'flex') {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
-    // Fuerza visibilidad de todos los modelos base si no hay nada equipado
-    if (
-      !equipadas.h && !equipadas.a && !equipadas.g && !equipadas.l
-    ) {
-      mostrarModelo('cabeza', './Cabeza.glb');
-      mostrarModelo('pecho', './Pecho.glb');
-      mostrarModelo('manos', './Manos.glb');
-      mostrarModelo('piernas', './Piernas.glb');
-    }
   } else {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
