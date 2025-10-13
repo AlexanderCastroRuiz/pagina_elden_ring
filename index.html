@@ -2296,6 +2296,28 @@ function animate() {
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
 
+// NUEVO: decide si un modelo debe mostrarse según el estado actual de `equipadas`
+function modeloDebeEstarVisible(nombre) {
+  // Ranura H
+  if (nombre === 'cabeza') return !equipadas.h;
+  if (nombre === 'H_Raging_Wolf') return (equipadas.h && equipadas.h.split('/').pop() === 'wolf-h.png');
+  // Ranura A
+  if (nombre === 'pecho') return !equipadas.a;
+  if (nombre === 'A_Raging_Wolf') return (equipadas.a && equipadas.a.split('/').pop() === 'wolf-a.png');
+  if (nombre === 'A_Alberich') return (equipadas.a && equipadas.a.split('/').pop() === 'carian-a.png');
+  if (nombre === 'A_Preceptor') return (equipadas.a && equipadas.a.split('/').pop() === 'samurai-a.png');
+  // Ranura G
+  if (nombre === 'manos') return !equipadas.g;
+  if (nombre === 'G_Raging_Wolf') return (equipadas.g && equipadas.g.split('/').pop() === 'wolf-g.png');
+  // Ranura L
+  if (nombre === 'piernas') return !equipadas.l;
+  if (nombre === 'L_Raging_Wolf') return (equipadas.l && equipadas.l.split('/').pop() === 'wolf-l.png');
+  if (nombre === 'L_Alberich') return (equipadas.l && equipadas.l.split('/').pop() === 'carian-l.png');
+  if (nombre === 'L_Preceptor') return (equipadas.l && equipadas.l.split('/').pop() === 'samurai-l.png');
+  // Por defecto, oculto hasta que se decida
+  return false;
+}
+
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
   // Si ya existe un modelo con ese nombre, elimínalo antes
@@ -2308,19 +2330,24 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
     ruta,
     function(gltf) {
       const model = gltf.scene;
-      // NO modificar posición, escala ni rotación por defecto
-      // Si quieres opciones personalizadas, descomenta y usa solo si se pasan explícitamente
+      // Mantener opciones si se pasan
       if (opciones.position) model.position.copy(opciones.position);
       if (opciones.scale) model.scale.copy(opciones.scale);
       if (opciones.rotation) model.rotation.copy(opciones.rotation);
 
-      // Centrado automático: ELIMINADO para respetar la ubicación original del modelo
-      // let box = new THREE.Box3().setFromObject(model);
-      // let center = box.getCenter(new THREE.Vector3());
-      // model.position.sub(center);
-
+      // Inserta en la escena pero controlando visibilidad según el estado de ranuras
+      // Por seguridad, inicializamos siempre como invisible y luego ajustamos según la regla
+      model.visible = false;
       scene.add(model);
       modelos3D[nombre] = model;
+
+      // Ajusta visibilidad final según la lógica de equipadas (si corresponde)
+      try {
+        modelos3D[nombre].visible = modeloDebeEstarVisible(nombre);
+      } catch (e) {
+        // no bloqueamos la carga por errores de visibilidad
+        console.error('Error ajustando visibilidad del modelo', nombre, e);
+      }
     },
     undefined,
     function(error) {
@@ -2329,119 +2356,21 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
   );
 }
 
-// Ejemplo de uso para cargar varios modelos:
-// cargarModeloGLB('./Cabeza.glb', 'cabeza');
-// cargarModeloGLB('./OtroModelo.glb', 'otro', { position: new THREE.Vector3(0,2,0), scale: new THREE.Vector3(1,1,1) });
-
-// Reemplazo: función renombrada para actualización independiente por ranura
-function actualizarModelos3D() {
-  if (!scene || !renderer) return;
-  const container = document.getElementById('threejs-container');
-
-  function mostrarModelo(nombre, ruta) {
-    if (!modelos3D[nombre]) {
-      cargarModeloGLB(ruta, nombre);
-    }
-    if (modelos3D[nombre]) {
-      modelos3D[nombre].visible = true;
-    }
+function mostrarModelo(nombre, ruta) {
+  if (!modelos3D[nombre]) {
+    // solicitar carga (la carga dejará el modelo visible solo si modeloDebeEstarVisible lo permite)
+    cargarModeloGLB(ruta, nombre);
+    return;
   }
-  function ocultarModelo(nombre) {
-    if (modelos3D[nombre]) {
-      modelos3D[nombre].visible = false;
-    }
-  }
-
-  // --- Ranura H ---
-  if (!equipadas.h) {
-    mostrarModelo('cabeza', './Cabeza.glb');
-    ocultarModelo('H_Raging_Wolf');
-  } else {
-    ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if (equipadas.h.split('/').pop() === 'wolf-h.png') {
-      mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
-    } else {
-      ocultarModelo('H_Raging_Wolf');
-    }
-  }
-
-  // --- Ranura A ---
-  if (!equipadas.a) {
-    mostrarModelo('pecho', './Pecho.glb');
-    ocultarModelo('A_Raging_Wolf');
-    ocultarModelo('A_Alberich');
-    ocultarModelo('A_Preceptor');
-  } else {
-    ocultarModelo('pecho');
-    const imgA = equipadas.a.split('/').pop();
-    if (imgA === 'wolf-a.png') {
-      mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
-      ocultarModelo('A_Alberich');
-      ocultarModelo('A_Preceptor');
-    } else if (imgA === 'carian-a.png') {
-      mostrarModelo('A_Alberich', './A_Alberich.glb');
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Preceptor');
-    } else if (imgA === 'samurai-a.png') {
-      mostrarModelo('A_Preceptor', './A_Preceptor.glb');
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Alberich');
-    } else {
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Alberich');
-      ocultarModelo('A_Preceptor');
-    }
-  }
-
-  // --- Ranura G ---
-  if (!equipadas.g) {
-    mostrarModelo('manos', './Manos.glb');
-    ocultarModelo('G_Raging_Wolf');
-  } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
-    ocultarModelo('manos');
-    mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
-  } else {
-    ocultarModelo('manos');
-    ocultarModelo('G_Raging_Wolf');
-  }
-
-  // --- Ranura L ---
-  if (!equipadas.l) {
-    mostrarModelo('piernas', './Piernas.glb');
-    ocultarModelo('L_Raging_Wolf');
-    ocultarModelo('L_Alberich');
-    ocultarModelo('L_Preceptor');
-  } else {
-    ocultarModelo('piernas');
-    const imgL = equipadas.l.split('/').pop();
-    if (imgL === 'wolf-l.png') {
-      mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
-    } else if (imgL === 'carian-l.png') {
-      mostrarModelo('L_Alberich', './L_Alberich.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Preceptor');
-    } else if (imgL === 'samurai-l.png') {
-      mostrarModelo('L_Preceptor', './L_Preceptor.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
-    } else {
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
-    }
-  }
-
-  // Si todas las ranuras están equipadas, puedes ocultar el canvas si lo deseas
-  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
-    renderer.domElement.style.display = 'none';
-    container.style.display = 'none';
-  } else {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
+  // Si ya está cargado, forzamos visibilidad true
+  modelos3D[nombre].visible = true;
+}
+function ocultarModelo(nombre) {
+  if (modelos3D[nombre]) {
+    modelos3D[nombre].visible = false;
   }
 }
+
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
