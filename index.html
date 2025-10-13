@@ -702,16 +702,13 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
-        // --- Renderiza los modelos antes de mostrar el menú ---
-        actualizarModelos3DPorRanuraH();
         document.getElementById('main-content').style.display = 'flex';
         document.getElementById('threejs-container').style.display = 'block';
-        // --- Renderiza los modelos después de mostrar el menú ---
+        // Fuerza la actualización y visibilidad de los modelos 3D
         actualizarModelos3DPorRanuraH();
-        // Fuerza el renderer a dibujar la escena
+        // Asegura que el renderer esté visible
         if (renderer && renderer.domElement) {
           renderer.domElement.style.display = 'block';
-          renderer.render(scene, camera);
         }
         // Si no hay nada equipado, fuerza la carga de modelos base
         if (
@@ -1299,6 +1296,7 @@ function volverMenuRanuras() {
     });
 
 
+
     // Click derecho
     document.getElementById('almacen-1').addEventListener("contextmenu", function(e){
       e.preventDefault(); volverMenuRanuras();
@@ -1494,8 +1492,10 @@ function volverMenuRanuras() {
         wrapper.appendChild(img);
         equipadas[ranura] = imgSrc;
 
-        // Fuerza la actualización de modelos 3D para cualquier ranura
-        actualizarModelos3DPorRanuraH();
+        // Si ranura es "h", actualiza el modelo 3D
+        if (ranura === "h") {
+          actualizarModelos3DPorRanuraH();
+        }
       }
     }
 
@@ -2334,9 +2334,6 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
 
       scene.add(model);
       modelos3D[nombre] = model;
-      // Fuerza visibilidad y sincroniza lógica
-      model.visible = true;
-      actualizarModelos3DPorRanuraH();
     },
     undefined,
     function(error) {
@@ -2452,13 +2449,9 @@ function actualizarModelos3DPorRanuraH() {
   if (document.getElementById('main-content').style.display === 'flex') {
     renderer.domElement.style.display = 'block';
     container.style.display = 'block';
-    // Fuerza la visibilidad de todos los modelos cargados
-    Object.values(modelos3D).forEach(model => { if (model) model.visible = true; });
   } else {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
-    // Oculta todos los modelos si no estamos en el menú principal
-    Object.values(modelos3D).forEach(model => { if (model) model.visible = false; });
   }
 }
   </script>
