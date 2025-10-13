@@ -1478,10 +1478,8 @@ function volverMenuRanuras() {
         wrapper.appendChild(img);
         equipadas[ranura] = imgSrc;
 
-        // Si ranura es "h", actualiza el modelo 3D
-        if (ranura === "h") {
-          actualizarModelos3DPorRanuraH();
-        }
+        // Actualiza el modelo 3D solo para la ranura correspondiente
+        actualizarModelos3DPorRanuraH();
       }
     }
 
@@ -2355,13 +2353,12 @@ function actualizarModelos3DPorRanuraH() {
   if (!equipadas.h) {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
+  } else if (equipadas.h.split('/').pop() === 'wolf-h.png') {
+    ocultarModelo('cabeza');
+    mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
   } else {
-    ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if (equipadas.h.split('/').pop() === 'wolf-h.png') {
-      mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
-    } else {
-      ocultarModelo('H_Raging_Wolf');
-    }
+    ocultarModelo('cabeza');
+    ocultarModelo('H_Raging_Wolf');
   }
 
   // --- Ranura A ---
@@ -2432,7 +2429,7 @@ function actualizarModelos3DPorRanuraH() {
     }
   }
 
-  // Si todas las ranuras están equipadas, puedes ocultar el canvas si lo deseas
+  // El canvas solo se oculta si TODAS las ranuras están equipadas
   if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
     renderer.domElement.style.display = 'none';
     container.style.display = 'none';
