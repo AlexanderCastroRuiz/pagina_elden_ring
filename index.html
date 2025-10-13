@@ -2344,8 +2344,7 @@ function actualizarModelos3DPorRanuraH() {
     }
   }
   function ocultarModelo(nombre, ruta) {
-    // Si el modelo no está cargado, cárgalo y luego ocúltalo
-    if (!modelos3D[nombre]) {
+    if (ruta && !modelos3D[nombre]) {
       cargarModeloGLB(ruta, nombre);
     }
     if (modelos3D[nombre]) {
