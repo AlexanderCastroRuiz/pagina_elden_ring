@@ -1263,7 +1263,7 @@ function actualizarDesequiparVolver() {
     txt.textContent = "Volver";
   } else {
     img.src = "erre.png";
-                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                
     txt.textContent = "Desequipar";
   }
 }
@@ -2340,7 +2340,8 @@ function initThreeJS() {
   controls.maxDistance = 20;
   controls.target.set(0, 1.5, 0);
   controls.update();
-  controls.enablePan = true; // Permite rotar la cámara
+  controls.enablePan = true; // Permite mover la cámara lateralmente
+  controls.enableRotate = true; // Permite rotar la cámara con el mouse
 
   renderer.domElement.style.cursor = 'grab';
   renderer.domElement.addEventListener('pointerdown', () => {
