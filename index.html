@@ -2215,7 +2215,7 @@ function initThreeJS() {
   const container = document.getElementById('threejs-container');
   container.style.position = 'absolute';
   container.style.left = '27vw';
-  container.style.top = '-5vw';
+  container.style.top = '-2vw';
   container.style.width = '33.33vw';
   container.style.height = '100vh';
   container.style.background = 'transparent';
@@ -2309,18 +2309,71 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
     function(gltf) {
       const model = gltf.scene;
       // NO modificar posición, escala ni rotación por defecto
-      // Si quieres opciones personalizadas, descomenta y usa solo si se pasan explícitamente
       if (opciones.position) model.position.copy(opciones.position);
       if (opciones.scale) model.scale.copy(opciones.scale);
       if (opciones.rotation) model.rotation.copy(opciones.rotation);
 
-      // Centrado automático: ELIMINADO para respetar la ubicación original del modelo
-      // let box = new THREE.Box3().setFromObject(model);
-      // let center = box.getCenter(new THREE.Vector3());
-      // model.position.sub(center);
+      // Determinar visibilidad inicial según estado actual de "equipadas"
+      const getBasename = (p) => (p || "").split('/').pop();
+      const hImg = equipadas.h ? getBasename(equipadas.h) : null;
+      const aImg = equipadas.a ? getBasename(equipadas.a) : null;
+      const gImg = equipadas.g ? getBasename(equipadas.g) : null;
+      const lImg = equipadas.l ? getBasename(equipadas.l) : null;
+
+      let visible = true;
+      switch (nombre) {
+        case 'cabeza':
+          visible = !hImg;
+          break;
+        case 'H_Raging_Wolf':
+          visible = hImg === 'wolf-h.png';
+          break;
+        case 'pecho':
+          visible = !aImg;
+          break;
+        case 'A_Raging_Wolf':
+          visible = aImg === 'wolf-a.png';
+          break;
+        case 'A_Alberich':
+          visible = aImg === 'carian-a.png';
+          break;
+        case 'A_Preceptor':
+          visible = aImg === 'samurai-a.png';
+          break;
+        case 'manos':
+          visible = !gImg;
+          break;
+        case 'G_Raging_Wolf':
+          visible = gImg === 'wolf-g.png';
+          break;
+        case 'piernas':
+          visible = !lImg;
+          break;
+        case 'L_Raging_Wolf':
+          visible = lImg === 'wolf-l.png';
+          break;
+        case 'L_Alberich':
+          visible = lImg === 'carian-l.png';
+          break;
+        case 'L_Preceptor':
+          visible = lImg === 'samurai-l.png';
+          break;
+        default:
+          visible = true;
+      }
+
+      model.visible = visible;
 
       scene.add(model);
       modelos3D[nombre] = model;
+
+      // Refuerza las reglas de visibilidad justo después de cargar
+      // (programado para evitar recursividad síncrona)
+      if (typeof actualizarModelos3D === 'function') {
+        setTimeout(() => {
+          try { actualizarModelos3D(); } catch (e) { console.error(e); }
+        }, 0);
+      }
     },
     undefined,
     function(error) {
