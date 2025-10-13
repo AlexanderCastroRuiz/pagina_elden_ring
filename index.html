@@ -465,15 +465,6 @@
   </style>
 </head>
 <body>
-  <!-- NUEVO: Loader visual -->
-  <div id="loader-modelos" style="position:fixed;z-index:3000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);">
-    <div style="color:#C9BBA1;font-size:2em;font-family:'FuentePersonalizada',sans-serif;text-align:center;">
-      Cargando modelos 3D...
-      <br>
-      <span id="loader-modelos-porcentaje" style="font-size:1.2em;color:#fff;">0%</span>
-    </div>
-  </div>
-
   <div class="base-wallpaper"></div>
   <div class="dark-overlay"></div>
   <div class="overlay-wallpaper"></div>
@@ -789,52 +780,20 @@
       document.getElementById('main-content').style.display = 'none';
       if (menu === 'inicio') {
         document.getElementById('menu-inicio').style.display = 'flex';
-        // Oculta el canvas y contenedor 3D si no es el menú principal
-        const container = document.getElementById('threejs-container');
-        if (container) container.style.display = 'none';
-        if (renderer && renderer.domElement) renderer.domElement.style.display = 'none';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
-        // Oculta el canvas y contenedor 3D si no es el menú principal
-        const container = document.getElementById('threejs-container');
-        if (container) container.style.display = 'none';
-        if (renderer && renderer.domElement) renderer.domElement.style.display = 'none';
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
-        // Muestra el menú principal y el canvas/3D
         document.getElementById('main-content').style.display = 'flex';
-        const container = document.getElementById('threejs-container');
-        if (container) container.style.display = 'block';
-        if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
-        // Si Three.js aún no está inicializado, inicialízalo (pero no ocultes el canvas)
-        initThreeJS(function() {
-          // ...no ocultar el canvas aquí...
-          // Fuerza mostrar el canvas y contenedor 3D
-          const container = document.getElementById('threejs-container');
-          if (container) container.style.display = 'block';
-          if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
-          actualizarModelos3DPorRanuraH();
-        });
-        // Si ya está inicializado, fuerza el render y visibilidad
-        if (typeof actualizarModelos3DPorRanuraH === "function") {
-          // Fuerza mostrar el canvas y contenedor 3D
-          const container = document.getElementById('threejs-container');
-          if (container) container.style.display = 'block';
-          if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
-          actualizarModelos3DPorRanuraH();
-        }
+        // Inicializa Three.js solo la primera vez
+        initThreeJS();
+        // Actualiza el modelo si la ranura H está vacía
+        actualizarModelos3DPorRanuraH();
       }
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-      // Muestra loader visual
-      document.getElementById('loader-modelos').style.display = 'flex';
-      loaderMostrado = true;
-      // Inicializa Three.js y espera a que los modelos estén listos antes de mostrar el menú principal
-      initThreeJS(function() {
-        // Cuando los modelos estén listos, muestra el menú de inicio
-        mostrarSoloMenu('inicio');
-      });
+      mostrarSoloMenu('inicio');
       // --- EVENTOS DE MENÚ INICIO ---
       document.getElementById('btn-identificar').addEventListener('click', async function() {
   const usuario = document.getElementById('usuario-inicio').value.trim();
@@ -2333,17 +2292,8 @@ import { OrbitControls } from 'https://esm.sh/three@0.153.0/examples/jsm/control
 let scene, camera, renderer, cabezaModel, controls;
 let threejsInicializado = false;
 
-function initThreeJS(callbackMostrarMenu) {
-  if (threejsInicializado) {
-    // Si ya está inicializado, muestra el contenedor y llama al callback
-    const container = document.getElementById('threejs-container');
-    if (container) {
-      container.style.display = 'block';
-      if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
-    }
-    if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
-    return;
-  }
+function initThreeJS() {
+  if (threejsInicializado) return;
   threejsInicializado = true;
   const container = document.getElementById('threejs-container');
   container.style.position = 'absolute';
@@ -2414,25 +2364,7 @@ function initThreeJS(callbackMostrarMenu) {
   });
 
   animate();
-  // Muestra loader visual
-  document.getElementById('loader-modelos').style.display = 'flex';
-  loaderMostrado = true;
-  // Precarga todos los modelos
-  precargarTodosLosModelos(function() {
-    // Oculta loader visual
-    document.getElementById('loader-modelos').style.display = 'none';
-    loaderMostrado = false;
-    // Muestra el contenedor y canvas 3D
-    const container = document.getElementById('threejs-container');
-    if (container) {
-      container.style.display = 'block';
-      if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
-    }
-    // Ahora sí muestra el menú principal
-    if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
-    // Renderiza los modelos según lo equipado
-    actualizarModelos3DPorRanuraH();
-  });
+  actualizarModelos3DPorRanuraH();
 }
 
 function animate() {
@@ -2444,46 +2376,9 @@ function animate() {
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
 
-// NUEVO: Lista de modelos a precargar
-const modelosParaPrecargar = [
-  { ruta: './Cabeza.glb', nombre: 'cabeza' },
-  { ruta: './H_Raging_Wolf.glb', nombre: 'H_Raging_Wolf' },
-  { ruta: './Pecho.glb', nombre: 'pecho' },
-  { ruta: './A_Raging_Wolf.glb', nombre: 'A_Raging_Wolf' },
-  { ruta: './Manos.glb', nombre: 'manos' },
-  { ruta: './G_Raging_Wolf.glb', nombre: 'G_Raging_Wolf' },
-  { ruta: './Piernas.glb', nombre: 'piernas' },
-  { ruta: './L_Raging_Wolf.glb', nombre: 'L_Raging_Wolf' }
-];
-
-// NUEVO: Estado de carga de modelos
-let modelosCargados = {};
-let totalModelos = modelosParaPrecargar.length;
-let modelosListos = 0;
-let loaderMostrado = false;
-
-// NUEVO: Precarga todos los modelos al iniciar la página
-function precargarTodosLosModelos(callback) {
-  modelosListos = 0;
-  modelosParaPrecargar.forEach((m, idx) => {
-    cargarModeloGLB(m.ruta, m.nombre, {}, function() {
-      modelosCargados[m.nombre] = true;
-      modelosListos++;
-      // Actualiza porcentaje en loader
-      const porcentaje = Math.round((modelosListos / totalModelos) * 100);
-      const loaderPorcentaje = document.getElementById('loader-modelos-porcentaje');
-      if (loaderPorcentaje) loaderPorcentaje.textContent = porcentaje + "%";
-      // Cuando todos estén listos, llama al callback
-      if (modelosListos === totalModelos) {
-        callback && callback();
-      }
-    });
-  });
-}
-
-// MODIFICAR: cargarModeloGLB para aceptar callback cuando termina de cargar
-function cargarModeloGLB(ruta, nombre, opciones = {}, onLoadCallback) {
+function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
+  // Si ya existe un modelo con ese nombre, elimínalo antes
   if (modelos3D[nombre]) {
     scene.remove(modelos3D[nombre]);
     delete modelos3D[nombre];
@@ -2493,27 +2388,26 @@ function cargarModeloGLB(ruta, nombre, opciones = {}, onLoadCallback) {
     ruta,
     function(gltf) {
       const model = gltf.scene;
+      // NO modificar posición, escala ni rotación por defecto
+      // Si quieres opciones personalizadas, descomenta y usa solo si se pasan explícitamente
       if (opciones.position) model.position.copy(opciones.position);
       if (opciones.scale) model.scale.copy(opciones.scale);
       if (opciones.rotation) model.rotation.copy(opciones.rotation);
+
+      // Centrado automático: ELIMINADO para respetar la ubicación original del modelo
+      // let box = new THREE.Box3().setFromObject(model);
+      // let center = box.getCenter(new THREE.Vector3());
+      // model.position.sub(center);
+
       scene.add(model);
       modelos3D[nombre] = model;
-      // Por defecto, oculta todos los modelos al inicio
-      model.visible = false;
-      if (typeof onLoadCallback === "function") onLoadCallback();
     },
     undefined,
     function(error) {
       console.error('Error cargando modelo:', ruta, error);
-      if (typeof onLoadCallback === "function") onLoadCallback();
     }
   );
 }
-
-// MODIFICAR: initThreeJS para precargar modelos antes de mostrar el menú principal
-
-
-
 
 // Ejemplo de uso para cargar varios modelos:
 // cargarModeloGLB('./Cabeza.glb', 'cabeza');
@@ -2609,4 +2503,6 @@ function actualizarModelos3DPorRanuraH() {
   }
 }
   </script>
-<!-- ...existing code... -->
+  <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
