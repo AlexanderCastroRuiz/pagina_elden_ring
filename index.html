@@ -2296,121 +2296,80 @@ function animate() {
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
 
-// NUEVO: decide si un modelo debe mostrarse según el estado actual de `equipadas`
+// REEMPLAZO/MEJORA: lógica de visibilidad más tolerante y actualización global de modelos
 function modeloDebeEstarVisible(nombre) {
-  // Ranura H
-  if (nombre === 'cabeza') return !equipadas.h;
-  if (nombre === 'H_Raging_Wolf') return (equipadas.h && equipadas.h.split('/').pop() === 'wolf-h.png');
-  // Ranura A
-  if (nombre === 'pecho') return !equipadas.a;
-  if (nombre === 'A_Raging_Wolf') return (equipadas.a && equipadas.a.split('/').pop() === 'wolf-a.png');
-  if (nombre === 'A_Alberich') return (equipadas.a && equipadas.a.split('/').pop() === 'carian-a.png');
-  if (nombre === 'A_Preceptor') return (equipadas.a && equipadas.a.split('/').pop() === 'samurai-a.png');
-  // Ranura G
-  if (nombre === 'manos') return !equipadas.g;
-  if (nombre === 'G_Raging_Wolf') return (equipadas.g && equipadas.g.split('/').pop() === 'wolf-g.png');
-  // Ranura L
-  if (nombre === 'piernas') return !equipadas.l;
-  if (nombre === 'L_Raging_Wolf') return (equipadas.l && equipadas.l.split('/').pop() === 'wolf-l.png');
-  if (nombre === 'L_Alberich') return (equipadas.l && equipadas.l.split('/').pop() === 'carian-l.png');
-  if (nombre === 'L_Preceptor') return (equipadas.l && equipadas.l.split('/').pop() === 'samurai-l.png');
-  // Por defecto, oculto hasta que se decida
+  if (!nombre) return false;
+  const n = String(nombre).toLowerCase();
+
+  // Helpers para comprobar equipadas (maneja URLs completas)
+  const eq = (k) => (equipadas[k] ? equipadas[k].split('/').pop() : "");
+  const isEqFile = (k, file) => eq(k) === file;
+
+  // CABEZA
+  if (n.includes('cabez') || n.includes('head')) {
+    // si hay algo equipado en H -> ocultar base, si no -> mostrar base
+    return !equipadas.h;
+  }
+  // H_RAGING_WOLF (u otros nombres variantes)
+  if (n.includes('h_raging') || n.includes('raging') && n.includes('wolf') || n.includes('h-') && n.includes('wolf') || n.includes('wolf-h') || n.includes('h_raging_wolf')) {
+    return isEqFile('h', 'wolf-h.png');
+  }
+
+  // PECHO / ARMADURA
+  if (n.includes('pech') || n.includes('torso') || n.includes('chest') || n.includes('_a') && (n.includes('a_') || n.includes('-a'))) {
+    return !equipadas.a;
+  }
+  // Modelos específicos de armadura
+  if (n.includes('a_raging') || (n.includes('raging') && n.includes('wolf') && n.includes('a')) || n.includes('a_raging_wolf') || n.includes('a-raging') || n.includes('raging_wolf_a')) {
+    return isEqFile('a', 'wolf-a.png');
+  }
+  if (n.includes('alberich') || n.includes('carian') || n.includes('a_alberich') || n.includes('carian-a')) {
+    return isEqFile('a', 'carian-a.png');
+  }
+  if (n.includes('preceptor') || n.includes('samurai') || n.includes('samurai-a') || n.includes('a_preceptor')) {
+    return isEqFile('a', 'samurai-a.png');
+  }
+
+  // MANOS / GUANTELETES
+  if (n.includes('mano') || n.includes('hand') || n.includes('manos') || n.includes('_g') || n.includes('-g')) {
+    return !equipadas.g;
+  }
+  if (n.includes('g_raging') || (n.includes('wolf') && n.includes('g')) || n.includes('g_raging_wolf') || n.includes('wolf-g') || n.includes('g-raging')) {
+    return isEqFile('g', 'wolf-g.png');
+  }
+
+  // PIERNAS / GREBAS
+  if (n.includes('pierna') || n.includes('leg') || n.includes('_l') || n.includes('-l')) {
+    return !equipadas.l;
+  }
+  if (n.includes('l_raging') || (n.includes('wolf') && n.includes('l')) || n.includes('l_raging_wolf') || n.includes('wolf-l') || n.includes('l-raging')) {
+    return isEqFile('l', 'wolf-l.png');
+  }
+  if (n.includes('alberich') && n.includes('l') || n.includes('carian-l')) {
+    return isEqFile('l', 'carian-l.png');
+  }
+  if (n.includes('preceptor') && n.includes('l') || n.includes('samurai-l')) {
+    return isEqFile('l', 'samurai-l.png');
+  }
+
+  // Por defecto: si no coincide ninguna regla explícita, ocultamos para evitar solapamientos.
   return false;
 }
 
-function cargarModeloGLB(ruta, nombre, opciones = {}) {
-  if (!scene) return;
-  // Si ya existe un modelo con ese nombre, elimínalo antes
-  if (modelos3D[nombre]) {
-    scene.remove(modelos3D[nombre]);
-    delete modelos3D[nombre];
-  }
-  const loader = new GLTFLoader();
-  loader.load(
-    ruta,
-    function(gltf) {
-      const model = gltf.scene;
-      // Mantener opciones si se pasan
-      if (opciones.position) model.position.copy(opciones.position);
-      if (opciones.scale) model.scale.copy(opciones.scale);
-      if (opciones.rotation) model.rotation.copy(opciones.rotation);
-
-      // Inserta en la escena pero controlando visibilidad según el estado de ranuras
-      // Por seguridad, inicializamos siempre como invisible y luego ajustamos según la regla
-      model.visible = false;
-      scene.add(model);
-      modelos3D[nombre] = model;
-
-      // Ajusta visibilidad final según la lógica de equipadas (si corresponde)
-      try {
-        modelos3D[nombre].visible = modeloDebeEstarVisible(nombre);
-      } catch (e) {
-        // no bloqueamos la carga por errores de visibilidad
-        console.error('Error ajustando visibilidad del modelo', nombre, e);
-      }
-    },
-    undefined,
-    function(error) {
-      console.error('Error cargando modelo:', ruta, error);
-    }
-  );
-}
-
-function mostrarModelo(nombre, ruta) {
-  if (!modelos3D[nombre]) {
-    // solicitar carga (la carga dejará el modelo visible solo si modeloDebeEstarVisible lo permite)
-    cargarModeloGLB(ruta, nombre);
-    return;
-  }
-  // Si ya está cargado, forzamos visibilidad true
-  modelos3D[nombre].visible = true;
-}
-function ocultarModelo(nombre) {
-  if (modelos3D[nombre]) {
-    modelos3D[nombre].visible = false;
-  }
-}
-
-// NUEVA: actualiza visibilidad de todos los modelos según `equipadas`
-// - carga los que deben mostrarse y aún no están cargados
-// - oculta los que deben estar ocultos (incluso si ya están cargados)
+// Recorre todos los modelos cargados y actualiza su visibilidad según la regla
 function actualizarModelos3D() {
-  if (!scene) return;
-
-  const modelos = [
-    { name: 'cabeza', path: './Cabeza.glb' },
-    { name: 'H_Raging_Wolf', path: './H_Raging_Wolf.glb' },
-
-    { name: 'pecho', path: './Pecho.glb' },
-    { name: 'A_Raging_Wolf', path: './A_Raging_Wolf.glb' },
-    { name: 'A_Alberich', path: './A_Alberich.glb' },
-    { name: 'A_Preceptor', path: './A_Preceptor.glb' },
-
-    { name: 'manos', path: './Manos.glb' },
-    { name: 'G_Raging_Wolf', path: './G_Raging_Wolf.glb' },
-
-    { name: 'piernas', path: './Piernas.glb' },
-    { name: 'L_Raging_Wolf', path: './L_Raging_Wolf.glb' },
-    { name: 'L_Alberich', path: './L_Alberich.glb' },
-    { name: 'L_Preceptor', path: './L_Preceptor.glb' }
-  ];
-
-  modelos.forEach(m => {
-    const debeMostrar = modeloDebeEstarVisible(m.name);
-
-    // Si ya está cargado, simplemente ajusta visibilidad
-    if (modelos3D[m.name]) {
-      modelos3D[m.name].visible = !!debeMostrar;
-      return;
+  if (!modelos3D) return;
+  Object.keys(modelos3D).forEach(function(nombre) {
+    try {
+      const visible = modeloDebeEstarVisible(nombre);
+      modelos3D[nombre].visible = !!visible;
+    } catch (e) {
+      // no romper la ejecución por errores en visibilidad
+      console.error('actualizarModelos3D error en', nombre, e);
     }
-
-    // Si no está cargado pero debe mostrarse, iniciar carga
-    if (debeMostrar) {
-      cargarModeloGLB(m.path, m.name);
-    }
-    // Si no está cargado y no debe mostrarse -> no hacemos nada
   });
 }
+
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
