@@ -23,7 +23,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
-
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
     }
 
     .main-grid {
@@ -789,9 +793,12 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
-        // Solo muestra el menú principal cuando los modelos estén listos
+        // Asegura que el contenedor y canvas 3D estén visibles al mostrar el menú principal
         initThreeJS(function() {
           document.getElementById('main-content').style.display = 'flex';
+          const container = document.getElementById('threejs-container');
+          if (container) container.style.display = 'block';
+          if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
           actualizarModelos3DPorRanuraH();
         });
       }
@@ -2306,7 +2313,12 @@ let threejsInicializado = false;
 
 function initThreeJS(callbackMostrarMenu) {
   if (threejsInicializado) {
-    // Si ya está inicializado, solo llama al callback para mostrar el menú principal
+    // Si ya está inicializado, muestra el contenedor y llama al callback
+    const container = document.getElementById('threejs-container');
+    if (container) {
+      container.style.display = 'block';
+      if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
+    }
     if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
     return;
   }
@@ -2380,16 +2392,19 @@ function initThreeJS(callbackMostrarMenu) {
   });
 
   animate();
-
   // Muestra loader visual
   document.getElementById('loader-modelos').style.display = 'flex';
   loaderMostrado = true;
-
   // Precarga todos los modelos
   precargarTodosLosModelos(function() {
     // Oculta loader visual
     document.getElementById('loader-modelos').style.display = 'none';
     loaderMostrado = false;
+    // Muestra el contenedor y canvas 3D
+    if (container) {
+      container.style.display = 'block';
+      if (renderer && renderer.domElement) renderer.domElement.style.display = 'block';
+    }
     // Ahora sí muestra el menú principal
     if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
     // Renderiza los modelos según lo equipado
@@ -2573,5 +2588,4 @@ function actualizarModelos3DPorRanuraH() {
   }
 }
   </script>
-
 <!-- ...existing code... -->
