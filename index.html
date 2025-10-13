@@ -2371,6 +2371,46 @@ function ocultarModelo(nombre) {
   }
 }
 
+// NUEVA: actualiza visibilidad de todos los modelos según `equipadas`
+// - carga los que deben mostrarse y aún no están cargados
+// - oculta los que deben estar ocultos (incluso si ya están cargados)
+function actualizarModelos3D() {
+  if (!scene) return;
+
+  const modelos = [
+    { name: 'cabeza', path: './Cabeza.glb' },
+    { name: 'H_Raging_Wolf', path: './H_Raging_Wolf.glb' },
+
+    { name: 'pecho', path: './Pecho.glb' },
+    { name: 'A_Raging_Wolf', path: './A_Raging_Wolf.glb' },
+    { name: 'A_Alberich', path: './A_Alberich.glb' },
+    { name: 'A_Preceptor', path: './A_Preceptor.glb' },
+
+    { name: 'manos', path: './Manos.glb' },
+    { name: 'G_Raging_Wolf', path: './G_Raging_Wolf.glb' },
+
+    { name: 'piernas', path: './Piernas.glb' },
+    { name: 'L_Raging_Wolf', path: './L_Raging_Wolf.glb' },
+    { name: 'L_Alberich', path: './L_Alberich.glb' },
+    { name: 'L_Preceptor', path: './L_Preceptor.glb' }
+  ];
+
+  modelos.forEach(m => {
+    const debeMostrar = modeloDebeEstarVisible(m.name);
+
+    // Si ya está cargado, simplemente ajusta visibilidad
+    if (modelos3D[m.name]) {
+      modelos3D[m.name].visible = !!debeMostrar;
+      return;
+    }
+
+    // Si no está cargado pero debe mostrarse, iniciar carga
+    if (debeMostrar) {
+      cargarModeloGLB(m.path, m.name);
+    }
+    // Si no está cargado y no debe mostrarse -> no hacemos nada
+  });
+}
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
