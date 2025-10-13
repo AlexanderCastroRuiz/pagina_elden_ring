@@ -2353,12 +2353,15 @@ function actualizarModelos3DPorRanuraH() {
   if (!equipadas.h) {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
-  } else if (equipadas.h.split('/').pop() === 'wolf-h.png') {
-    ocultarModelo('cabeza');
-    mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
   } else {
-    ocultarModelo('cabeza');
-    ocultarModelo('H_Raging_Wolf');
+    const imgH = equipadas.h.split('/').pop();
+    if (imgH === 'wolf-h.png') {
+      ocultarModelo('cabeza');
+      mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('cabeza');
+      ocultarModelo('H_Raging_Wolf'); // <-- Asegura que se oculte si no es wolf-h.png
+    }
   }
 
   // --- Ranura A ---
