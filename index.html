@@ -2354,13 +2354,12 @@ function actualizarModelos3DPorRanuraH() {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
   } else {
+    ocultarModelo('cabeza'); // Oculta Cabeza.glb si hay algo equipado en H
     const imgH = equipadas.h.split('/').pop();
     if (imgH === 'wolf-h.png') {
-      ocultarModelo('cabeza');
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
     } else {
-      ocultarModelo('cabeza');
-      ocultarModelo('H_Raging_Wolf'); // <-- Asegura que se oculte si no es wolf-h.png
+      ocultarModelo('H_Raging_Wolf');
     }
   }
 
@@ -2371,7 +2370,7 @@ function actualizarModelos3DPorRanuraH() {
     ocultarModelo('A_Alberich');
     ocultarModelo('A_Preceptor');
   } else {
-    ocultarModelo('pecho');
+    ocultarModelo('pecho'); // Oculta Pecho.glb si hay algo equipado en A
     const imgA = equipadas.a.split('/').pop();
     if (imgA === 'wolf-a.png') {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
@@ -2396,12 +2395,14 @@ function actualizarModelos3DPorRanuraH() {
   if (!equipadas.g) {
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
-  } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
-    ocultarModelo('manos');
-    mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
   } else {
-    ocultarModelo('manos');
-    ocultarModelo('G_Raging_Wolf');
+    ocultarModelo('manos'); // Oculta Manos.glb si hay algo equipado en G
+    const imgG = equipadas.g.split('/').pop();
+    if (imgG === 'wolf-g.png') {
+      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('G_Raging_Wolf');
+    }
   }
 
   // --- Ranura L ---
@@ -2411,7 +2412,7 @@ function actualizarModelos3DPorRanuraH() {
     ocultarModelo('L_Alberich');
     ocultarModelo('L_Preceptor');
   } else {
-    ocultarModelo('piernas');
+    ocultarModelo('piernas'); // Oculta Piernas.glb si hay algo equipado en L
     const imgL = equipadas.l.split('/').pop();
     if (imgL === 'wolf-l.png') {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
@@ -2430,15 +2431,6 @@ function actualizarModelos3DPorRanuraH() {
       ocultarModelo('L_Alberich');
       ocultarModelo('L_Preceptor');
     }
-  }
-
-  // El canvas solo se oculta si TODAS las ranuras están equipadas
-  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
-    renderer.domElement.style.display = 'none';
-    container.style.display = 'none';
-  } else {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
   }
 }
   </script>
