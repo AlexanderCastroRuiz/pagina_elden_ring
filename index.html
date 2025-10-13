@@ -2296,7 +2296,7 @@ function animate() {
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
 
-// NUEVO: decide si un modelo debe mostrarse según el estado actual de `equipadas`
+// NUEVO: decide si un modelo debe mostrarse según la lógica actual de `equipadas`
 function modeloDebeEstarVisible(nombre) {
   // Ranura H
   if (nombre === 'cabeza') return !equipadas.h;
@@ -2348,6 +2348,12 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
         // no bloqueamos la carga por errores de visibilidad
         console.error('Error ajustando visibilidad del modelo', nombre, e);
       }
+
+      // SINCRONIZAR: una vez añadido el modelo, actualizar visibilidad de TODOS los modelos
+      // para evitar que modelos base y variantes se muestren simultáneamente.
+      if (typeof actualizarModelos3D === "function") {
+        actualizarModelos3D();
+      }
     },
     undefined,
     function(error) {
@@ -2371,6 +2377,18 @@ function ocultarModelo(nombre) {
   }
 }
 
+// NUEVA FUNCIÓN: sincroniza la visibilidad de todos los modelos según la lógica actual
+function actualizarModelos3D() {
+  if (!scene || !modelos3D) return;
+  Object.keys(modelos3D).forEach(function(nombre) {
+    try {
+      const debe = modeloDebeEstarVisible(nombre);
+      modelos3D[nombre].visible = !!debe;
+    } catch (e) {
+      console.error('Error en actualizarModelos3D para', nombre, e);
+    }
+  });
+}
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
