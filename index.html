@@ -2308,8 +2308,12 @@ import { OrbitControls } from 'https://esm.sh/three@0.153.0/examples/jsm/control
 let scene, camera, renderer, cabezaModel, controls;
 let threejsInicializado = false;
 
-function initThreeJS() {
-  if (threejsInicializado) return;
+function initThreeJS(callbackMostrarMenu) {
+  if (threejsInicializado) {
+    // Si ya está inicializado, solo llama al callback para mostrar el menú principal
+    if (typeof callbackMostrarMenu === "function") callbackMostrarMenu();
+    return;
+  }
   threejsInicializado = true;
   const container = document.getElementById('threejs-container');
   container.style.position = 'absolute';
