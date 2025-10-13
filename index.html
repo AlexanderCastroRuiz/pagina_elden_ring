@@ -702,13 +702,16 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         actualizarMenuSeleccionVisual();
       } else if (menu === 'principal') {
+        // --- Renderiza los modelos antes de mostrar el menú ---
+        actualizarModelos3DPorRanuraH();
         document.getElementById('main-content').style.display = 'flex';
         document.getElementById('threejs-container').style.display = 'block';
-        // Fuerza la actualización y visibilidad de los modelos 3D
+        // --- Renderiza los modelos después de mostrar el menú ---
         actualizarModelos3DPorRanuraH();
-        // Asegura que el renderer esté visible
+        // Fuerza el renderer a dibujar la escena
         if (renderer && renderer.domElement) {
           renderer.domElement.style.display = 'block';
+          renderer.render(scene, camera);
         }
         // Si no hay nada equipado, fuerza la carga de modelos base
         if (
@@ -1294,7 +1297,6 @@ function volverMenuRanuras() {
     document.getElementById("almacen-3").addEventListener("mouseenter", function() {
       setAlmacenDorado("almacen-3");
     });
-
 
 
     // Click derecho
