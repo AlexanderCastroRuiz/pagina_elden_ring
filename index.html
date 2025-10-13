@@ -2354,7 +2354,10 @@ function actualizarModelos3DPorRanuraH() {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
   } else {
-    ocultarModelo('cabeza'); // Oculta Cabeza.glb si hay algo equipado en H
+    // Asegura que el modelo base se oculte aunque no esté cargado aún
+    if (modelos3D['cabeza']) {
+      ocultarModelo('cabeza');
+    }
     const imgH = equipadas.h.split('/').pop();
     if (imgH === 'wolf-h.png') {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
@@ -2370,7 +2373,9 @@ function actualizarModelos3DPorRanuraH() {
     ocultarModelo('A_Alberich');
     ocultarModelo('A_Preceptor');
   } else {
-    ocultarModelo('pecho'); // Oculta Pecho.glb si hay algo equipado en A
+    if (modelos3D['pecho']) {
+      ocultarModelo('pecho');
+    }
     const imgA = equipadas.a.split('/').pop();
     if (imgA === 'wolf-a.png') {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
@@ -2396,7 +2401,9 @@ function actualizarModelos3DPorRanuraH() {
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
   } else {
-    ocultarModelo('manos'); // Oculta Manos.glb si hay algo equipado en G
+    if (modelos3D['manos']) {
+      ocultarModelo('manos');
+    }
     const imgG = equipadas.g.split('/').pop();
     if (imgG === 'wolf-g.png') {
       mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
@@ -2412,7 +2419,9 @@ function actualizarModelos3DPorRanuraH() {
     ocultarModelo('L_Alberich');
     ocultarModelo('L_Preceptor');
   } else {
-    ocultarModelo('piernas'); // Oculta Piernas.glb si hay algo equipado en L
+    if (modelos3D['piernas']) {
+      ocultarModelo('piernas');
+    }
     const imgL = equipadas.l.split('/').pop();
     if (imgL === 'wolf-l.png') {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
