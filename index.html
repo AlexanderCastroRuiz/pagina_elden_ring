@@ -401,8 +401,8 @@
   <div id="menu-inicio" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);">
     <div style="background:rgba(30,30,30,0.98);border-radius:18px;padding:40px 32px;box-shadow:0 0 32px #000a;min-width:320px;display:flex;flex-direction:column;align-items:center;gap:24px;max-width:90vw;">
       <h2 style="color:#C9BBA1;font-size:2em;margin-bottom:10px;">Bienvenido</h2>
-      <label for="usuario-inicio" style="color:#fff;font-size:1.1em;margin-bottom:6px; font-family: 'FuentePersonalizada';">Ingresa tu usuario:</label>
-      <input id="usuario-inicio" type="text" placeholder="Usuario" style="padding:10px 16px;font-size:1.1em;border-radius:8px;border:1px solid #C9BBA1;background:#222;color:#fff;width:220px;outline:none; font-family: 'FuentePersonalizada';">
+      <label for="usuario-inicio" style="color:#fff;font-size:1.1em;margin-bottom:6px;">Ingresa tu usuario:</label>
+      <input id="usuario-inicio" type="text" placeholder="Usuario" style="padding:10px 16px;font-size:1.1em;border-radius:8px;border:1px solid #C9BBA1;background:#222;color:#fff;width:220px;outline:none;">
       <div style="display:flex;gap:18px;margin-top:18px;">
         <button id="btn-identificar" style="padding:10px 28px;font-size:1.1em;background:#C9BBA1;color:#222;border:none;border-radius:8px;cursor:pointer; font-family: 'FuentePersonalizada', sans-serif;">Listo</button>
         <button id="btn-omitir" style="padding:10px 28px;font-size:1.1em;background:#444;color:#C9BBA1;border:none;border-radius:8px;cursor:pointer; font-family: 'FuentePersonalizada', sans-serif;">Omitir</button>
@@ -2284,6 +2284,8 @@ function initThreeJS() {
 
   animate();
   // Inicializar modelos 3D según el estado actual de ranuras
+  // PRELOAD: cargar todos los modelos en memoria y mantenerlos ocultos hasta que se pidan
+  preloadAllModels();
   actualizarModelos3D();
 }
 
@@ -2303,19 +2305,13 @@ function disposeObject3D(obj) {
   if (!obj) return;
   obj.traverse((child) => {
     if (child.isMesh) {
-      if (child.geometry) {
-        child.geometry.dispose();
-      }
+      if (child.geometry) child.geometry.dispose();
       if (child.material) {
         const mat = child.material;
-        // material puede ser array o único
         if (Array.isArray(mat)) {
-          mat.forEach(m => {
-            if (m.map) { m.map.dispose(); }
-            m.dispose();
-          });
+          mat.forEach(m => { if (m.map) m.map.dispose(); m.dispose(); });
         } else {
-          if (mat.map) { mat.map.dispose(); }
+          if (mat.map) mat.map.dispose();
           mat.dispose();
         }
       }
@@ -2323,7 +2319,29 @@ function disposeObject3D(obj) {
   });
 }
 
-// NUEVO: función para cargar modelos GLB con token y limpieza de callbacks obsoletos
+// NUEVO: función para pre-cargar todos los modelos y mantenerlos ocultos inicialmente
+function preloadAllModels() {
+  const lista = [
+    {ruta: './Cabeza.glb', nombre: 'cabeza'},
+    {ruta: './H_Raging_Wolf.glb', nombre: 'H_Raging_Wolf'},
+    {ruta: './Pecho.glb', nombre: 'pecho'},
+    {ruta: './A_Raging_Wolf.glb', nombre: 'A_Raging_Wolf'},
+    {ruta: './A_Alberich.glb', nombre: 'A_Alberich'},
+    {ruta: './A_Preceptor.glb', nombre: 'A_Preceptor'},
+    {ruta: './Manos.glb', nombre: 'manos'},
+    {ruta: './G_Raging_Wolf.glb', nombre: 'G_Raging_Wolf'},
+    {ruta: './Piernas.glb', nombre: 'piernas'},
+    {ruta: './L_Raging_Wolf.glb', nombre: 'L_Raging_Wolf'},
+    {ruta: './L_Alberich.glb', nombre: 'L_Alberich'},
+    {ruta: './L_Preceptor.glb', nombre: 'L_Preceptor'}
+  ];
+  lista.forEach(item => {
+    // fuerza que, al cargar, el modelo quede oculto hasta que actualizarModelos3D lo muestre
+    cargarModeloGLB(item.ruta, item.nombre, { hiddenOnLoad: true });
+  });
+}
+
+// NUEVO: cargarModeloGLB mantiene compatibilidad, añade opción hiddenOnLoad
 function cargarModeloGLB(ruta, nombre, opciones = {}) {
   if (!scene) return;
   // Genera token único para esta carga
@@ -2344,10 +2362,7 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
     ruta,
     function(gltf) {
       // Si el token actual cambió, descartar este resultado (carga obsoleta)
-      if (cargaTokens[nombre] !== token) {
-        // No añadir a la escena ni conservar referencias
-        return;
-      }
+      if (cargaTokens[nombre] !== token) return;
 
       const model = gltf.scene;
 
@@ -2356,37 +2371,41 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
       if (opciones.scale) model.scale.copy(opciones.scale);
       if (opciones.rotation) model.rotation.copy(opciones.rotation);
 
-      // Determinar visibilidad inicial según estado actual de "equipadas"
-      const getBasename = (p) => (p || "").split('/').pop();
-      const hImg = equipadas.h ? getBasename(equipadas.h) : null;
-      const aImg = equipadas.a ? getBasename(equipadas.a) : null;
-      const gImg = equipadas.g ? getBasename(equipadas.g) : null;
-      const lImg = equipadas.l ? getBasename(equipadas.l) : null;
+      // Si el caller solicita que el modelo quede oculto en la carga, respetarlo
+      if (opciones.hiddenOnLoad) {
+        model.visible = false;
+      } else {
+        // Determinar visibilidad inicial según estado actual de "equipadas"
+        const getBasename = (p) => (p || "").split('/').pop();
+        const hImg = equipadas.h ? getBasename(equipadas.h) : null;
+        const aImg = equipadas.a ? getBasename(equipadas.a) : null;
+        const gImg = equipadas.g ? getBasename(equipadas.g) : null;
+        const lImg = equipadas.l ? getBasename(equipadas.l) : null;
 
-      let visible = true;
-      switch (nombre) {
-        case 'cabeza': visible = !hImg; break;
-        case 'H_Raging_Wolf': visible = hImg === 'wolf-h.png'; break;
-        case 'pecho': visible = !aImg; break;
-        case 'A_Raging_Wolf': visible = aImg === 'wolf-a.png'; break;
-        case 'A_Alberich': visible = aImg === 'carian-a.png'; break;
-        case 'A_Preceptor': visible = aImg === 'samurai-a.png'; break;
-        case 'manos': visible = !gImg; break;
-        case 'G_Raging_Wolf': visible = gImg === 'wolf-g.png'; break;
-        case 'piernas': visible = !lImg; break;
-        case 'L_Raging_Wolf': visible = lImg === 'wolf-l.png'; break;
-        case 'L_Alberich': visible = lImg === 'carian-l.png'; break;
-        case 'L_Preceptor': visible = lImg === 'samurai-l.png'; break;
-        default: visible = true;
+        let visible = true;
+        switch (nombre) {
+          case 'cabeza': visible = !hImg; break;
+          case 'H_Raging_Wolf': visible = hImg === 'wolf-h.png'; break;
+          case 'pecho': visible = !aImg; break;
+          case 'A_Raging_Wolf': visible = aImg === 'wolf-a.png'; break;
+          case 'A_Alberich': visible = aImg === 'carian-a.png'; break;
+          case 'A_Preceptor': visible = aImg === 'samurai-a.png'; break;
+          case 'manos': visible = !gImg; break;
+          case 'G_RAGING_WOLF': visible = gImg === 'wolf-g.png'; break;
+          case 'G_Raging_Wolf': visible = gImg === 'wolf-g.png'; break;
+          case 'piernas': visible = !lImg; break;
+          case 'L_Raging_Wolf': visible = lImg === 'wolf-l.png'; break;
+          case 'L_Alberich': visible = lImg === 'carian-l.png'; break;
+          case 'L_Preceptor': visible = lImg === 'samurai-l.png'; break;
+          default: visible = true;
+        }
+        model.visible = visible;
       }
-
-      model.visible = visible;
 
       scene.add(model);
       modelos3D[nombre] = model;
 
       // Refuerza las reglas de visibilidad justo después de cargar
-      // (programado para evitar recursividad síncrona)
       if (typeof actualizarModelos3D === 'function') {
         setTimeout(() => {
           try { actualizarModelos3D(); } catch (e) { console.error(e); }
@@ -2395,7 +2414,6 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
     },
     undefined,
     function(error) {
-      // Si la carga falla y el token sigue siendo el actual, limpia token para evitar retries obsoletos
       if (cargaTokens[nombre] === token) delete cargaTokens[nombre];
       console.error('Error cargando modelo:', ruta, error);
     }
