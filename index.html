@@ -2268,7 +2268,7 @@ function initThreeJS() {
   controls.maxDistance = 20;
   controls.target.set(0, 1, 0);
   controls.update();
-  controls.enablePan = true;
+  controls.enablePan = false;
   controls.enableRotate = true;
 
   renderer.domElement.style.cursor = 'grab';
@@ -2294,6 +2294,20 @@ function initThreeJS() {
   // PRELOAD de modelos (ya existente)
   preloadAllModels();
   // No forzamos mostrar modelos aquí; actualizarModelos3D los hará visibles según equipadas
+}
+
+// NUEVO: define animate ANTES de initThreeJS para evitar ReferenceError
+function animate() {
+  // Llama recursivamente
+  requestAnimationFrame(animate);
+  // Actualiza controles si existen
+  if (typeof controls !== 'undefined' && controls) {
+    try { controls.update(); } catch (e) { /* ignore */ }
+  }
+  // Renderiza solo si renderer y camera están listos
+  if (typeof renderer !== 'undefined' && renderer && typeof scene !== 'undefined' && scene && typeof camera !== 'undefined' && camera) {
+    try { renderer.render(scene, camera); } catch (e) { /* ignore render errors */ }
+  }
 }
 
 // NUEVA: función para ajustar tamaño del renderer/cámara cuando el contenedor tiene tamaño real
