@@ -2552,15 +2552,6 @@ function actualizarModelos3D() {
       ocultarModelo('L_Preceptor');
     }
   }
-
-  // Si todas las ranuras están equipadas, puedes ocultar el canvas si lo deseas
-  if (equipadas.h && equipadas.a && equipadas.g && equipadas.l) {
-    renderer.domElement.style.display = 'none';
-    container.style.display = 'none';
-  } else {
-    renderer.domElement.style.display = 'block';
-    container.style.display = 'block';
-  }
 }
   </script>
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
