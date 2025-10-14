@@ -704,6 +704,8 @@
         document.getElementById('main-content').style.display = 'flex';
         // Inicializa Three.js solo la primera vez
         initThreeJS();
+        // Asegura que el renderer tenga el tamaño correcto ahora que el contenedor es visible
+        updateThreeSize();
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
       }
@@ -711,6 +713,11 @@
 
     window.addEventListener('DOMContentLoaded', function() {
       mostrarSoloMenu('inicio');
+
+      // INICIALIZAR THREE.JS DESDE EL MENÚ INICIO (preload + render oculto)
+      // Esto permitirá que los modelos comiencen a cargarse mientras el usuario está en "inicio".
+      initThreeJS();
+
       // --- EVENTOS DE MENÚ INICIO ---
       document.getElementById('btn-identificar').addEventListener('click', async function() {
   const usuario = document.getElementById('usuario-inicio').value.trim();
@@ -2222,10 +2229,15 @@ function initThreeJS() {
   container.style.zIndex = '1000';
   container.style.display = 'block';
 
-  // Usa el tamaño real del contenedor en píxeles
-  const rect = container.getBoundingClientRect();
-  const width = rect.width;
-  const height = rect.height;
+  // Usa el tamaño real del contenedor en píxeles; si está oculto, usa fallback basado en ventana
+  let rect = container.getBoundingClientRect();
+  let width = rect.width;
+  let height = rect.height;
+  if (!width || !height) {
+    // fallback: 35.55% ancho aproximado del viewport usado para columna B y altura completa
+    width = Math.max(300, Math.floor(window.innerWidth * 0.3555));
+    height = Math.max(300, window.innerHeight);
+  }
 
   scene = new THREE.Scene();
   scene.background = null;
@@ -2254,11 +2266,10 @@ function initThreeJS() {
   controls.dampingFactor = 0.08;
   controls.minDistance = 2;
   controls.maxDistance = 20;
-  // Cambia el target para girar alrededor del pecho (y=1)
   controls.target.set(0, 1, 0);
   controls.update();
-  controls.enablePan = true; // Permite mover la cámara lateralmente
-  controls.enableRotate = true; // Permite rotar la cámara con el mouse
+  controls.enablePan = true;
+  controls.enableRotate = true;
 
   renderer.domElement.style.cursor = 'grab';
   renderer.domElement.addEventListener('pointerdown', () => {
@@ -2276,23 +2287,27 @@ function initThreeJS() {
 
   // Redimensiona el entorno 3D si la ventana cambia de tamaño
   window.addEventListener('resize', () => {
-    const rect = container.getBoundingClientRect();
-    camera.aspect = rect.width / rect.height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(rect.width, rect.height);
+    updateThreeSize();
   });
 
   animate();
-  // Inicializar modelos 3D según el estado actual de ranuras
-  // PRELOAD: cargar todos los modelos en memoria y mantenerlos ocultos hasta que se pidan
+  // PRELOAD de modelos (ya existente)
   preloadAllModels();
-  actualizarModelos3D();
+  // No forzamos mostrar modelos aquí; actualizarModelos3D los hará visibles según equipadas
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-  controls && controls.update();
-  renderer.render(scene, camera);
+// NUEVA: función para ajustar tamaño del renderer/cámara cuando el contenedor tiene tamaño real
+function updateThreeSize() {
+  const container = document.getElementById('threejs-container');
+  if (!container || !renderer || !camera) return;
+  const rect = container.getBoundingClientRect();
+  const width = rect.width || Math.max(300, Math.floor(window.innerWidth * 0.3555));
+  const height = rect.height || Math.max(300, window.innerHeight);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+  renderer.domElement.style.width = '100%';
+  renderer.domElement.style.height = '100%';
 }
 
 // Permite cargar varios modelos GLB en la misma escena
