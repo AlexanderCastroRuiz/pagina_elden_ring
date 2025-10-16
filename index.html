@@ -308,6 +308,43 @@
       opacity: 1;
     }
 
+    /* --- NUEVO: Inputs de texto personalizados --- */
+    .sinluz-input {
+      background: url('input.png') center center no-repeat;
+      background-size: contain;
+      width: 230px;
+      height: 45px;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #fff;
+      text-align: center;
+      font-size: 1.1em;
+      font-family: inherit;
+      margin-bottom: 20px;
+      transition: background-image 0.2s ease;
+      padding: 6px 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    /* Hover solo aplica cuando el input NO está en foco (evita que hover en etiqueta/elementos adyacentes afecte mientras se escribe) */
+    .sinluz-input:not(:focus):hover {
+      background-image: url('dorado-input.png');
+    }
+    /* Focus siempre muestra escribiendo.png; incluso si el puntero está encima, mantener este estado */
+    .sinluz-input:focus,
+    .sinluz-input:focus:hover {
+      background-image: url('escribiendo.png') !important;
+      outline: none;
+      box-shadow: none;
+    }
+
+    /* Color del placeholder (con prefijos para compatibilidad) */
+    .sinluz-input::placeholder { color: #aaa; }
+    .sinluz-input::-webkit-input-placeholder { color: #aaa; }
+    .sinluz-input::-moz-placeholder { color: #aaa; }
+
     /* Estilos individuales para cada atributo (puedes modificar left, top, font-size, width, etc. para cada uno) */
     #atributo-img {
       position: absolute;
@@ -390,6 +427,41 @@
       opacity: 0 !important;
     }
 
+    /* ===== BOTONES: estilo solicitado ===== */
+    .btn-cargar {
+      background: url('boton.png') center center no-repeat;
+      background-size: contain;
+      width: 180px;
+      height: 55px;
+      border: none;
+      outline: none;
+      color: #C9BBA1;
+      font-family: inherit;
+      font-size: 1em;
+      cursor: pointer;
+      filter: brightness(0.7);
+      transition: all 0.15s ease;
+    }
+    .btn-cargar:hover { filter: brightness(1); }
+    .btn-cargar:active { transform: scale(0.97); }
+
+    .btn-cargar-bn {
+      background: url('boton.png') center center no-repeat;
+      background-size: contain;
+      width: 180px;
+      height: 55px;
+      border: none;
+      outline: none;
+      color: #ccc;
+      font-family: inherit;
+      font-size: 1em;
+      cursor: pointer;
+      filter: grayscale(1) brightness(0.7);
+      transition: all 0.15s ease;
+    }
+    .btn-cargar-bn:hover { filter: grayscale(1) brightness(1); }
+    .btn-cargar-bn:active { transform: scale(0.97); }
+
   </style>
 </head>
 <body>
@@ -402,10 +474,15 @@
     <div style="background:rgba(30,30,30,0.98);border-radius:18px;padding:40px 32px;box-shadow:0 0 32px #000a;min-width:320px;display:flex;flex-direction:column;align-items:center;gap:24px;max-width:90vw;">
       <h2 style="color:#C9BBA1;font-size:2em;margin-bottom:10px;">Bienvenido</h2>
       <label for="usuario-inicio" style="color:#fff;font-size:1.1em;margin-bottom:6px;">Ingresa tu usuario:</label>
-      <input id="usuario-inicio" type="text" placeholder="Usuario" style="padding:10px 16px;font-size:1.1em;border-radius:8px;border:1px solid #C9BBA1;background:#222;color:#fff;width:220px;outline:none;">
+      <input id="usuario-inicio" type="text" placeholder="Usuario" class="sinluz-input" maxlength="13"
+        style="width:220px;font-size:1.1em;font-family: 'FuentePersonalizada', sans-serif;">
+
       <div style="display:flex;gap:18px;margin-top:18px;">
-        <button id="btn-identificar" style="padding:10px 28px;font-size:1.1em;background:#C9BBA1;color:#222;border:none;border-radius:8px;cursor:pointer; font-family: 'FuentePersonalizada', sans-serif;">Listo</button>
-        <button id="btn-omitir" style="padding:10px 28px;font-size:1.1em;background:#444;color:#C9BBA1;border:none;border-radius:8px;cursor:pointer; font-family: 'FuentePersonalizada', sans-serif;">Omitir</button>
+        <!-- 'Listo' usa .btn-cargar -->
+        <button id="btn-identificar" class="btn-cargar">Listo</button>
+
+        <!-- 'Omitir' usa .btn-cargar-bn -->
+        <button id="btn-omitir" class="btn-cargar-bn">Omitir</button>
       </div>
     </div>
   </div>
@@ -431,7 +508,7 @@
     <img id="ranura-a-copia-1" src="ranura-a.png" alt="Ranura A copia 1" style="position: absolute; top: 237px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-g-copia-1" src="ranura-g.png" alt="Ranura G copia 1" style="position: absolute; top: 337px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-l-copia-1" src="ranura-l.png" alt="Ranura L copia 1" style="position: absolute; top: 437px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-1" style="position: absolute; top: 547px; left: 160px; width: 100px; z-index: 2202; padding: 10px 0; background: #C9BBA1; color: #222; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; font-family: 'FuentePersonalizada', sans-serif;">
+    <button id="btn-cargar-1" class="btn-cargar" style="position: absolute; top: 520px; left: 9%; z-index: 2202;">
     Cargar
     </button>
     <!-- Copias de ranuras (grupo 2: centro horizontal, misma altura) -->
@@ -439,7 +516,7 @@
     <img id="ranura-a-copia-2" src="ranura-a.png" alt="Ranura A copia 2" style="position: absolute; top: 237px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-g-copia-2" src="ranura-g.png" alt="Ranura G copia 2" style="position: absolute; top: 337px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-l-copia-2" src="ranura-l.png" alt="Ranura L copia 2" style="position: absolute; top: 437px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-2" style="position: absolute; top: 547px; left: 50vw; transform: translateX(-50%); width: 100px; z-index: 2202; padding: 10px 0; background: #C9BBA1; color: #222; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; font-family: 'FuentePersonalizada', sans-serif;">
+    <button id="btn-cargar-2" class="btn-cargar" style="position: absolute; top: 520px; left: 50vw; transform: translateX(-50%); z-index: 2202;">
       Cargar
     </button>
     <!-- Copias de ranuras (grupo 3: lado opuesto horizontal, misma altura) -->
@@ -447,18 +524,18 @@
     <img id="ranura-a-copia-3" src="ranura-a.png" alt="Ranura A copia 3" style="position: absolute; top: 237px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-g-copia-3" src="ranura-g.png" alt="Ranura G copia 3" style="position: absolute; top: 337px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-l-copia-3" src="ranura-l.png" alt="Ranura L copia 3" style="position: absolute; top: 437px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-3" style="position: absolute; top: 547px; right: 160px; width: 100px; z-index: 2202; padding: 10px 0; background: #C9BBA1; color: #222; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; font-family: 'FuentePersonalizada', sans-serif;">
+    <button id="btn-cargar-3" class="btn-cargar" style="position: absolute; top: 520px; right: 9%; z-index: 2202;">
     Cargar
     </button>
     <!-- Contenedor de texto para Sinluz1 -->
-    <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1"
-      style="position: absolute; top: 87px; left: 210px; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; padding: 6px 10px; border-radius: 8px; border: 1px solid #C9BBA1; background: #222; color: #fff; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center;">
-    <!-- Contenedor de texto para Sinluz2 -->
-    <input id="nombre-sinluz-2" type="text" placeholder="Sinluz 2"
-      style="position: absolute; top: 87px; left: 50vw; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; padding: 6px 10px; border-radius: 8px; border: 1px solid #C9BBA1; background: #222; color: #fff; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center;">
+    <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
+      style="position: absolute; top: 87px; left: 210px; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
+    <!-- Contenedor de texto para Sinluz2 (añadido: centrado) -->
+    <input id="nombre-sinluz-2" type="text" placeholder="Sinluz 2" class="sinluz-input" maxlength="15"
+      style="position: absolute; top: 87px; left: 50vw; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
     <!-- Contenedor de texto para Sinluz3 -->
-    <input id="nombre-sinluz-3" type="text" placeholder="Sinluz 3"
-      style="position: absolute; top: 87px; right: 160px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; padding: 6px 10px; border-radius: 8px; border: 1px solid #C9BBA1; background: #222; color: #fff; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center;">
+    <input id="nombre-sinluz-3" type="text" placeholder="Sinluz 3" class="sinluz-input" maxlength="15"
+      style="position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
   </div>
 
   <div class="main-grid" id="main-content" style="display:none;">
@@ -2046,44 +2123,66 @@ function volverMenuRanuras() {
 
   // Ajusta el ancho del input según el texto
   function ajustarInputWidth(input) {
-    // Crea un span invisible para medir el texto
-    let span = document.getElementById('medidor-input-span');
-    if (!span) {
-      span = document.createElement('span');
-      span.id = 'medidor-input-span';
-      span.style.visibility = 'hidden';
-      span.style.position = 'absolute';
-      span.style.whiteSpace = 'pre';
-      span.style.fontFamily = input.style.fontFamily || window.getComputedStyle(input).fontFamily;
-      span.style.fontSize = input.style.fontSize || window.getComputedStyle(input).fontSize;
-      document.body.appendChild(span);
-    }
-    span.textContent = input.value || input.placeholder;
-    // Suma un poco de espacio extra
-    input.style.width = Math.max(40, Math.min(span.offsetWidth + 24, 300)) + 'px';
+    // DESACTIVADO: ya no se ajusta el ancho automáticamente en el menú selección.
+    // Esto preserva las posiciones/anchos definidos por CSS/inline y evita cambios visuales.
+    return;
   }
 
   // Asigna eventos a cada input
-  ['1','2','3'].forEach(function(idx){
-    const input = document.getElementById('nombre-sinluz-' + idx);
-    // Ajusta el ancho al cargar
-    ajustarInputWidth(input);
+  // Asegura maxlength en el input usuario y en los inputs de Sinluz; añade truncado por si se pega texto.
+  const usuarioInput = document.getElementById('usuario-inicio');
+  if (usuarioInput) {
+    usuarioInput.maxLength = 13;
+    usuarioInput.style.backgroundImage = "url('input.png')";
+    usuarioInput.style.backgroundRepeat = "no-repeat";
+    usuarioInput.style.backgroundPosition = "center center";
+    usuarioInput.style.backgroundSize = "contain";
 
-    // Ajusta el ancho al escribir
-    input.addEventListener('input', function() {
-      ajustarInputWidth(input);
+    usuarioInput.addEventListener('input', function() {
+      if (usuarioInput.value.length > 13) usuarioInput.value = usuarioInput.value.slice(0,13);
     });
 
+    // Solo cuando el puntero está directamente sobre el input
+    usuarioInput.addEventListener('pointerenter', function() {
+      if (document.activeElement !== usuarioInput) {
+        usuarioInput.style.backgroundImage = "url('dorado-input.png')";
+      }
+    });
+    usuarioInput.addEventListener('pointerleave', function() {
+      if (document.activeElement !== usuarioInput) {
+        usuarioInput.style.backgroundImage = "url('input.png')";
+      }
+    });
+
+    // Focus siempre muestra escribiendo.png
+    usuarioInput.addEventListener('focus', function() {
+      usuarioInput.style.backgroundImage = "url('escribiendo.png')";
+    });
+    usuarioInput.addEventListener('blur', function() {
+      usuarioInput.style.backgroundImage = "url('input.png')";
+    });
+  }
+
+  ['1','2','3'].forEach(function(idx){
+    const input = document.getElementById('nombre-sinluz-' + idx);
+    if (!input) return;
+    input.maxLength = 15;
+    // Ajusta el ancho al cargar (función ya inactiva pero mantenida)
+    ajustarInputWidth(input);
+    // Truncado por si se pega texto
+    input.addEventListener('input', function() {
+      if (input.value.length > 15) input.value = input.value.slice(0,15);
+      ajustarInputWidth(input);
+    });
     // Actualiza al presionar Enter
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         if (input.value.trim()) {
           actualizarNombreSinluz(idx);
-          input.blur(); // quita el foco para disparar el evento blur también
+          input.blur();
         }
       }
     });
-
     // Actualiza al perder foco
     input.addEventListener('blur', function() {
       if (input.value.trim()) {
@@ -2091,8 +2190,7 @@ function volverMenuRanuras() {
       }
     });
   });
-
-  // Mapeo de armadura a imagen
+    // Mapeo de armadura a imagen
 const imagenPorArmadura = {
   "Armadura de Lobo Furioso": "wolf-a.png",
   "Vestido de Alberich": "carian-a.png",
@@ -2184,7 +2282,6 @@ async function actualizarMenuSeleccionVisual() {
         const input = document.getElementById('nombre-sinluz-' + idx);
         if (input) {
           input.value = sinluz.Nombre || "";
-          ajustarInputWidth(input);
         }
         // Muestra imagen equipada sobre copia de ranura H
         const imgH = obtenerImagenPorNombre("h", sinluz.Yelmo || "");
@@ -2224,7 +2321,7 @@ function initThreeJS() {
   container.style.left = '27vw';
   container.style.top = '-2vw';
   container.style.width = '33.33vw';
-  container.style.height = '100vh';
+  container.style.height = '120vh';
   container.style.background = 'transparent';
   container.style.zIndex = '1000';
   container.style.display = 'block';
@@ -2320,8 +2417,6 @@ function updateThreeSize() {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
-  renderer.domElement.style.width = '100%';
-  renderer.domElement.style.height = '100%';
 }
 
 // Permite cargar varios modelos GLB en la misma escena
