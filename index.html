@@ -427,40 +427,47 @@
       opacity: 0 !important;
     }
 
-    /* ===== BOTONES: estilo solicitado ===== */
-    .btn-cargar {
-      background: url('boton.png') center center no-repeat;
+    /* Botones estilo imagen (Menú inicio y Selección)
+       - Fondo por defecto: boton-pordefecto.png (grayscale)
+       - Hover/focus: boton.png (color)
+       - Color de letras siempre: #D0D0D0
+       - Variables para ajustar tamaño: --fancy-btn-width, --fancy-btn-height, --fancy-btn-padding, --fancy-btn-font-size
+    */
+    :root {
+      --fancy-btn-width: 100px;          /* podés sobrescribir en :root o inline */
+      --fancy-btn-height: 100px;
+      --fancy-btn-padding: 10px 28px;
+      --fancy-btn-font-size: 1.1em;
+    }
+    .fancy-img-button {
+      display: inline-block;
+      background-image: url('boton-pordefecto.png');
+      /* mostrar la imagen completa sin recortar */
       background-size: contain;
-      width: 180px;
-      height: 55px;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: grayscale(100%);
+      color: #D0D0D0;
       border: none;
       outline: none;
-      color: #C9BBA1;
-      font-family: inherit;
-      font-size: 1em;
+      padding: var(--fancy-btn-padding);
+      font-family: 'FuentePersonalizada', sans-serif;
+      font-size: var(--fancy-btn-font-size);
       cursor: pointer;
-      filter: brightness(0.7);
-      transition: all 0.15s ease;
+      border-radius: 8px; /* conservá el contorno de la ventana, esto es interno del botón */
+      transition: filter 0.15s ease, background-image 0.15s ease;
+      width: var(--fancy-btn-width);
+      height: var(--fancy-btn-height);
+      text-align: center;
+      box-shadow: none;
+      background-color: transparent;
     }
-    .btn-cargar:hover { filter: brightness(1); }
-    .btn-cargar:active { transform: scale(0.97); }
-
-    .btn-cargar-bn {
-      background: url('boton.png') center center no-repeat;
-      background-size: contain;
-      width: 180px;
-      height: 55px;
-      border: none;
-      outline: none;
-      color: #ccc;
-      font-family: inherit;
-      font-size: 1em;
-      cursor: pointer;
-      filter: grayscale(1) brightness(0.7);
-      transition: all 0.15s ease;
+    .fancy-img-button:hover,
+    .fancy-img-button:focus {
+      background-image: url('boton.png');
+      filter: none;
+      color: #D0D0D0;
     }
-    .btn-cargar-bn:hover { filter: grayscale(1) brightness(1); }
-    .btn-cargar-bn:active { transform: scale(0.97); }
 
   </style>
 </head>
@@ -470,19 +477,23 @@
   <div class="overlay-wallpaper"></div>
 
   <!-- MENÚ INICIO MODAL -->
-  <div id="menu-inicio" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);">
-    <div style="background:rgba(30,30,30,0.98);border-radius:18px;padding:40px 32px;box-shadow:0 0 32px #000a;min-width:320px;display:flex;flex-direction:column;align-items:center;gap:24px;max-width:90vw;">
+  <div id="menu-inicio" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);backdrop-filter:blur(2px);">
+    <!-- Imagen "copia" del rectángulo escalada al tamaño de la ventana.
+         Está detrás del contenido pero dentro del modal (se puede reemplazar por otra imagen si querés). -->
+    <img id="rectangulo-inicio" src="rectangulo.png" alt="Rectángulo inicio"
+      style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:550px; height:auto; object-fit:contain; z-index:2001; pointer-events:none;">
+
+    <!-- Contenido del modal superpuesto sobre la imagen (transparente para mantener el contorno visual) -->
+    <div id="menu-inicio-content"
+         style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:clamp(300px, 60vw, 900px); z-index:2002; display:flex; flex-direction:column; align-items:center; gap:24px; padding:40px 32px; box-sizing:border-box;">
       <h2 style="color:#C9BBA1;font-size:2em;margin-bottom:10px;">Bienvenido</h2>
       <label for="usuario-inicio" style="color:#fff;font-size:1.1em;margin-bottom:6px;">Ingresa tu usuario:</label>
       <input id="usuario-inicio" type="text" placeholder="Usuario" class="sinluz-input" maxlength="13"
         style="width:220px;font-size:1.1em;font-family: 'FuentePersonalizada', sans-serif;">
 
       <div style="display:flex;gap:18px;margin-top:18px;">
-        <!-- 'Listo' usa .btn-cargar -->
-        <button id="btn-identificar" class="btn-cargar">Listo</button>
-
-        <!-- 'Omitir' usa .btn-cargar-bn -->
-        <button id="btn-omitir" class="btn-cargar-bn">Omitir</button>
+        <button id="btn-identificar" class="fancy-img-button" style="--fancy-btn-width:220px; --fancy-btn-font-size:1.1em;">Listo</button>
+        <button id="btn-omitir" class="fancy-img-button" style="--fancy-btn-width:220px; --fancy-btn-font-size:1.1em;">Omitir</button>
       </div>
     </div>
   </div>
@@ -508,15 +519,13 @@
     <img id="ranura-a-copia-1" src="ranura-a.png" alt="Ranura A copia 1" style="position: absolute; top: 237px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-g-copia-1" src="ranura-g.png" alt="Ranura G copia 1" style="position: absolute; top: 337px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-l-copia-1" src="ranura-l.png" alt="Ranura L copia 1" style="position: absolute; top: 437px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-1" class="btn-cargar" style="position: absolute; top: 520px; left: 9%; z-index: 2202;">
-    Cargar
-    </button>
+    <button id="btn-cargar-1" class="fancy-img-button" style="position: absolute; top: 520px; left: 9%; z-index: 2202; --fancy-btn-width:100px;">Cargar</button>
     <!-- Copias de ranuras (grupo 2: centro horizontal, misma altura) -->
     <img id="ranura-h-copia-2" src="ranura-h.png" alt="Ranura H copia 2" style="position: absolute; top: 137px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-a-copia-2" src="ranura-a.png" alt="Ranura A copia 2" style="position: absolute; top: 237px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-g-copia-2" src="ranura-g.png" alt="Ranura G copia 2" style="position: absolute; top: 337px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-l-copia-2" src="ranura-l.png" alt="Ranura L copia 2" style="position: absolute; top: 437px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-2" class="btn-cargar" style="position: absolute; top: 520px; left: 50vw; transform: translateX(-50%); z-index: 2202;">
+    <button id="btn-cargar-2" class="fancy-img-button" style="position: absolute; top: 520px; left: 50vw; transform: translateX(-50%); z-index: 2202; --fancy-btn-width:100px;">
       Cargar
     </button>
     <!-- Copias de ranuras (grupo 3: lado opuesto horizontal, misma altura) -->
@@ -524,7 +533,7 @@
     <img id="ranura-a-copia-3" src="ranura-a.png" alt="Ranura A copia 3" style="position: absolute; top: 237px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-g-copia-3" src="ranura-g.png" alt="Ranura G copia 3" style="position: absolute; top: 337px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
     <img id="ranura-l-copia-3" src="ranura-l.png" alt="Ranura L copia 3" style="position: absolute; top: 437px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-3" class="btn-cargar" style="position: absolute; top: 520px; right: 9%; z-index: 2202;">
+    <button id="btn-cargar-3" class="fancy-img-button" style="position: absolute; top: 520px; right: 9%; z-index: 2202; --fancy-btn-width:100px;">
     Cargar
     </button>
     <!-- Contenedor de texto para Sinluz1 -->
@@ -2233,7 +2242,6 @@ function limpiarEquipadaCopiaPorRanura(tipo, idx) {
 // Muestra imagen equipada sobre la copia de ranura
 function mostrarEquipadaCopia(tipo, idx, imgSrc) {
   limpiarEquipadaCopiaPorRanura(tipo, idx);
-  // Elige el ranura-copia-X según tipo y idx
   let ranuraId = "";
   if (tipo === "h") ranuraId = `ranura-h-copia-${idx}`;
   if (tipo === "a") ranuraId = `ranura-a-copia-${idx}`;
