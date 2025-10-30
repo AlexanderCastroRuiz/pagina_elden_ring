@@ -547,6 +547,20 @@
       style="position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
   </div>
 
+  <!-- MENÚ LEVELUP (nuevo) -->
+  <div id="menu-estadisticas" style="display:none;position:fixed;z-index:2500;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:transparent;">
+    <!-- Mostramos una copia grande del rectángulo; reutilizaremos los mini-separadores existentes -->
+    <img id="rectangulo-estadisticas" src="rectangulo.png" alt="Rectángulo LevelUp"
+      style="position: absolute; top: 110px; left: 23px; width: auto; height: 460px; z-index: 2501; pointer-events: none; object-fit: contain;">
+    <!-- Título visible del menú -->
+    <h2 style="position:absolute; top:70px; left:120px; z-index:2504; color:#C9BBA1; font-family: 'FuentePersonalizada', sans-serif;">Menú LevelUp</h2>
+    <!-- Botón de cerrar para volver al menú principal -->
+    <div class="menu-btn-wrapper" id="btn-cerrar-estadisticas" style="position:absolute; top:24px; right:24px; --menu-btn-size:44px; z-index:2503;">
+      <img src="esc.png" alt="Cerrar" class="menu-btn-img" style="width:100%; height:100%; object-fit:contain;">
+      <span class="menu-btn-tooltip">Volver</span>
+    </div>
+  </div>
+
   <div class="main-grid" id="main-content" style="display:none;">
     <div class="fila-a">
       <p class="fila-a-text">Equipo</p>
@@ -617,6 +631,8 @@
     <img src="mini-separador.png" alt="Mini Separador" id="mini-separador-1" style="position: absolute; left: 66.66%; top: calc(50% - 37.5vh); transform: translateX(-50%); width: 6px; height: 140px; z-index: 2;">
     <img src="mini-separador.png" alt="Mini Separador 2" id="mini-separador-2" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 66.5%; top: 240px;">
     <img src="mini-separador.png" alt="Mini Separador 3" id="mini-separador-3" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 82.825vw; top: 240px;">
+  <!-- Copias de mini-separadores ubicadas en el primer tercio (manteniendo altura) -->
+  <!-- mini-separador copies removed as requested; menu-estadisticas will use cloned separators at runtime -->
     <!-- <img src="separador.png" alt="Separador 2" class="separator second"> Eliminado -->
     <img src="rectangulo.png" alt="Rectángulo" id="rectangulo-img">
     <!-- Ranuras como botones, listas para ubicar y cambiar tamaño -->
@@ -672,6 +688,12 @@
       <img src="load.png" alt="Cargar" class="menu-btn-img">
       <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
       <span class="menu-btn-tooltip">Cargar Sinluz</span>
+    </div>
+    <!-- Botón Menú LevelUp (nuevo) -->
+    <div class="menu-btn-wrapper" id="btn-estadisticas" style="bottom: 30px; right: 210px; --menu-btn-size: 50px;">
+      <img src="poder.png" alt="LevelUp" class="menu-btn-img">
+      <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
+      <span class="menu-btn-tooltip">Menú LevelUp</span>
     </div>
     <img id="atributo-img" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4; pointer-events: none;">
     <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
@@ -780,12 +802,19 @@
     function mostrarSoloMenu(menu) {
       document.getElementById('menu-inicio').style.display = 'none';
       document.getElementById('menu-seleccion').style.display = 'none';
+      document.getElementById('menu-estadisticas') && (document.getElementById('menu-estadisticas').style.display = 'none');
       document.getElementById('main-content').style.display = 'none';
       if (menu === 'inicio') {
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
         actualizarMenuSeleccionVisual();
+      } else if (menu === 'estadisticas' || menu === 'levelup') {
+        // Mostrar solo la pantalla LevelUp (overlay minimalista)
+        // Oculta todo lo demás (ya hecho arriba) y muestra el overlay
+        if (document.getElementById('menu-estadisticas')) {
+          document.getElementById('menu-estadisticas').style.display = 'flex';
+        }
       } else if (menu === 'principal') {
         document.getElementById('main-content').style.display = 'flex';
         // Inicializa Three.js solo la primera vez
@@ -852,6 +881,85 @@
       // --- NUEVO: Botón "Guardar" te lleva al menú inicio ---
       document.getElementById('btn-guardar').addEventListener('click', function() {
         mostrarSoloMenu('inicio');
+      });
+
+      // --- NUEVO: Botón "Estadísticas" abre el Menú Estadísticas ---
+      var btnEst = document.getElementById('btn-estadisticas');
+      var btnCerrarEst = document.getElementById('btn-cerrar-estadisticas');
+      // Guardamos referencias para restaurar mini-separadores
+      var _estad_prev = { nodes: [] };
+
+      // Clone mini-separators into the statistics overlay and shift their left by -33.3%
+      function moverMiniSeparadoresAlOverlay() {
+        try {
+          var menuEst = document.getElementById('menu-estadisticas');
+          if (!menuEst) return;
+          ['mini-separador-1','mini-separador-2'].forEach(function(id){
+            var orig = document.getElementById(id);
+            if (!orig) return;
+            // create a clone so principal is unaffected
+            var clone = orig.cloneNode(true);
+            // compute new left by subtracting 33.3% when possible
+            var leftVal = orig.style.left || window.getComputedStyle(orig).left || '';
+            var newLeft = '';
+            if (typeof leftVal === 'string' && leftVal.indexOf('%') !== -1) {
+              var num = parseFloat(leftVal);
+              if (!isNaN(num)) {
+                var result = Math.max(0, +(num - 33.3).toFixed(2));
+                newLeft = result + '%';
+              }
+            } else if (typeof leftVal === 'string' && leftVal.indexOf('vw') !== -1) {
+              var numvw = parseFloat(leftVal);
+              if (!isNaN(numvw)) {
+                var resvw = Math.max(0, +(numvw - 33.3).toFixed(2));
+                newLeft = resvw + 'vw';
+              }
+            }
+            if (!newLeft) newLeft = '33.33%';
+            clone.style.left = newLeft;
+            clone.id = id + '-estad-clone';
+            clone.style.zIndex = '2502';
+            menuEst.appendChild(clone);
+            _estad_prev.nodes.push(clone.id);
+          });
+        } catch (e) { console.error(e); }
+      }
+
+      // Remove clones created for the statistics overlay
+      function restaurarMiniSeparadores() {
+        try {
+          _estad_prev.nodes.forEach(function(cloneId){
+            var el = document.getElementById(cloneId);
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+          });
+        } catch (e) { console.error(e); }
+        _estad_prev.nodes = [];
+      }
+
+      if (btnEst) {
+        btnEst.addEventListener('click', function() {
+          // mover mini-separadores reales dentro del overlay para reutilizarlos
+          moverMiniSeparadoresAlOverlay();
+          mostrarSoloMenu('estadisticas');
+        });
+      }
+
+      // Cerrar desde el overlay de estadísticas (restaurar los separadores antes de volver)
+      if (btnCerrarEst) {
+        btnCerrarEst.addEventListener('click', function() {
+          // cerrar overlay
+          mostrarSoloMenu('principal');
+          // restaurar separadores a su lugar original
+          restaurarMiniSeparadores();
+        });
+      }
+
+      // Tecla Escape para cerrar el overlay de estadísticas
+      window.addEventListener('keydown', function(e){
+        if ((e.key === 'Escape' || e.key === 'Esc') && document.getElementById('menu-estadisticas') && document.getElementById('menu-estadisticas').style.display === 'flex') {
+          mostrarSoloMenu('principal');
+          restaurarMiniSeparadores();
+        }
       });
 
   // --- Quitar imagen equipada y actualizar base de datos al presionar R ---
@@ -1691,6 +1799,9 @@ function volverMenuRanuras() {
     }
     setupMenuBtnTooltip("btn-guardar");
     setupMenuBtnTooltip("btn-cargar");
+  setupMenuBtnTooltip("btn-estadisticas");
+  // también registro tooltip para el botón de cerrar en el overlay (si existe)
+  try { setupMenuBtnTooltip('btn-cerrar-estadisticas'); } catch(e) {}
 
 
     // Utilidad para formatear saltos de línea en descripciones
