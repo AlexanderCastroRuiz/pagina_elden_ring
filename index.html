@@ -558,6 +558,10 @@
 
   <!-- MENÚ LEVELUP (nuevo) -->
   <div id="menu-estadisticas" style="display:none;position:fixed;z-index:2500;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:transparent;">
+    <!-- Barra-levelup -->
+    <div class="barra-levelup-container" style="position:absolute;left:0;top:7%;transform:translateY(-50%);width:39.45vw;height:66.66%;display:flex;align-items:flex-start;justify-content:flex-start;pointer-events:none;z-index:2502;">
+      <img src="Barra-levelup.png" alt="Barra LevelUp" class="barra-levelup-img" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">
+    </div>
     <!-- Mostramos una copia grande del rectángulo con variables CSS para ajustar tamaño -->
     <img id="rectangulo-estadisticas" src="rectangulo.png" alt="Rectángulo LevelUp"
       style="position: absolute; top: var(--rect-stats-top, 240px); left: var(--rect-stats-left, 23px); width: var(--rect-stats-width, 380px); height: var(--rect-stats-height, 330px); z-index: 2501; pointer-events: none; object-fit: fill;">
@@ -584,6 +588,7 @@
       .stat-label { position: absolute; color: #C9BBA1; font-size: 15px; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 1px 1px 2px #000; pointer-events: none; z-index: 2504; }
     </style>
     <div id="label-brazo" class="stat-label" style="left:5.3%; top:43%; transform:translateY(-50%);">Puntos de atributo</div>
+    <div id="numero-levelup" style="position:absolute; right:82%; top:43%; transform:translateY(-50%); color:#C9BBA1; font-size:20px; font-family:'FuentePersonalizada',sans-serif; text-shadow:1px 1px 2px #000; z-index:2504; white-space:nowrap;">99</div>
     <div id="label-resistencia2" class="stat-label" style="left:68.2%; top:42.5%; transform:translateY(-50%);">Cuerpo</div>
     <div id="label-defensa2" class="stat-label" style="left:68.2%; top:11.2%; transform:translateY(-50%);">Neutralización de daño</div>
     <div id="label-stats" class="stat-label" style="left:34.5%; top:11.2%; transform:translateY(-50%);">Estadísticas básicas</div>
@@ -617,41 +622,71 @@
     <img src="fondito.png" alt="Fondito 26" id="fondito-26" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 55.5%; transform: translate(-50%,-50%);">
     <!-- Labels/textos sobre cada fondito: puedes editarlos y moverlos cambiando left/top -->
     <style>
-      .fondito-label{ position:absolute; color:#D0D0D0; font-size:15px; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; pointer-events:none; z-index:2504; }
+      .fondito-label{ position:absolute; color:#D0D0D0; font-size:1em; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; pointer-events:none; z-index:2504; }
+      .stat-number { position:absolute; color:#D0D0D0; font-size:1em; font-family:'FuentePersonalizada',sans-serif; text-shadow:1px 1px 2px #000; z-index:2504; white-space:nowrap; }
     </style>
     <div id="fondito-text-1"  class="fondito-label" style="left: 6.7%; top:49%; transform:translate(-50%,-140%);">Vigor</div>
+    <div id="stat-number-1" class="stat-number" style="right:82%; top:46.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-2"  class="fondito-label" style="left: 7%; top:52%; transform:translate(-50%,-140%);">Mente</div>
+    <div id="stat-number-2" class="stat-number" style="right:82%; top:49.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-3"  class="fondito-label" style="left: 8.3%; top:55%; transform:translate(-50%,-140%);">Resistencia</div>
+    <div id="stat-number-3" class="stat-number" style="right:82%; top:52.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-4"  class="fondito-label" style="left: 7.2%; top:58%; transform:translate(-50%,-140%);">Fuerza</div>
+    <div id="stat-number-4" class="stat-number" style="right:82%; top:55.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-5"  class="fondito-label" style="left: 7.7%; top:61%; transform:translate(-50%,-140%);">Destreza</div>
+    <div id="stat-number-5" class="stat-number" style="right:82%; top:58.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-6"  class="fondito-label" style="left: 8.4%; top:64%; transform:translate(-50%,-140%);">Inteligencia</div>
+    <div id="stat-number-6" class="stat-number" style="right:82%; top:61.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-7"  class="fondito-label" style="left: 6%; top:67%; transform:translate(-50%,-140%);">Fe</div>
+    <div id="stat-number-7" class="stat-number" style="right:82%; top:64.5%; transform:translateY(-50%);">10</div>
     <div id="fondito-text-8"  class="fondito-label" style="left: 7.2%; top:70%; transform:translate(-50%,-140%);">Arcano</div>
+    <div id="stat-number-8" class="stat-number" style="right:82%; top:67.5%; transform:translateY(-50%);">10</div>
 
     <div id="fondito-text-9"  class="fondito-label" style="left:35.2%; top:17.6%; transform:translate(-50%,-140%);">PS</div>
+    <div id="stat-number-9" class="stat-number" style="right:52%; top:15%; transform:translateY(-50%);">100</div>
     <div id="fondito-text-10" class="fondito-label" style="left:35.3%; top:20.6%; transform:translate(-50%,-140%);">PC</div>
+    <div id="stat-number-10" class="stat-number" style="right:52%; top:18%; transform:translateY(-50%);">100</div>
     <div id="fondito-text-11" class="fondito-label" style="left:37%; top:23.5%; transform:translate(-50%,-140%);">Estamina</div>
+    <div id="stat-number-11" class="stat-number" style="right:52%; top:21%; transform:translateY(-50%);">100</div>
     <div id="fondito-text-12" class="fondito-label" style="left:41%; top:29.6%; transform:translate(-50%,-140%);">Carga de equipo máxima</div>
+    <div id="stat-number-12" class="stat-number" style="right:52%; top:27%; transform:translateY(-50%);">50.5</div>
     <div id="fondito-text-13" class="fondito-label" style="left:36.6%; top:35.5%; transform:translate(-50%,-140%);">Aplomo</div>
+    <div id="stat-number-13" class="stat-number" style="right:52%; top:33%; transform:translateY(-50%);">50</div>
     <div id="fondito-text-14" class="fondito-label" style="left:38.6%; top:38.5%; transform:translate(-50%,-140%);">Descubrimiento</div>
+    <div id="stat-number-14" class="stat-number" style="right:52%; top:36%; transform:translateY(-50%);">100</div>
 
     <div id="fondito-text-15" class="fondito-label" style="left:69.7%; top:17.6%; transform:translate(-50%,-140%);">Físico</div>
+    <div id="stat-number-15" class="stat-number" style="right:19%; top:15%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-16" class="fondito-label" style="left:70.6%; top:20.6%; transform:translate(-50%,-140%);">Vs. golpe</div>
+    <div id="stat-number-16" class="stat-number" style="right:19%; top:18%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-17" class="fondito-label" style="left:70.6%; top:23.5%; transform:translate(-50%,-140%);">Vs. corte</div>
+    <div id="stat-number-17" class="stat-number" style="right:19%; top:21%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-18" class="fondito-label" style="left:72.2%; top:26.5%; transform:translate(-50%,-140%);">Vs. perforación</div>
+    <div id="stat-number-18" class="stat-number" style="right:19%; top:24%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-19" class="fondito-label" style="left:69.7%; top:29.5%; transform:translate(-50%,-140%);">Magia</div>
+    <div id="stat-number-19" class="stat-number" style="right:19%; top:27%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-20" class="fondito-label" style="left:69.7%; top:32.5%; transform:translate(-50%,-140%);">Fuego</div>
+    <div id="stat-number-20" class="stat-number" style="right:19%; top:30%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-21" class="fondito-label" style="left:69.4%; top:35.5%; transform:translate(-50%,-140%);">Rayo</div>
+    <div id="stat-number-21" class="stat-number" style="right:19%; top:33%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-22" class="fondito-label" style="left:70.2%; top:38.5%; transform:translate(-50%,-140%);">Sagrado</div>
+    <div id="stat-number-22" class="stat-number" style="right:19%; top:36%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-23" class="fondito-label" style="left:71%; top:49.1%; transform:translate(-50%,-140%);">Inmunidad</div>
+    <div id="stat-number-23" class="stat-number" style="right:19%; top:46.5%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-24" class="fondito-label" style="left:70.6%; top:52.1%; transform:translate(-50%,-140%);">Robustez</div>
+    <div id="stat-number-24" class="stat-number" style="right:19%; top:49.5%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-25" class="fondito-label" style="left:72.1%; top:55.1%; transform:translate(-50%,-140%);">Concentración</div>
+    <div id="stat-number-25" class="stat-number" style="right:19%; top:52.5%; transform:translateY(-50%);">30</div>
     <div id="fondito-text-26" class="fondito-label" style="left:70.5%; top:58.1%; transform:translate(-50%,-140%);">Vitalidad</div>
+    <div id="stat-number-26" class="stat-number" style="right:19%; top:55.5%; transform:translateY(-50%);">30</div>
 
     <!-- Tres textos adicionales para ubicar manualmente -->
     <div id="fondito-text-27" class="fondito-label" style="left:6.7%; top:17.6%; transform:translate(-50%,-140%);">Nivel</div>
+    <div id="stat-number-27" class="stat-number" style="right:82%; top:15%; transform:translateY(-50%);">1</div>
     <div id="fondito-text-28" class="fondito-label" style="left:9.7%; top:23.5%; transform:translate(-50%,-140%);">Runas necesarias</div>
+    <div id="stat-number-28" class="stat-number" style="right:82%; top:21%; transform:translateY(-50%);">673</div>
     <div id="fondito-text-29" class="fondito-label" style="left:5%; top:26.6%; transform:translate(-50%,-140%);"> </div>
+    <div id="stat-number-29" class="stat-number" style="right:82%; top:24%; transform:translateY(-50%);">0</div>
   </div>
 
   <div class="main-grid" id="main-content" style="display:none;">
