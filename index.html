@@ -469,6 +469,15 @@
       color: #D0D0D0;
     }
 
+    /* Fonditos: brillo por defecto al 50% dentro del overlay LevelUp
+       Selecciona por id que empieza por "fondito-" para no afectar otros elementos. */
+    #menu-estadisticas img[id^="fondito-"] {
+      filter: brightness(50%);
+      transition: filter 0.15s ease;
+    }
+    /* NOTE: quitamos el :hover global para implementar comportamiento persistente
+       sólo para fondito-1..8 desde JS (el brillo por defecto se mantiene 50%). */
+
   </style>
 </head>
 <body>
@@ -549,16 +558,100 @@
 
   <!-- MENÚ LEVELUP (nuevo) -->
   <div id="menu-estadisticas" style="display:none;position:fixed;z-index:2500;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:transparent;">
-    <!-- Mostramos una copia grande del rectángulo; reutilizaremos los mini-separadores existentes -->
+    <!-- Mostramos una copia grande del rectángulo con variables CSS para ajustar tamaño -->
     <img id="rectangulo-estadisticas" src="rectangulo.png" alt="Rectángulo LevelUp"
-      style="position: absolute; top: 110px; left: 23px; width: auto; height: 460px; z-index: 2501; pointer-events: none; object-fit: contain;">
-    <!-- Título visible del menú -->
-    <h2 style="position:absolute; top:70px; left:120px; z-index:2504; color:#C9BBA1; font-family: 'FuentePersonalizada', sans-serif;">Menú LevelUp</h2>
+      style="position: absolute; top: var(--rect-stats-top, 240px); left: var(--rect-stats-left, 23px); width: var(--rect-stats-width, 380px); height: var(--rect-stats-height, 330px); z-index: 2501; pointer-events: none; object-fit: fill;">
     <!-- Botón de cerrar para volver al menú principal -->
     <div class="menu-btn-wrapper" id="btn-cerrar-estadisticas" style="position:absolute; top:24px; right:24px; --menu-btn-size:44px; z-index:2503;">
       <img src="esc.png" alt="Cerrar" class="menu-btn-img" style="width:100%; height:100%; object-fit:contain;">
       <span class="menu-btn-tooltip">Volver</span>
     </div>
+    <!-- Botón de confirmar para volver al menú principal -->
+    <button id="btn-confirmar-levelup" class="fancy-img-button" style="position:absolute; bottom:80px; left:16%; transform:translateX(-50%); --fancy-btn-width:220px; --fancy-btn-font-size:1.1em; z-index:2503;">Confirmar</button>
+    <!-- Copias adicionales de mini-separadores dentro del menú levelup -->
+    <img src="mini-separador.png" alt="Mini Separador 1 Copia B" id="mini-separador-1b" style="position: absolute; left: 66.66%; top: 44%; transform: translateX(-50%); width: 6px; height: 140px; z-index: 2502;"> <!-- resistencias-->
+    <img src="mini-separador.png" alt="Mini Separador 2 Copia A" id="mini-separador-2a" style="position: absolute; width: 6px; height: 170px; z-index: 2502; left: 66.5%; top: calc(50% - 37.5vh);"> <!-- defensas--> 
+    <img src="mini-separador.png" alt="Mini Separador 2 Copia B" id="mini-separador-2b" style="position: absolute; width: 6px; height: 170px; z-index: 2502; left: 4%; top: 44%;"> <!-- subir de nivel-->
+    <!-- Mini separador adicional para ubicar -->
+    <img src="mini-separador.png" alt="Mini Separador Extra" id="mini-separador-extra" style="position: absolute; width: 6px; height: 100px; z-index: 2502; left: 4%; top: 80px;"> <!-- runas-->
+    <!-- Imágenes para el menú levelup -->
+    <img src="brazo.png" alt="Brazo" id="img-brazo" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 3.5%; top: 41%;">
+    <img src="resistencia2.png" alt="Resistencia 2" id="img-resistencia2" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 66%; top: 41%;">
+    <img src="defensa2.png" alt="Defensa 2" id="img-defensa2" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 66%; top: 9.5%;">
+    <img src="stats.png" alt="Stats" id="img-stats" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 32.9%; top: 9.5%;">
+    <!-- Textos junto a las imágenes (color #C9BBA1). Edita left/top para moverlos. -->
+    <style>
+      .stat-label { position: absolute; color: #C9BBA1; font-size: 15px; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 1px 1px 2px #000; pointer-events: none; z-index: 2504; }
+    </style>
+    <div id="label-brazo" class="stat-label" style="left:5.3%; top:43%; transform:translateY(-50%);">Puntos de atributo</div>
+    <div id="label-resistencia2" class="stat-label" style="left:68.2%; top:42.5%; transform:translateY(-50%);">Cuerpo</div>
+    <div id="label-defensa2" class="stat-label" style="left:68.2%; top:11.2%; transform:translateY(-50%);">Neutralización de daño</div>
+    <div id="label-stats" class="stat-label" style="left:34.5%; top:11.2%; transform:translateY(-50%);">Estadísticas básicas</div>
+    <!-- Fonditos añadidos (8 copias) - altura: 20px, ancho: 340px - ubícalos manualmente cambiando left/top -->
+    <img src="fondito.png" alt="Fondito Vigor"        id="fondito-1" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 46.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Mente"        id="fondito-2" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 49.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Resistencia"  id="fondito-3" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 52.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Fuerza"       id="fondito-4" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 55.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Destreza"     id="fondito-5" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 58.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Inteligencia" id="fondito-6" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 61.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Fe"           id="fondito-7" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 64.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Arcano"       id="fondito-8" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 67.5%; transform: translate(-50%,-50%);">  
+    <!-- 18 fondito adicionales añadidos; ubícalos cambiando inline left/top -->
+    <img src="fondito.png" alt="Fondito PS"  id="fondito-9"  style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 15%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito PC" id="fondito-10" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 18%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Estamina" id="fondito-11" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 21%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Carga de equipo máxima" id="fondito-12" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 27%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Aplomo" id="fondito-13" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 33%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Descubrimiento" id="fondito-14" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 36%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 15" id="fondito-15" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 15%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 16" id="fondito-16" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 18%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 17" id="fondito-17" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 21%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 18" id="fondito-18" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 24%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 19" id="fondito-19" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 27%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 20" id="fondito-20" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 30%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 21" id="fondito-21" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 33%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 22" id="fondito-22" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 36%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 23" id="fondito-23" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 46.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 24" id="fondito-24" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 49.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 25" id="fondito-25" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 52.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 26" id="fondito-26" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 55.5%; transform: translate(-50%,-50%);">
+    <!-- Labels/textos sobre cada fondito: puedes editarlos y moverlos cambiando left/top -->
+    <style>
+      .fondito-label{ position:absolute; color:#D0D0D0; font-size:15px; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; pointer-events:none; z-index:2504; }
+    </style>
+    <div id="fondito-text-1"  class="fondito-label" style="left: 6.7%; top:49%; transform:translate(-50%,-140%);">Vigor</div>
+    <div id="fondito-text-2"  class="fondito-label" style="left: 7%; top:52%; transform:translate(-50%,-140%);">Mente</div>
+    <div id="fondito-text-3"  class="fondito-label" style="left: 8.3%; top:55%; transform:translate(-50%,-140%);">Resistencia</div>
+    <div id="fondito-text-4"  class="fondito-label" style="left: 7.2%; top:58%; transform:translate(-50%,-140%);">Fuerza</div>
+    <div id="fondito-text-5"  class="fondito-label" style="left: 7.7%; top:61%; transform:translate(-50%,-140%);">Destreza</div>
+    <div id="fondito-text-6"  class="fondito-label" style="left: 8.4%; top:64%; transform:translate(-50%,-140%);">Inteligencia</div>
+    <div id="fondito-text-7"  class="fondito-label" style="left: 6%; top:67%; transform:translate(-50%,-140%);">Fe</div>
+    <div id="fondito-text-8"  class="fondito-label" style="left: 7.2%; top:70%; transform:translate(-50%,-140%);">Arcano</div>
+
+    <div id="fondito-text-9"  class="fondito-label" style="left:35.2%; top:17.6%; transform:translate(-50%,-140%);">PS</div>
+    <div id="fondito-text-10" class="fondito-label" style="left:35.3%; top:20.6%; transform:translate(-50%,-140%);">PC</div>
+    <div id="fondito-text-11" class="fondito-label" style="left:37%; top:23.5%; transform:translate(-50%,-140%);">Estamina</div>
+    <div id="fondito-text-12" class="fondito-label" style="left:41%; top:29.6%; transform:translate(-50%,-140%);">Carga de equipo máxima</div>
+    <div id="fondito-text-13" class="fondito-label" style="left:36.6%; top:35.5%; transform:translate(-50%,-140%);">Aplomo</div>
+    <div id="fondito-text-14" class="fondito-label" style="left:38.6%; top:38.5%; transform:translate(-50%,-140%);">Descubrimiento</div>
+
+    <div id="fondito-text-15" class="fondito-label" style="left:69.7%; top:17.6%; transform:translate(-50%,-140%);">Físico</div>
+    <div id="fondito-text-16" class="fondito-label" style="left:70.6%; top:20.6%; transform:translate(-50%,-140%);">Vs. golpe</div>
+    <div id="fondito-text-17" class="fondito-label" style="left:70.6%; top:23.5%; transform:translate(-50%,-140%);">Vs. corte</div>
+    <div id="fondito-text-18" class="fondito-label" style="left:72.2%; top:26.5%; transform:translate(-50%,-140%);">Vs. perforación</div>
+    <div id="fondito-text-19" class="fondito-label" style="left:69.7%; top:29.5%; transform:translate(-50%,-140%);">Magia</div>
+    <div id="fondito-text-20" class="fondito-label" style="left:69.7%; top:32.5%; transform:translate(-50%,-140%);">Fuego</div>
+    <div id="fondito-text-21" class="fondito-label" style="left:69.4%; top:35.5%; transform:translate(-50%,-140%);">Rayo</div>
+    <div id="fondito-text-22" class="fondito-label" style="left:70.2%; top:38.5%; transform:translate(-50%,-140%);">Sagrado</div>
+    <div id="fondito-text-23" class="fondito-label" style="left:71%; top:49.1%; transform:translate(-50%,-140%);">Inmunidad</div>
+    <div id="fondito-text-24" class="fondito-label" style="left:70.6%; top:52.1%; transform:translate(-50%,-140%);">Robustez</div>
+    <div id="fondito-text-25" class="fondito-label" style="left:72.1%; top:55.1%; transform:translate(-50%,-140%);">Concentración</div>
+    <div id="fondito-text-26" class="fondito-label" style="left:70.5%; top:58.1%; transform:translate(-50%,-140%);">Vitalidad</div>
+
+    <!-- Tres textos adicionales para ubicar manualmente -->
+    <div id="fondito-text-27" class="fondito-label" style="left:6.7%; top:17.6%; transform:translate(-50%,-140%);">Nivel</div>
+    <div id="fondito-text-28" class="fondito-label" style="left:9.7%; top:23.5%; transform:translate(-50%,-140%);">Runas necesarias</div>
+    <div id="fondito-text-29" class="fondito-label" style="left:5%; top:26.6%; transform:translate(-50%,-140%);"> </div>
   </div>
 
   <div class="main-grid" id="main-content" style="display:none;">
@@ -627,12 +720,9 @@
     </div>
   <!-- Solo un separador en el menú principal -->
   <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw;">
-  <!-- <img src="separador.png" alt="Separador 2" class="separator second" style="height: 75%; top: 83.33%; transform: translate(-50%, -50%); left: 66.66vw;"> -->
     <img src="mini-separador.png" alt="Mini Separador" id="mini-separador-1" style="position: absolute; left: 66.66%; top: calc(50% - 37.5vh); transform: translateX(-50%); width: 6px; height: 140px; z-index: 2;">
     <img src="mini-separador.png" alt="Mini Separador 2" id="mini-separador-2" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 66.5%; top: 240px;">
     <img src="mini-separador.png" alt="Mini Separador 3" id="mini-separador-3" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 82.825vw; top: 240px;">
-  <!-- Copias de mini-separadores ubicadas en el primer tercio (manteniendo altura) -->
-  <!-- mini-separador copies removed as requested; menu-estadisticas will use cloned separators at runtime -->
     <!-- <img src="separador.png" alt="Separador 2" class="separator second"> Eliminado -->
     <img src="rectangulo.png" alt="Rectángulo" id="rectangulo-img">
     <!-- Ranuras como botones, listas para ubicar y cambiar tamaño -->
@@ -804,6 +894,14 @@
       document.getElementById('menu-seleccion').style.display = 'none';
       document.getElementById('menu-estadisticas') && (document.getElementById('menu-estadisticas').style.display = 'none');
       document.getElementById('main-content').style.display = 'none';
+      
+      // Ocultar los separadores adicionales si volvemos al menú principal
+      const separadoresAdicionales = ['mini-separador-1b', 'mini-separador-2a', 'mini-separador-2b', 'mini-separador-extra'];
+      separadoresAdicionales.forEach(id => {
+        const elem = document.getElementById(id);
+        if (elem) elem.style.display = 'none';
+      });
+
       if (menu === 'inicio') {
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
@@ -814,6 +912,11 @@
         // Oculta todo lo demás (ya hecho arriba) y muestra el overlay
         if (document.getElementById('menu-estadisticas')) {
           document.getElementById('menu-estadisticas').style.display = 'flex';
+          // Mostrar los separadores adicionales en el menú levelup
+          separadoresAdicionales.forEach(id => {
+            const elem = document.getElementById(id);
+            if (elem) elem.style.display = 'block';
+          });
         }
       } else if (menu === 'principal') {
         document.getElementById('main-content').style.display = 'flex';
@@ -894,7 +997,7 @@
         try {
           var menuEst = document.getElementById('menu-estadisticas');
           if (!menuEst) return;
-          ['mini-separador-1','mini-separador-2'].forEach(function(id){
+          ['mini-separador-1'].forEach(function(id){
             var orig = document.getElementById(id);
             if (!orig) return;
             // create a clone so principal is unaffected
@@ -953,6 +1056,91 @@
           restaurarMiniSeparadores();
         });
       }
+
+      // Botón Confirmar en el menú levelup
+      var btnConfirmarLevelup = document.getElementById('btn-confirmar-levelup');
+      if (btnConfirmarLevelup) {
+        btnConfirmarLevelup.addEventListener('click', function() {
+          // cerrar overlay
+          mostrarSoloMenu('principal');
+          // restaurar separadores a su lugar original
+          restaurarMiniSeparadores();
+        });
+      }
+        (function(){
+          var activeFonditoId = null;
+          function setActiveFondito(idx) {
+            // Resetear rangos relevantes antes de aplicar la nueva selección
+            for (var k=1;k<=8;k++){
+              var el = document.getElementById('fondito-' + k);
+              if (el) el.style.filter = 'brightness(50%)';
+            }
+            for (var m=9;m<=14;m++){
+              var el2 = document.getElementById('fondito-' + m);
+              if (el2) el2.style.filter = 'brightness(50%)';
+            }
+            for (var j=15;j<=26;j++){
+              var f = document.getElementById('fondito-' + j);
+              if (f) f.style.filter = 'brightness(50%)';
+            }
+
+            // Activar el fondito 1..8 seleccionado
+            var target = document.getElementById('fondito-' + idx);
+            if (target) target.style.filter = 'brightness(100%)';
+
+            // Regla previa: todos 15..26 deben brillar cuando cualquier 1..8 esté activo
+            for (var j=15;j<=26;j++){
+              var f = document.getElementById('fondito-' + j);
+              if (f) f.style.filter = 'brightness(100%)';
+            }
+
+            // mapeos específicos solicitados:
+            // 1 (Vigor) -> fondito-9 (PS)
+            if (idx === 1) {
+              var p = document.getElementById('fondito-9'); if (p) p.style.filter = 'brightness(100%)';
+            }
+            // 2 (Mente) -> fondito-10 (PC)
+            if (idx === 2) {
+              var pc = document.getElementById('fondito-10'); if (pc) pc.style.filter = 'brightness(100%)';
+            }
+            // 3 (Resistencia) -> fondito-11 (Estamina) y fondito-12 (Carga de equipo máxima)
+            if (idx === 3) {
+              var est = document.getElementById('fondito-11'); if (est) est.style.filter = 'brightness(100%)';
+              var carga = document.getElementById('fondito-12'); if (carga) carga.style.filter = 'brightness(100%)';
+            }
+            // 8 (Arcano) -> fondito-14 (Descubrimiento)
+            if (idx === 8) {
+              var desc = document.getElementById('fondito-14'); if (desc) desc.style.filter = 'brightness(100%)';
+            }
+
+            activeFonditoId = idx;
+          }
+          function clearActiveFondito() {
+            // Resetear 1..8 y 9..26 a su brillo por defecto (50%)
+            for (var k=1;k<=26;k++){
+              var el = document.getElementById('fondito-' + k);
+              if (el) el.style.filter = 'brightness(50%)';
+            }
+            activeFonditoId = null;
+          }
+
+          // Añade listeners a fondito-1..fondito-8
+          for (var i=1;i<=8;i++){
+            (function(i){
+              var el = document.getElementById('fondito-' + i);
+              if (!el) return;
+              el.addEventListener('mouseenter', function(){ setActiveFondito(i); });
+              // permitir también activar por click para accesibilidad
+              el.addEventListener('click', function(){ setActiveFondito(i); });
+            })(i);
+          }
+
+          // Hover sobre el botón Confirmar limpia la selección activa (según pedido)
+          if (btnConfirmarLevelup) {
+            btnConfirmarLevelup.addEventListener('mouseenter', function(){ clearActiveFondito(); });
+            // conservar el comportamiento click existente (ya definido arriba)
+          }
+        })();
 
       // Tecla Escape para cerrar el overlay de estadísticas
       window.addEventListener('keydown', function(e){
