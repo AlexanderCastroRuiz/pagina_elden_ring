@@ -156,6 +156,12 @@
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
+    /* Aplicar sombra a la mayoría de elementos textuales para cubrir textos/números
+       que no tuvieran shadow explícito. Excluye imágenes. Ajusta si quieres
+       un valor distinto o selectores más concretos. */
+    p, div, span, label, a, button, input[type="text"], input[type="button"], h1, h2, h3, h4, h5, h6 {
+      text-shadow: 1px 1px 2px #000;
+    }
     .fila-a-text,
     .fila-c-text,
     .seleccionado-text,
@@ -585,11 +591,11 @@
     <img src="stats.png" alt="Stats" id="img-stats" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 32.9%; top: 9.5%;">
     <!-- Textos junto a las imágenes (color #C9BBA1). Edita left/top para moverlos. -->
     <style>
-      .stat-label { position: absolute; color: #C9BBA1; font-size: 15px; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 1px 1px 2px #000; pointer-events: none; z-index: 2504; }
+      .stat-label { position: absolute; color: #C9BBA1; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 1px 1px 2px #000; pointer-events: none; z-index: 2504; }
     </style>
     <div id="label-brazo" class="stat-label" style="left:5.3%; top:43%; transform:translateY(-50%);">Puntos de atributo</div>
-    <div id="numero-levelup" style="position:absolute; right:82%; top:43%; transform:translateY(-50%); color:#C9BBA1; font-size:20px; font-family:'FuentePersonalizada',sans-serif; text-shadow:1px 1px 2px #000; z-index:2504; white-space:nowrap;">99</div>
-    <div id="label-resistencia2" class="stat-label" style="left:68.2%; top:42.5%; transform:translateY(-50%);">Cuerpo</div>
+    <div id="numero-levelup" style="position:absolute; right:82%; top:43%; transform:translateY(-50%); color:#C9BBA1; font-size:20px; font-family:'FuentePersonalizada',sans-serif; text-shadow:1px 1px 2px #000; z-index:2504; white-space:nowrap;"></div>
+    <div id="label-resistencia2" class="stat-label" style="left:68.1%; top:42.5%; transform:translateY(-50%);">Cuerpo</div>
     <div id="label-defensa2" class="stat-label" style="left:68.2%; top:11.2%; transform:translateY(-50%);">Neutralización de daño</div>
     <div id="label-stats" class="stat-label" style="left:34.5%; top:11.2%; transform:translateY(-50%);">Estadísticas básicas</div>
     <!-- Fonditos añadidos (8 copias) - altura: 20px, ancho: 340px - ubícalos manualmente cambiando left/top -->
@@ -602,11 +608,11 @@
     <img src="fondito.png" alt="Fondito Fe"           id="fondito-7" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 64.5%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito Arcano"       id="fondito-8" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 67.5%; transform: translate(-50%,-50%);">  
     <!-- 18 fondito adicionales añadidos; ubícalos cambiando inline left/top -->
-    <img src="fondito.png" alt="Fondito PS"  id="fondito-9"  style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 15%; transform: translate(-50%,-50%);">
-    <img src="fondito.png" alt="Fondito PC" id="fondito-10" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 18%; transform: translate(-50%,-50%);">
-    <img src="fondito.png" alt="Fondito Estamina" id="fondito-11" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 21%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito PS"           id="fondito-9"  style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 15%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito PC"           id="fondito-10" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 18%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Estamina"     id="fondito-11" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 21%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito Carga de equipo máxima" id="fondito-12" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 27%; transform: translate(-50%,-50%);">
-    <img src="fondito.png" alt="Fondito Aplomo" id="fondito-13" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 33%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Aplomo"       id="fondito-13" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 33%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito Descubrimiento" id="fondito-14" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 36%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito 15" id="fondito-15" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 15%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito 16" id="fondito-16" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 18%; transform: translate(-50%,-50%);">
@@ -623,70 +629,199 @@
     <!-- Labels/textos sobre cada fondito: puedes editarlos y moverlos cambiando left/top -->
     <style>
       .fondito-label{ position:absolute; color:#D0D0D0; font-size:1em; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; pointer-events:none; z-index:2504; }
-      .stat-number { position:absolute; color:#D0D0D0; font-size:1em; font-family:'FuentePersonalizada',sans-serif; text-shadow:1px 1px 2px #000; z-index:2504; white-space:nowrap; }
+      .stat-number {
+        position:absolute;
+        color:#D0D0D0;
+        font-size:1em;
+        font-family:'FuentePersonalizada',sans-serif;
+        text-shadow:1px 1px 2px #000;
+        z-index:2504;
+        white-space:nowrap;
+        /* Prevent selecting the actual numbers and allow pointer events to pass through */
+        user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -moz-user-select: none;
+        pointer-events: none;
+      }
+  .flecha-stat { position: absolute; width: 15px; height: auto; z-index: 2503; pointer-events: none; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8)); }
+  .flecha-numero {
+    position: absolute;
+    color: #D0D0D0;
+    font-size: 1em;
+    font-family: 'FuentePersonalizada',sans-serif;
+    text-shadow: 1px 1px 2px #000;
+    z-index: 2504;
+    white-space: nowrap;
+    /* Prevent selecting the numbers with the mouse */
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    /* Allow pointer events to pass through so the underlying fondito receives hover/click */
+    pointer-events: none;
+  }
+  /* mas-menos icons next to flecha-numero: hidden by default, shown when fondito active */
+  .mas-menos { display: none; position: absolute; height: 18px; width: auto; z-index: 2503; pointer-events: auto; cursor: pointer; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8)); }
     </style>
     <div id="fondito-text-1"  class="fondito-label" style="left: 6.7%; top:49%; transform:translate(-50%,-140%);">Vigor</div>
-    <div id="stat-number-1" class="stat-number" style="right:82%; top:46.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-2"  class="fondito-label" style="left: 7%; top:52%; transform:translate(-50%,-140%);">Mente</div>
-    <div id="stat-number-2" class="stat-number" style="right:82%; top:49.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-3"  class="fondito-label" style="left: 8.3%; top:55%; transform:translate(-50%,-140%);">Resistencia</div>
-    <div id="stat-number-3" class="stat-number" style="right:82%; top:52.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-4"  class="fondito-label" style="left: 7.2%; top:58%; transform:translate(-50%,-140%);">Fuerza</div>
-    <div id="stat-number-4" class="stat-number" style="right:82%; top:55.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-5"  class="fondito-label" style="left: 7.7%; top:61%; transform:translate(-50%,-140%);">Destreza</div>
-    <div id="stat-number-5" class="stat-number" style="right:82%; top:58.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-6"  class="fondito-label" style="left: 8.4%; top:64%; transform:translate(-50%,-140%);">Inteligencia</div>
-    <div id="stat-number-6" class="stat-number" style="right:82%; top:61.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-7"  class="fondito-label" style="left: 6%; top:67%; transform:translate(-50%,-140%);">Fe</div>
-    <div id="stat-number-7" class="stat-number" style="right:82%; top:64.5%; transform:translateY(-50%);">10</div>
-    <div id="fondito-text-8"  class="fondito-label" style="left: 7.2%; top:70%; transform:translate(-50%,-140%);">Arcano</div>
-    <div id="stat-number-8" class="stat-number" style="right:82%; top:67.5%; transform:translateY(-50%);">10</div>
+  <div id="stat-number-1" class="stat-number" alt="Vigor actual" style="right:82%; top:46.5%; transform:translateY(-50%);">12</div>
+  <img src="flecha.png" alt="Flecha 1" class="flecha-stat" style="right:80%; top:46.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 1 left" class="mas-menos" data-fondito="1" style="right:76%; top:46.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="1" data-default="12" alt="Vigor futuro" style="right:74%; top:46.5%; transform:translateY(-50%);">12</span>
+  <img src="mas menos.png" alt="MasMenos 1 right" class="mas-menos" data-fondito="1" style="right:72.5%; top:46.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-2" class="fondito-label" style="left: 7%; top:52%; transform:translate(-50%,-140%);">Mente</div>
+  <div id="stat-number-2" class="stat-number" alt="Mente actual" style="right:82%; top:49.5%; transform:translateY(-50%);">11</div>
+  <img src="flecha.png" alt="Flecha 2" class="flecha-stat" style="right:80%; top:49.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 2 left" class="mas-menos" data-fondito="2" style="right:76%; top:49.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="2" data-default="11" alt="Mente futura" style="right:74%; top:49.5%; transform:translateY(-50%);">11</span>
+  <img src="mas menos.png" alt="MasMenos 2 right" class="mas-menos" data-fondito="2" style="right:72.5%; top:49.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-3" class="fondito-label" style="left: 8.3%; top:55%; transform:translate(-50%,-140%);">Resistencia</div>
+  <div id="stat-number-3" class="stat-number" alt="Resistencia actual" style="right:82%; top:52.5%; transform:translateY(-50%);">13</div>
+  <img src="flecha.png" alt="Flecha 3" class="flecha-stat" style="right:80%; top:52.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 3 left" class="mas-menos" data-fondito="3" style="right:76%; top:52.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="3" data-default="13" alt="Resistencia futura" style="right:74%; top:52.5%; transform:translateY(-50%);">13</span>
+  <img src="mas menos.png" alt="MasMenos 3 right" class="mas-menos" data-fondito="3" style="right:72.5%; top:52.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-4" class="fondito-label" style="left: 7.2%; top:58%; transform:translate(-50%,-140%);">Fuerza</div>
+  <div id="stat-number-4" class="stat-number" alt="Fuerza actual" style="right:82%; top:55.5%; transform:translateY(-50%);">12</div>
+  <img src="flecha.png" alt="Flecha 4" class="flecha-stat" style="right:80%; top:55.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 4 left" class="mas-menos" data-fondito="4" style="right:76%; top:55.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="4" data-default="12" alt="Fuerza futura" style="right:74%; top:55.5%; transform:translateY(-50%);">12</span>
+  <img src="mas menos.png" alt="MasMenos 4 right" class="mas-menos" data-fondito="4" style="right:72.5%; top:55.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-5" class="fondito-label" style="left: 7.7%; top:61%; transform:translate(-50%,-140%);">Destreza</div>
+  <div id="stat-number-5" class="stat-number" alt="Destreza actual" style="right:82%; top:58.5%; transform:translateY(-50%);">15</div>
+  <img src="flecha.png" alt="Flecha 5" class="flecha-stat" style="right:80%; top:58.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 5 left" class="mas-menos" data-fondito="5" style="right:76%; top:58.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="5" data-default="15" alt="Destreza futura" style="right:74%; top:58.5%; transform:translateY(-50%);">15</span>
+  <img src="mas menos.png" alt="MasMenos 5 right" class="mas-menos" data-fondito="5" style="right:72.5%; top:58.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-6" class="fondito-label" style="left: 8.4%; top:64%; transform:translate(-50%,-140%);">Inteligencia</div>
+  <div id="stat-number-6" class="stat-number" alt="Inteligencia actual" style="right:82%; top:61.5%; transform:translateY(-50%);">9</div>
+  <img src="flecha.png" alt="Flecha 6" class="flecha-stat" style="right:80%; top:61.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 6 left" class="mas-menos" data-fondito="6" style="right:76%; top:61.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="6" data-default="9" alt="Inteligencia futura" style="right:74%; top:61.5%; transform:translateY(-50%);">9</span>
+  <img src="mas menos.png" alt="MasMenos 6 right" class="mas-menos" data-fondito="6" style="right:72.5%; top:61.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-7" class="fondito-label" style="left: 6%; top:67%; transform:translate(-50%,-140%);">Fe</div>
+  <div id="stat-number-7" class="stat-number" alt="Fe actual" style="right:82%; top:64.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 7" class="flecha-stat" style="right:80%; top:64.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 7 left" class="mas-menos" data-fondito="7" style="right:76%; top:64.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="7" data-default="10" alt="Fe futura" style="right:74%; top:64.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 7 right" class="mas-menos" data-fondito="7" style="right:72.5%; top:64.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-8" class="fondito-label" style="left: 7.2%; top:70%; transform:translate(-50%,-140%);">Arcano</div>
+  <div id="stat-number-8" class="stat-number" alt="Arcano actual" style="right:82%; top:67.5%; transform:translateY(-50%);">8</div>
+  <img src="flecha.png" alt="Flecha 8" class="flecha-stat" style="right:80%; top:67.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 8 left" class="mas-menos" data-fondito="8" style="right:76%; top:67.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="8" data-default="8" alt="Arcano futuro" style="right:74%; top:67.5%; transform:translateY(-50%);">8</span>
+  <img src="mas menos.png" alt="MasMenos 8 right" class="mas-menos" data-fondito="8" style="right:72.5%; top:67.5%; transform:translateY(-50%) scaleX(-1);">
 
-    <div id="fondito-text-9"  class="fondito-label" style="left:35.2%; top:17.6%; transform:translate(-50%,-140%);">PS</div>
-    <div id="stat-number-9" class="stat-number" style="right:52%; top:15%; transform:translateY(-50%);">100</div>
+    <div id="fondito-text-9" class="fondito-label" style="left:35.2%; top:17.6%; transform:translate(-50%,-140%);">PS</div>
+    <div id="stat-number-9" class="stat-number" alt="PS actual" style="right:46%; top:15%; transform:translateY(-50%);">100</div>
+    <img src="flecha.png" alt="Flecha 9" class="flecha-stat" style="right:42%; top:15%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="9" data-default="9" alt="PS futuro" style="right:37%; top:15%; transform:translateY(-50%);">9</span>
+    
     <div id="fondito-text-10" class="fondito-label" style="left:35.3%; top:20.6%; transform:translate(-50%,-140%);">PC</div>
-    <div id="stat-number-10" class="stat-number" style="right:52%; top:18%; transform:translateY(-50%);">100</div>
+    <div id="stat-number-10" class="stat-number" alt="PC actual" style="right:46%; top:18%; transform:translateY(-50%);">100</div>
+    <img src="flecha.png" alt="Flecha 10" class="flecha-stat" style="right:42%; top:18%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="10" data-default="10" alt="PC futuro" style="right:37%; top:18%; transform:translateY(-50%);">10</span>
+    
     <div id="fondito-text-11" class="fondito-label" style="left:37%; top:23.5%; transform:translate(-50%,-140%);">Estamina</div>
-    <div id="stat-number-11" class="stat-number" style="right:52%; top:21%; transform:translateY(-50%);">100</div>
-    <div id="fondito-text-12" class="fondito-label" style="left:41%; top:29.6%; transform:translate(-50%,-140%);">Carga de equipo máxima</div>
-    <div id="stat-number-12" class="stat-number" style="right:52%; top:27%; transform:translateY(-50%);">50.5</div>
+    <div id="stat-number-11" class="stat-number" alt="Estamina actual" style="right:46%; top:21%; transform:translateY(-50%);">100</div>
+    <img src="flecha.png" alt="Flecha 11" class="flecha-stat" style="right:42%; top:21%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="11" data-default="11" alt="Estamina futuro" style="right:37%; top:21%; transform:translateY(-50%);">11</span>
+    
+    <div id="fondito-text-12" class="fondito-label" style="left:41.3%; top:29.6%; transform:translate(-50%,-140%);">Carga de equipo máxima</div>
+    <div id="stat-number-12" class="stat-number" alt="Carga de equipo máxima actual" style="right:46%; top:27%; transform:translateY(-50%);">50.5</div>
+    <img src="flecha.png" alt="Flecha 12" class="flecha-stat" style="right:42%; top:27%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="12" data-default="12" alt="Carga de equipo máxima futura" style="right:37%; top:27%; transform:translateY(-50%);">12</span>
+    
     <div id="fondito-text-13" class="fondito-label" style="left:36.6%; top:35.5%; transform:translate(-50%,-140%);">Aplomo</div>
-    <div id="stat-number-13" class="stat-number" style="right:52%; top:33%; transform:translateY(-50%);">50</div>
-    <div id="fondito-text-14" class="fondito-label" style="left:38.6%; top:38.5%; transform:translate(-50%,-140%);">Descubrimiento</div>
-    <div id="stat-number-14" class="stat-number" style="right:52%; top:36%; transform:translateY(-50%);">100</div>
+    <div id="stat-number-13" class="stat-number" alt="Aplomo actual" style="right:46%; top:33%; transform:translateY(-50%);">50</div>
+    <img src="flecha.png" alt="Flecha 13" class="flecha-stat" style="right:42%; top:33%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="13" data-default="13" alt="Aplomo futuro" style="right:37%; top:33%; transform:translateY(-50%);">13</span>
+    
+    <div id="fondito-text-14" class="fondito-label" style="left:38.8%; top:38.5%; transform:translate(-50%,-140%);">Descubrimiento</div>
+    <div id="stat-number-14" class="stat-number" alt="Descubrimiento actual" style="right:46%; top:36%; transform:translateY(-50%);">100.0</div>
+    <img src="flecha.png" alt="Flecha 14" class="flecha-stat" style="right:42%; top:36%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="14" data-default="14" alt="Descubrimiento futuro" style="right:37%; top:36%; transform:translateY(-50%);">14</span>
 
     <div id="fondito-text-15" class="fondito-label" style="left:69.7%; top:17.6%; transform:translate(-50%,-140%);">Físico</div>
-    <div id="stat-number-15" class="stat-number" style="right:19%; top:15%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-15" class="stat-number" alt="Físico actual" style="right:15%; top:15%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 15" class="flecha-stat" style="right:11%; top:15%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="15" data-default="15" alt="Físico futuro" style="right:6%; top:15%; transform:translateY(-50%);">15</span>
+    
     <div id="fondito-text-16" class="fondito-label" style="left:70.6%; top:20.6%; transform:translate(-50%,-140%);">Vs. golpe</div>
-    <div id="stat-number-16" class="stat-number" style="right:19%; top:18%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-16" class="stat-number" alt="Vs. golpe actual" style="right:15%; top:18%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 16" class="flecha-stat" style="right:11%; top:18%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="16" data-default="16" alt="Vs. golpe futuro" style="right:6%; top:18%; transform:translateY(-50%);">16</span>
+    
     <div id="fondito-text-17" class="fondito-label" style="left:70.6%; top:23.5%; transform:translate(-50%,-140%);">Vs. corte</div>
-    <div id="stat-number-17" class="stat-number" style="right:19%; top:21%; transform:translateY(-50%);">30</div>
-    <div id="fondito-text-18" class="fondito-label" style="left:72.2%; top:26.5%; transform:translate(-50%,-140%);">Vs. perforación</div>
-    <div id="stat-number-18" class="stat-number" style="right:19%; top:24%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-17" class="stat-number" alt="Vs. corte actual" style="right:15%; top:21%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 17" class="flecha-stat" style="right:11%; top:21%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="17" data-default="17" alt="Vs. corte futuro" style="right:6%; top:21%; transform:translateY(-50%);">17</span>
+    
+    <div id="fondito-text-18" class="fondito-label" style="left:72.3%; top:26.5%; transform:translate(-50%,-140%);">Vs. perforación</div>
+    <div id="stat-number-18" class="stat-number" alt="Vs. perforación actual" style="right:15%; top:24%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 18" class="flecha-stat" style="right:11%; top:24%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="18" data-default="18" alt="Vs. perforación futuro" style="right:6%; top:24%; transform:translateY(-50%);">18</span>
+    
     <div id="fondito-text-19" class="fondito-label" style="left:69.7%; top:29.5%; transform:translate(-50%,-140%);">Magia</div>
-    <div id="stat-number-19" class="stat-number" style="right:19%; top:27%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-19" class="stat-number" alt="Magia actual" style="right:15%; top:27%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 19" class="flecha-stat" style="right:11%; top:27%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="19" data-default="19" alt="Magia futura" style="right:6%; top:27%; transform:translateY(-50%);">19</span>
+    
     <div id="fondito-text-20" class="fondito-label" style="left:69.7%; top:32.5%; transform:translate(-50%,-140%);">Fuego</div>
-    <div id="stat-number-20" class="stat-number" style="right:19%; top:30%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-20" class="stat-number" alt="Fuego actual" style="right:15%; top:30%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 20" class="flecha-stat" style="right:11%; top:30%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="20" data-default="20" alt="Fuego futuro" style="right:6%; top:30%; transform:translateY(-50%);">20</span>
+    
     <div id="fondito-text-21" class="fondito-label" style="left:69.4%; top:35.5%; transform:translate(-50%,-140%);">Rayo</div>
-    <div id="stat-number-21" class="stat-number" style="right:19%; top:33%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-21" class="stat-number" alt="Rayo actual" style="right:15%; top:33%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 21" class="flecha-stat" style="right:11%; top:33%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="21" data-default="21" alt="Rayo futuro" style="right:6%; top:33%; transform:translateY(-50%);">21</span>
+    
     <div id="fondito-text-22" class="fondito-label" style="left:70.2%; top:38.5%; transform:translate(-50%,-140%);">Sagrado</div>
-    <div id="stat-number-22" class="stat-number" style="right:19%; top:36%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-22" class="stat-number" alt="Sagrado actual" style="right:15%; top:36%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 22" class="flecha-stat" style="right:11%; top:36%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="22" data-default="22" alt="Sagrado futuro" style="right:6%; top:36%; transform:translateY(-50%);">22</span>
+    
     <div id="fondito-text-23" class="fondito-label" style="left:71%; top:49.1%; transform:translate(-50%,-140%);">Inmunidad</div>
-    <div id="stat-number-23" class="stat-number" style="right:19%; top:46.5%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-23" class="stat-number" alt="Inmunidad actual" style="right:15%; top:46.5%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 23" class="flecha-stat" style="right:11%; top:46.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="23" data-default="23" alt="Inmunidad futura" style="right:6%; top:46.5%; transform:translateY(-50%);">23</span>
+    
     <div id="fondito-text-24" class="fondito-label" style="left:70.6%; top:52.1%; transform:translate(-50%,-140%);">Robustez</div>
-    <div id="stat-number-24" class="stat-number" style="right:19%; top:49.5%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-24" class="stat-number" alt="Robustez actual" style="right:15%; top:49.5%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 24" class="flecha-stat" style="right:11%; top:49.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="24" data-default="24" alt="Robustez futura" style="right:6%; top:49.5%; transform:translateY(-50%);">24</span>
+    
     <div id="fondito-text-25" class="fondito-label" style="left:72.1%; top:55.1%; transform:translate(-50%,-140%);">Concentración</div>
-    <div id="stat-number-25" class="stat-number" style="right:19%; top:52.5%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-25" class="stat-number" alt="Concentración actual" style="right:15%; top:52.5%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 25" class="flecha-stat" style="right:11%; top:52.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="25" data-default="25" alt="Concentración futura" style="right:6%; top:52.5%; transform:translateY(-50%);">25</span>
+    
     <div id="fondito-text-26" class="fondito-label" style="left:70.5%; top:58.1%; transform:translate(-50%,-140%);">Vitalidad</div>
-    <div id="stat-number-26" class="stat-number" style="right:19%; top:55.5%; transform:translateY(-50%);">30</div>
+    <div id="stat-number-26" class="stat-number" alt="Vitalidad actual" style="right:15%; top:55.5%; transform:translateY(-50%);">30</div>
+    <img src="flecha.png" alt="Flecha 26" class="flecha-stat" style="right:11%; top:55.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="26" data-default="26" alt="Vitalidad futuro" style="right:6%; top:55.5%; transform:translateY(-50%);">26</span>
 
     <!-- Tres textos adicionales para ubicar manualmente -->
     <div id="fondito-text-27" class="fondito-label" style="left:6.7%; top:17.6%; transform:translate(-50%,-140%);">Nivel</div>
-    <div id="stat-number-27" class="stat-number" style="right:82%; top:15%; transform:translateY(-50%);">1</div>
+  <div id="stat-number-27" class="stat-number" alt="Nivel actual" style="right:82%; top:15%; transform:translateY(-50%);">11</div>
+  <img src="flecha.png" alt="Flecha 27" class="flecha-stat" style="right:80%; top:15%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="27" data-default="11" alt="Nivel futuro" style="right:74%; top:15%; transform:translateY(-50%);">11</span>
+    
     <div id="fondito-text-28" class="fondito-label" style="left:9.7%; top:23.5%; transform:translate(-50%,-140%);">Runas necesarias</div>
-    <div id="stat-number-28" class="stat-number" style="right:82%; top:21%; transform:translateY(-50%);">673</div>
+    <div id="stat-number-28" class="stat-number" alt="Runas necesarias" style="right:74%; top:21%; transform:translateY(-50%);">673</div>
+    
     <div id="fondito-text-29" class="fondito-label" style="left:5%; top:26.6%; transform:translate(-50%,-140%);"> </div>
-    <div id="stat-number-29" class="stat-number" style="right:82%; top:24%; transform:translateY(-50%);">0</div>
+    <div id="stat-number-29" class="stat-number" style="right:82%; top:24%; transform:translateY(-50%);"></div>
   </div>
 
   <div class="main-grid" id="main-content" style="display:none;">
@@ -1096,14 +1231,86 @@
       var btnConfirmarLevelup = document.getElementById('btn-confirmar-levelup');
       if (btnConfirmarLevelup) {
         btnConfirmarLevelup.addEventListener('click', function() {
-          // cerrar overlay
-          mostrarSoloMenu('principal');
-          // restaurar separadores a su lugar original
-          restaurarMiniSeparadores();
+          // Copiar valores futuros a los valores actuales (no cerrar el overlay)
+          try {
+            document.querySelectorAll('.flecha-numero[data-fondito]').forEach(function(span){
+              var idx = span.getAttribute('data-fondito');
+              if (!idx) return;
+              var val = span.textContent;
+              var cur = document.getElementById('stat-number-' + idx);
+              if (cur) cur.textContent = val;
+              // También ajustar color del futuro respecto al actual tras la copia
+              try {
+                var curVal = cur ? parseFloat(cur.textContent) : NaN;
+                var futVal = parseFloat(span.textContent);
+                if (!isNaN(curVal) && futVal < curVal) span.style.color = '#C22F35'; else span.style.color = '#D0D0D0';
+              } catch(e) {}
+            });
+          } catch (e) { /* silencioso */ }
+          // No navegar al menú principal. Mantener overlay abierto.
         });
       }
         (function(){
           var activeFonditoId = null;
+          // Cálculo de runas necesarias para un nivel futuro
+          function runasNecesarias(nivelFuturo) {
+            return Math.floor(0.02 * Math.pow(nivelFuturo, 3) + 3.06 * Math.pow(nivelFuturo, 2) + 105.6 * nivelFuturo - 895);
+          }
+          function updateRunasDisplay(nivelFuturo) {
+            try {
+              // Mostrar las runas necesarias para subir AL SIGUIENTE nivel
+              var targetLevel = (typeof nivelFuturo === 'number' && !isNaN(nivelFuturo)) ? (nivelFuturo + 1) : (parseInt(nivelFuturo, 10) + 1);
+              if (isNaN(targetLevel) || targetLevel < 1) targetLevel = 1;
+              var runas = runasNecesarias(targetLevel);
+              var el = document.getElementById('stat-number-28');
+              if (el) el.textContent = runas;
+            } catch (e) { /* silent */ }
+          }
+          // Actualiza el estado (escala de grises) de los íconos mas-menos para un fondito dado
+          function updateMasMenosState(idx) {
+            try {
+              var numSpan = document.querySelector('.flecha-numero[data-fondito="' + idx + '"]');
+              if (!numSpan) return;
+              var val = parseInt(numSpan.textContent, 10);
+              if (isNaN(val)) val = parseInt(numSpan.getAttribute('data-default') || '0', 10) || 0;
+              var minVal = parseInt(numSpan.getAttribute('data-default') || numSpan.textContent, 10);
+              if (isNaN(minVal)) minVal = 0;
+              var maxVal = 99;
+              // Obtener los íconos asociados (pueden ser dos: left y right)
+              var icons = Array.from(document.querySelectorAll('.mas-menos[data-fondito="' + idx + '"]'));
+              icons.forEach(function(ic){
+                try {
+                  var alt = (ic.alt || '').toLowerCase();
+                  var transform = (ic.style && ic.style.transform) ? ic.style.transform : '';
+                  var isRight = alt.indexOf('right') !== -1 || transform.indexOf('scaleX(-1)') !== -1;
+                  var drop = 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8))';
+                  if (isRight) {
+                    // desactivar (grayscale) si alcanzó el máximo
+                    if (val >= maxVal) {
+                      ic.style.filter = 'grayscale(100%) ' + drop;
+                      ic.style.pointerEvents = 'none';
+                      ic.style.cursor = 'default';
+                    } else {
+                      ic.style.filter = drop;
+                      ic.style.pointerEvents = 'auto';
+                      ic.style.cursor = 'pointer';
+                    }
+                  } else {
+                    // left (decrement): desactivar si val <= minVal
+                    if (val <= minVal) {
+                      ic.style.filter = 'grayscale(100%) ' + drop;
+                      ic.style.pointerEvents = 'none';
+                      ic.style.cursor = 'default';
+                    } else {
+                      ic.style.filter = drop;
+                      ic.style.pointerEvents = 'auto';
+                      ic.style.cursor = 'pointer';
+                    }
+                  }
+                } catch(e){}
+              });
+            } catch(e) { /* silent */ }
+          }
           function setActiveFondito(idx) {
             // Resetear rangos relevantes antes de aplicar la nueva selección
             for (var k=1;k<=8;k++){
@@ -1149,6 +1356,15 @@
             }
 
             activeFonditoId = idx;
+            // Mostrar/ocultar íconos "mas menos" asociados al fondito activo
+            try {
+              // ocultar todos
+              document.querySelectorAll('.mas-menos').forEach(function(el){ el.style.display = 'none'; });
+              // mostrar los que correspondan al fondito activo (ambos, left y right)
+              document.querySelectorAll('.mas-menos[data-fondito="' + idx + '"]').forEach(function(el){ el.style.display = 'block'; });
+              // Actualizar estado visual (grayscale) de los íconos mostrados
+              try { updateMasMenosState(idx); } catch(e) {}
+            } catch (e) { /* silencioso si DOM no está listo */ }
           }
           function clearActiveFondito() {
             // Resetear 1..8 y 9..26 a su brillo por defecto (50%)
@@ -1157,6 +1373,8 @@
               if (el) el.style.filter = 'brightness(50%)';
             }
             activeFonditoId = null;
+            // ocultar todos los íconos mas-menos
+            try { document.querySelectorAll('.mas-menos').forEach(function(el){ el.style.display = 'none'; }); } catch(e) {}
           }
 
           // Añade listeners a fondito-1..fondito-8
@@ -1169,6 +1387,162 @@
               el.addEventListener('click', function(){ setActiveFondito(i); });
             })(i);
           }
+
+              // Inicializar display de runas según el Nivel futuro actual al cargar el overlay
+              try {
+                var inicialNivelSpan = document.querySelector('.flecha-numero[data-fondito="27"]');
+                if (inicialNivelSpan) {
+                  var inicialNivel = parseInt(inicialNivelSpan.textContent, 10);
+                  if (isNaN(inicialNivel)) inicialNivel = parseInt(inicialNivelSpan.getAttribute('data-default') || '11', 10) || 11;
+                  updateRunasDisplay(inicialNivel);
+                  // también ajustar color inicial del nivel relativo al actual
+                  try {
+                    var curNivelEl = document.getElementById('stat-number-27');
+                    var curNivelVal = curNivelEl ? parseFloat(curNivelEl.textContent) : NaN;
+                    if (!isNaN(curNivelVal)) {
+                      if (inicialNivel < curNivelVal) inicialNivelSpan.style.color = '#C22F35';
+                      else if (inicialNivel > curNivelVal) inicialNivelSpan.style.color = '#4A6EB5';
+                    }
+                  } catch(e){}
+                }
+              } catch(e) {}
+
+          // Click + hold handlers for mas-menos icons: left (decrement) and right (increment)
+          try {
+            // Map para guardar timers por elemento durante el auto-repeat
+            var repeatTimers = new Map();
+            // Map para evitar que un mismo "click" y el mousedown/touchstart causen dos acciones
+            var lastActionTimes = new Map();
+
+            function doMasMenosAction(img, isRight) {
+              try {
+                var idx = img.getAttribute('data-fondito');
+                if (!idx) return;
+                var numSpan = document.querySelector('.flecha-numero[data-fondito="' + idx + '"]');
+                if (!numSpan) return;
+                var oldVal = parseInt(numSpan.textContent, 10);
+                if (isNaN(oldVal)) oldVal = 0;
+                var minVal = parseInt(numSpan.getAttribute('data-default') || numSpan.textContent, 10);
+                var newVal = oldVal + (isRight ? 1 : -1);
+                if (newVal < minVal) newVal = minVal;
+                if (newVal > 99) newVal = 99;
+                if (newVal === oldVal) return;
+                // marca la hora de la última acción para evitar dobles por click
+                try { lastActionTimes.set(img, Date.now()); } catch(e) {}
+                numSpan.textContent = newVal;
+                var delta = newVal - oldVal;
+
+                // Update Nivel futuro (fondito 27) by same delta
+                try {
+                  var nivelSpan = document.querySelector('.flecha-numero[data-fondito="27"]');
+                  if (nivelSpan) {
+                    var nivelOld = parseInt(nivelSpan.textContent, 10);
+                    if (isNaN(nivelOld)) nivelOld = parseInt(nivelSpan.getAttribute('data-default') || '11', 10) || 11;
+                    var nivelNew = nivelOld + delta;
+                    var nivelMin = parseInt(nivelSpan.getAttribute('data-default') || nivelOld, 10) || 11;
+                    if (nivelNew < nivelMin) nivelNew = nivelMin;
+                    if (nivelNew > 713) nivelNew = 713;
+                    nivelSpan.textContent = nivelNew;
+                    try { updateRunasDisplay(nivelNew); } catch(e) {}
+                    try {
+                      var curNivelEl = document.getElementById('stat-number-27');
+                      var curNivelVal = curNivelEl ? parseFloat(curNivelEl.textContent) : NaN;
+                      if (!isNaN(curNivelVal)) {
+                        if (nivelNew < curNivelVal) nivelSpan.style.color = '#C22F35';
+                        else if (nivelNew > curNivelVal) nivelSpan.style.color = '#4A6EB5';
+                        else nivelSpan.style.color = '#D0D0D0';
+                      }
+                    } catch(e){}
+                  }
+                } catch(e){}
+
+                // Update color for this changed future vs its current
+                try {
+                  var curEl = document.getElementById('stat-number-' + idx);
+                  var curVal = curEl ? parseFloat(curEl.textContent) : NaN;
+                  var futVal = parseFloat(newVal);
+                  if (!isNaN(curVal)) {
+                    if (futVal < curVal) numSpan.style.color = '#C22F35';
+                    else if (futVal > curVal) numSpan.style.color = '#4A6EB5';
+                    else numSpan.style.color = '#D0D0D0';
+                  }
+                } catch (e) {}
+                // Actualiza el estado visual de los íconos mas-menos para este fondito
+                try { updateMasMenosState(idx); } catch(e) {}
+              } catch(e) { /* silent */ }
+            }
+
+            document.querySelectorAll('.mas-menos').forEach(function(img){
+              // Single-click behavior (keeps existing behavior)
+              img.addEventListener('click', function(e){
+                e.stopPropagation();
+                // Evita doble acción si un mousedown/touchstart acaba de ejecutarse
+                var last = lastActionTimes.get(img) || 0;
+                if (Date.now() - last < 300) return; // ignore recent actions (300ms)
+                var alt = (img.alt || '').toLowerCase();
+                var transform = (img.style && img.style.transform) ? img.style.transform : '';
+                var isRight = alt.indexOf('right') !== -1 || transform.indexOf('scaleX(-1)') !== -1;
+                doMasMenosAction(img, isRight);
+              });
+
+              // Auto-repeat when maintaining pressed (mouse/touch)
+              img.addEventListener('mousedown', function(e){
+                e.preventDefault(); e.stopPropagation();
+                var alt = (img.alt || '').toLowerCase();
+                var transform = (img.style && img.style.transform) ? img.style.transform : '';
+                var isRight = alt.indexOf('right') !== -1 || transform.indexOf('scaleX(-1)') !== -1;
+
+                // initial immediate action
+                doMasMenosAction(img, isRight);
+
+                  // fixed fast repeat with initial delay: perform immediate action, then
+                  // wait initialDelay ms before starting rapid repeats at fixedDelay ms.
+                  var initialDelay = 600; // ms to wait before starting rapid repeat
+                  var fixedDelay = 50; // ms between repeats once started
+                  var startTimer = setTimeout(function(){
+                    var interval = setInterval(function(){ doMasMenosAction(img, isRight); }, fixedDelay);
+                    var entry = repeatTimers.get(img) || {};
+                    entry.startTimer = entry.startTimer || startTimer;
+                    entry.interval = interval;
+                    repeatTimers.set(img, entry);
+                  }, initialDelay);
+                  // store the startTimer so we can cancel it if released before initialDelay
+                  repeatTimers.set(img, { startTimer: startTimer, interval: null });
+              });
+
+              // Touch support: touchstart / touchend
+              img.addEventListener('touchstart', function(e){
+                e.preventDefault(); e.stopPropagation();
+                var alt = (img.alt || '').toLowerCase();
+                var transform = (img.style && img.style.transform) ? img.style.transform : '';
+                var isRight = alt.indexOf('right') !== -1 || transform.indexOf('scaleX(-1)') !== -1;
+                doMasMenosAction(img, isRight);
+                // fixed fast repeat for touch as well, with initial delay
+                var initialDelayTouch = 600;
+                var fixedDelayTouch = 50;
+                var startTimerTouch = setTimeout(function(){
+                  var interval = setInterval(function(){ doMasMenosAction(img, isRight); }, fixedDelayTouch);
+                  var entry = repeatTimers.get(img) || {};
+                  entry.startTimer = entry.startTimer || startTimerTouch;
+                  entry.interval = interval;
+                  repeatTimers.set(img, entry);
+                }, initialDelayTouch);
+                repeatTimers.set(img, { startTimer: startTimerTouch, interval: null });
+              });
+
+              // Stop repeating on mouseup, mouseleave, touchend, touchcancel
+              ['mouseup','mouseleave','mouseout','touchend','touchcancel'].forEach(function(ev){
+                img.addEventListener(ev, function(){
+                  var entry = repeatTimers.get(img);
+                  if (entry) {
+                    try { if (entry.interval) clearInterval(entry.interval); } catch(_) {}
+                    try { if (entry.startTimer) clearTimeout(entry.startTimer); } catch(_) {}
+                    repeatTimers.delete(img);
+                  }
+                });
+              });
+            });
+          } catch (e) { /* silent */ }
 
           // Hover sobre el botón Confirmar limpia la selección activa (según pedido)
           if (btnConfirmarLevelup) {
