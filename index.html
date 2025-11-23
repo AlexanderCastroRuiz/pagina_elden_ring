@@ -611,7 +611,7 @@
     <img src="fondito.png" alt="Fondito PS"           id="fondito-9"  style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 15%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito PC"           id="fondito-10" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 18%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito Estamina"     id="fondito-11" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 21%; transform: translate(-50%,-50%);">
-    <img src="fondito.png" alt="Fondito Carga de equipo máxima" id="fondito-12" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 27%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Carga de equipo" id="fondito-12" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 27%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito Aplomo"       id="fondito-13" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 33%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito Descubrimiento" id="fondito-14" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 36%; transform: translate(-50%,-50%);">
     <img src="fondito.png" alt="Fondito 15" id="fondito-15" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 15%; transform: translate(-50%,-50%);">
@@ -842,7 +842,8 @@
     </div>
     <div class="columna-c">
       <div id="columna-c-contenido"></div>
-      <div class="atributos-bloque" style="position: relative; left: 880px; top: 87px">
+      <!-- menú defensas: elementos que se ocultan cuando se abre el submenú 'Estado' -->
+      <div class="atributos-bloque" data-menu="defensas" style="position: relative; left: 880px; top: 87px">
         <!-- Pega aquí todo lo adjunto, por ejemplo: -->
         <div id="atributo-nombre"></div>
         <div id="atributo-fisico"></div>
@@ -890,9 +891,9 @@
     </div>
   <!-- Solo un separador en el menú principal -->
   <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw;">
-    <img src="mini-separador.png" alt="Mini Separador" id="mini-separador-1" style="position: absolute; left: 66.66%; top: calc(50% - 37.5vh); transform: translateX(-50%); width: 6px; height: 140px; z-index: 2;">
-    <img src="mini-separador.png" alt="Mini Separador 2" id="mini-separador-2" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 66.5%; top: 240px;">
-    <img src="mini-separador.png" alt="Mini Separador 3" id="mini-separador-3" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 82.825vw; top: 240px;">
+    <img src="mini-separador.png" alt="Mini Separador" id="mini-separador-1" data-menu="defensas" style="position: absolute; left: 66.66%; top: calc(50% - 37.5vh); transform: translateX(-50%); width: 6px; height: 140px; z-index: 2;">
+    <img src="mini-separador.png" alt="Mini Separador 2" id="mini-separador-2" data-menu="defensas" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 66.5%; top: 240px;">
+    <img src="mini-separador.png" alt="Mini Separador 3" id="mini-separador-3" data-menu="defensas" style="position: absolute; width: 6px; height: 140px; z-index: 2; left: 82.825vw; top: 240px;">
     <!-- <img src="separador.png" alt="Separador 2" class="separator second"> Eliminado -->
     <img src="rectangulo.png" alt="Rectángulo" id="rectangulo-img">
     <!-- Ranuras como botones, listas para ubicar y cambiar tamaño -->
@@ -951,12 +952,126 @@
     </div>
     <!-- Botón Menú LevelUp (nuevo) -->
     <div class="menu-btn-wrapper" id="btn-estadisticas" style="bottom: 30px; right: 210px; --menu-btn-size: 50px;">
-      <img src="poder.png" alt="LevelUp" class="menu-btn-img">
+      <img src="levelup.png" alt="LevelUp" class="menu-btn-img">
       <img src="dorado.png" alt="Dorado" class="menu-btn-dorado">
       <span class="menu-btn-tooltip">Menú LevelUp</span>
     </div>
-    <img id="atributo-img" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4; pointer-events: none;">
-    <img src="muestra.png" alt="Muestra" id="muestra-img" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
+    <!-- Botón Estado eliminado: la tecla F ahora abre/cierra el submenú Estado -->
+    <img id="atributo-img" data-menu="defensas" src="" alt="Atributo" style="position: absolute; left: 1185px; top: 100px; height: 100px; width: auto; display: none; z-index: 4; pointer-events: none;">
+    <img src="muestra.png" alt="Muestra" id="muestra-img" data-menu="defensas" style="position: absolute; left: 88.5%; top: 12%; height: 145px; width: auto; z-index: 3; pointer-events: none;">
+    <!-- Separador adicional para el menú 'Estado' (oculto por defecto) -->
+    <img src="separador.png" alt="Separador Estado" id="separator-estado" class="separator second" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 66.66vw; z-index: 2; display: none;">
+    <!-- Elementos específicos del menú 'Estado' (ocultos por defecto). -->
+    <!-- Imagen humano: aparecerá cuando se active el menú Estado -->
+    <img id="humano-img" src="humano.png" alt="Humano" style="position:absolute; left:66.8%; top:74px; transform:translate(-50%,-50%); width:auto; height:22px; display:none; z-index:2300;">
+    <!-- 18 textos posicionables por el usuario; por defecto ocultos. -->
+    <style>
+      .estado-text { position:absolute; display:none; color:#D0D0D0; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; z-index:9999; white-space: normal; max-width: 600px; overflow: visible !important; width: auto !important; display: none; }
+      .estado-text-special { position:absolute; display:none; color:#C9BBA1; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; z-index:2301; }
+      .estado-value { position:absolute; display:none; color:#D0D0D0; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; z-index:2302; }
+    </style>
+    <!-- Ajusta aquí las posiciones (left/top) de las etiquetas y de las variables del menú 'Estado'. -->
+    <!-- - Edita manualmente los estilos inline `left:...px; top:...px;` de los elementos -->
+    <!--   `#estado-text-1` .. `#estado-text-18` (etiquetas) y `#estado-value-1` .. `#estado-value-15` (valores). -->
+    <!-- - El script solo modifica `display` y el texto de `estado-value-*`; no tocará tus left/top. -->
+
+    <!-- Etiquetas (solo texto estático, editables manualmente) -->
+    <span id="estado-text-1"  class="estado-text" style="left:895px; top:calc(95px - 3px);">Nivel</span>
+    <span id="estado-text-2"  class="estado-text" style="left:895px; top:calc(140px - 10px);">Vigor</span>
+    <span id="estado-text-3"  class="estado-text" style="left:895px; top:calc(163px - 10px);">Mente</span>
+    <span id="estado-text-4"  class="estado-text" style="left:895px; top:calc(186px - 10px);">Resistencia</span>
+    <span id="estado-text-5"  class="estado-text" style="left:895px; top:calc(209px - 10px);">Fuerza</span>
+    <span id="estado-text-6"  class="estado-text" style="left:895px; top:calc(232px - 10px);">Destreza</span>
+    <span id="estado-text-7"  class="estado-text" style="left:895px; top:calc(255px - 10px);">Inteligencia</span>
+    <span id="estado-text-8"  class="estado-text" style="left:895px; top:calc(278px - 10px);">Fe</span>
+    <span id="estado-text-9"  class="estado-text" style="left:895px; top:calc(300px - 10px);">Arcano</span>
+    <span id="estado-text-10" class="estado-text" style="left:895px; top:calc(345px - 10px);">PV</span>
+    <span id="estado-text-11" class="estado-text" style="left:895px; top:calc(368px - 10px);">PC</span>
+    <span id="estado-text-12" class="estado-text" style="left:895px; top:calc(391px - 10px);">Estamina</span>
+    <span id="estado-text-13" class="estado-text" style="left:895px; top:calc(436px - 10px);">Carga de equipo</span>
+    <span id="estado-text-14" class="estado-text" style="left:895px; top:calc(482px - 10px);">Aplomo</span>
+    <span id="estado-text-15" class="estado-text" style="left:895px; top:calc(504px - 10px);">Descubrimiento</span>
+    <span id="estado-text-16" class="estado-text" style="left:calc(1100px - 15px); top:calc(345px - 10px);">/</span>
+    <span id="estado-text-17" class="estado-text" style="left:calc(1100px - 15px); top:calc(368px - 10px);">/</span>
+    <span id="estado-text-18" class="estado-text" style="left:calc(1100px - 15px); top:calc(436px - 10px);">/</span>
+    <!-- Texto extra con color #C9BBA1 -->
+    <span id="estado-text-special" class="estado-text-special" style="left:895px; top:65px;">Estado de personaje</span>
+
+    <!-- Elementos del nuevo 'Menú Totales' (ocultos por defecto). 24 textos + 2 especiales -->
+    <span id="totales-text-special-1" class="estado-text-special" style="left:895px; top:calc(95px - 3px); display:none;">Neutralización de daño</span>
+    <span id="totales-text-special-2" class="estado-text-special" style="left:895px; top:calc(325px - 3px); display:none;">Resistencias</span>
+    <span id="totales-text-1" class="estado-text" style="left:895px; top:calc(118px - 3px); display:none;">Físico</span>
+    <span id="totales-text-2" class="estado-text" style="left:895px; top:calc(141px - 3px); display:none;">Vs golpe</span>
+    <span id="totales-text-3" class="estado-text" style="left:895px; top:calc(164px - 3px); display:none;">Vs tajo</span>
+    <span id="totales-text-4" class="estado-text" style="left:895px; top:calc(187px - 3px); display:none;">Vs punción</span>
+    <span id="totales-text-5" class="estado-text" style="left:895px; top:calc(210px - 3px); display:none;">Magia</span>
+    <span id="totales-text-6" class="estado-text" style="left:895px; top:calc(233px - 3px); display:none;">Fuego</span>
+    <span id="totales-text-7" class="estado-text" style="left:895px; top:calc(256px - 3px); display:none;">Rayo</span>
+    <span id="totales-text-8" class="estado-text" style="left:895px; top:calc(279px - 3px); display:none;">Sagrado</span>
+    <span id="totales-text-9" class="estado-text" style="left:calc(1100px - 15px); top:calc(118px - 3px); display:none;">/</span>
+    <span id="totales-text-10" class="estado-text" style="left:calc(1100px - 15px); top:calc(141px - 3px); display:none;">/</span>
+    <span id="totales-text-11" class="estado-text" style="left:calc(1100px - 15px); top:calc(164px - 3px); display:none;">/</span>
+    <span id="totales-text-12" class="estado-text" style="left:calc(1100px - 15px); top:calc(187px - 3px); display:none;">/</span>
+    <span id="totales-text-13" class="estado-text" style="left:calc(1100px - 15px); top:calc(210px - 3px); display:none;">/</span>
+    <span id="totales-text-14" class="estado-text" style="left:calc(1100px - 15px); top:calc(233px - 3px); display:none;">/</span>
+    <span id="totales-text-15" class="estado-text" style="left:calc(1100px - 15px); top:calc(256px - 3px); display:none;">/</span>
+    <span id="totales-text-16" class="estado-text" style="left:calc(1100px - 15px); top:calc(279px - 3px); display:none;">/</span>
+    <span id="totales-text-17" class="estado-text" style="left:895px; top:calc(348px - 3px); display:none;">Inmunidad</span>
+    <span id="totales-text-18" class="estado-text" style="left:895px; top:calc(371px - 3px); display:none;">Robustez</span>
+    <span id="totales-text-19" class="estado-text" style="left:895px; top:calc(394px - 3px); display:none;">Concentración</span>
+    <span id="totales-text-20" class="estado-text" style="left:895px; top:calc(417px - 3px); display:none;">Vitalidad</span>
+    <span id="totales-text-21" class="estado-text" style="left:calc(1100px - 15px); top:calc(348px - 3px); display:none;">/</span>
+    <span id="totales-text-22" class="estado-text" style="left:calc(1100px - 15px); top:calc(371px - 3px); display:none;">/</span>
+    <span id="totales-text-23" class="estado-text" style="left:calc(1100px - 15px); top:calc(394px - 3px); display:none;">/</span>
+    <span id="totales-text-24" class="estado-text" style="left:calc(1100px - 15px); top:calc(417px - 3px); display:none;">/</span>
+
+    <!-- Valores independientes del Menú Totales -->
+    <span id="totales-value-1" class="estado-value" alt="Físico (derivado)"               style="right:calc(203px - 22px); top:calc(118px - 3px); display:none;"></span>
+    <span id="totales-value-2" class="estado-value" alt="Vs golpe (derivado)"             style="right:calc(203px - 22px); top:calc(141px - 3px); display:none;"></span>
+    <span id="totales-value-3" class="estado-value" alt="Vs tajo (derivado)"              style="right:calc(203px - 22px); top:calc(164px - 3px); display:none;"></span>
+    <span id="totales-value-4" class="estado-value" alt="Vs punción (derivado)"           style="right:calc(203px - 22px); top:calc(187px - 3px); display:none;"></span>
+    <span id="totales-value-5" class="estado-value" alt="Magia (derivado)"                style="right:calc(203px - 22px); top:calc(210px - 3px); display:none;"></span>
+    <span id="totales-value-6" class="estado-value" alt="Fuego (derivado)"                style="right:calc(203px - 22px); top:calc(233px - 3px); display:none;"></span>
+    <span id="totales-value-7" class="estado-value" alt="Rayo (derivado)"                 style="right:calc(203px - 22px); top:calc(256px - 3px); display:none;"></span>
+    <span id="totales-value-8" class="estado-value" alt="Sagrado (derivado)"              style="right:calc(203px - 22px); top:calc(279px - 3px); display:none;"></span>
+    <span id="totales-value-9" class="estado-value" alt="Inmunidad (derivado)"            style="right:calc(273px - 22px); top:calc(348px - 3px); display:none;"></span>
+    <span id="totales-value-10" class="estado-value" alt="Robustez (derivado)"            style="right:calc(273px - 22px); top:calc(371px - 3px); display:none;"></span>
+    <span id="totales-value-11" class="estado-value" alt="Concentración (derivado)"       style="right:calc(273px - 22px); top:calc(394px - 3px); display:none;"></span>
+    <span id="totales-value-12" class="estado-value" alt="Vitalidad (derivado)"           style="right:calc(273px - 22px); top:calc(417px - 3px); display:none;"></span>
+    <span id="totales-value-13" class="estado-value" alt="Físico (suma equipadas)"        style="right:calc(273px - 22px); top:calc(118px - 3px); display:none;"></span>
+    <span id="totales-value-14" class="estado-value" alt="Vs golpe (suma equipadas)"      style="right:calc(273px - 22px); top:calc(141px - 3px); display:none;"></span>
+    <span id="totales-value-15" class="estado-value" alt="Vs tajo (suma equipadas)"       style="right:calc(273px - 22px); top:calc(164px - 3px); display:none;"></span>
+    <span id="totales-value-16" class="estado-value" alt="Vs punción (suma equipadas)"    style="right:calc(273px - 22px); top:calc(187px - 3px); display:none;"></span>
+    <span id="totales-value-17" class="estado-value" alt="Magia (suma equipadas)"         style="right:calc(203px - 22px); top:calc(210px - 3px); display:none;"></span>
+    <span id="totales-value-18" class="estado-value" alt="Fuego (suma equipadas)"         style="right:calc(203px - 22px); top:calc(233px - 3px); display:none;"></span>
+    <span id="totales-value-19" class="estado-value" alt="Rayo (suma equipadas)"          style="right:calc(203px - 22px); top:calc(256px - 3px); display:none;"></span>
+    <span id="totales-value-20" class="estado-value" alt="Sagrado (suma equipadas)"       style="right:calc(203px - 22px); top:calc(279px - 3px); display:none;"></span>
+    <span id="totales-value-21" class="estado-value" alt="Inmunidad (suma equipadas)"     style="right:calc(273px - 22px); top:calc(348px - 3px); display:none;"></span>
+    <span id="totales-value-22" class="estado-value" alt="Robustez (suma equipadas)"      style="right:calc(273px - 22px); top:calc(371px - 3px); display:none;"></span>
+    <span id="totales-value-23" class="estado-value" alt="Concentración (suma equipadas)" style="right:calc(273px - 22px); top:calc(394px - 3px); display:none;"></span>
+    <span id="totales-value-24" class="estado-value" alt="Vitalidad (suma equipadas)"     style="right:calc(273px - 22px); top:calc(417px - 3px); display:none;"></span>
+
+    <!-- Valores independientes: edítalos manualmente cambiando left/top de cada `estado-value-*`. -->
+    <span id="estado-value-1"  class="estado-value" style="right:calc(203px - 22px); top:calc(95px - 3px);"></span>
+    <span id="estado-value-2"  class="estado-value" style="right:calc(203px - 22px); top:calc(140px - 10px);"></span>
+    <span id="estado-value-3"  class="estado-value" style="right:calc(203px - 22px); top:calc(163px - 10px);"></span>
+    <span id="estado-value-4"  class="estado-value" style="right:calc(203px - 22px); top:calc(186px - 10px);"></span>
+    <span id="estado-value-5"  class="estado-value" style="right:calc(203px - 22px); top:calc(209px - 10px);"></span>
+    <span id="estado-value-6"  class="estado-value" style="right:calc(203px - 22px); top:calc(232px - 10px);"></span>
+    <span id="estado-value-7"  class="estado-value" style="right:calc(203px - 22px); top:calc(255px - 10px);"></span>
+    <span id="estado-value-8"  class="estado-value" style="right:calc(203px - 22px); top:calc(278px - 10px);"></span>
+    <span id="estado-value-9"  class="estado-value" style="right:calc(203px - 22px); top:calc(300px - 10px);"></span>
+    <span id="estado-value-10" class="estado-value" style="right:calc(203px - 22px); top:calc(345px - 10px);"></span>
+    <span id="estado-value-11" class="estado-value" style="right:calc(203px - 22px); top:calc(368px - 10px);"></span>
+    <span id="estado-value-12" class="estado-value" style="right:calc(203px - 22px); top:calc(391px - 10px);"></span>
+    <span id="estado-value-13" class="estado-value" style="right:calc(203px - 22px); top:calc(436px - 10px);"></span>
+    <span id="estado-value-15" class="estado-value" style="right:calc(203px - 22px); top:calc(504px - 10px);"></span>
+    <span id="estado-value-16" class="estado-value" style="right:calc(273px - 22px); top:calc(345px - 10px);"></span>
+    <span id="estado-value-17" class="estado-value" style="right:calc(273px - 22px); top:calc(368px - 10px);"></span>
+    <span id="estado-value-18" class="estado-value" style="right:calc(203px - 22px); top:calc(482px - 10px);"></span>
+    <span id="estado-value-19" class="estado-value" style="right:calc(273px - 22px); top:calc(436px - 10px);"></span>
+    <!-- Estado de carga: texto dinámico según porcentaje de PesoEquipo / Carga -->
+    <span id="estado-carga-status" class="estado-text" style="right:calc(203px - 22px); top:calc(459px - 10px); display:none; color:#C9BBA1;"></span>
   </div>
   <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
 
@@ -1187,10 +1302,63 @@
     }
 
     // --- VISIBILIDAD CENTRALIZADA DE MENÚS ---
+    // Copia todos los valores "futuros" (flecha-numero) a los valores
+    // "actuales" (stat-number-*) y recalcula los indicadores derivados.
+    function copiarFuturosACurrentesLevelup() {
+      try {
+        document.querySelectorAll('.flecha-numero[data-fondito]').forEach(function(span){
+          var idx = span.getAttribute('data-fondito');
+          if (!idx) return;
+          var val = span.textContent;
+          var cur = document.getElementById('stat-number-' + idx);
+          if (cur) {
+            cur.textContent = val;
+            try { cur.style.color = '#D0D0D0'; } catch(e){}
+          }
+          try { span.style.color = '#D0D0D0'; } catch(e){}
+        });
+
+        // Recalcular indicadores dependientes (si existen las funciones)
+        try { if (typeof updatePVFromVigor === 'function') updatePVFromVigor(); } catch(e){}
+        try { if (typeof updatePCFromMente === 'function') updatePCFromMente(); } catch(e){}
+        try { if (typeof updateStaminaFromResistencia === 'function') updateStaminaFromResistencia(); } catch(e){}
+        try { if (typeof updateDiscoveryFromArcano === 'function') updateDiscoveryFromArcano(); } catch(e){}
+        try { if (typeof enforceAplomo40 === 'function') enforceAplomo40(); } catch(e){}
+        // Actualizar runas según nivel actual/futuro
+        try {
+          var nivelSpan = document.querySelector('.flecha-numero[data-fondito="27"]');
+          var nivel = NaN;
+          if (nivelSpan) nivel = parseInt(nivelSpan.textContent, 10);
+          if (isNaN(nivel)) {
+            var curN = document.getElementById('stat-number-27');
+            if (curN) nivel = parseInt(curN.textContent, 10);
+          }
+          if (typeof updateRunasDisplay === 'function') updateRunasDisplay(isNaN(nivel) ? undefined : nivel);
+        } catch(e){}
+      } catch(e) { console.error('Error al copiar futuros a actuales al ocultar levelup', e); }
+    }
+
     function mostrarSoloMenu(menu) {
+      // Guardar estado previo de Estado/Totales y asegurarnos de cerrarlos
+      try {
+        window.__prevEstadoState = { menuEstadoVisible: !!menuEstadoVisible, menuTotalesVisible: !!menuTotalesVisible };
+        // Cerrar Totales primero (si estaba abierto) para evitar que quede parcialmente visible
+        try { if (typeof toggleMenuTotales === 'function' && menuTotalesVisible) toggleMenuTotales(false); } catch(e){}
+        // Cerrar Estado (esto restaurará elementos ocultos por Estado)
+        try { if (typeof toggleMenuEstado === 'function' && menuEstadoVisible) toggleMenuEstado(false); } catch(e) {}
+      } catch(e) {}
       document.getElementById('menu-inicio').style.display = 'none';
       document.getElementById('menu-seleccion').style.display = 'none';
-      document.getElementById('menu-estadisticas') && (document.getElementById('menu-estadisticas').style.display = 'none');
+      // Si el overlay LevelUp está visible en este momento, copia los valores futuros a los actuales
+      var _me = document.getElementById('menu-estadisticas');
+      if (_me) {
+        var computed = window.getComputedStyle(_me).display;
+        if (computed && computed !== 'none') {
+          // copiar mientras está oculto (antes de ocultarlo), para que al volver a mostrar muestre valores actualizados
+          try { copiarFuturosACurrentesLevelup(); } catch(e){}
+        }
+        _me.style.display = 'none';
+      }
       document.getElementById('main-content').style.display = 'none';
       
       // Ocultar los separadores adicionales si volvemos al menú principal
@@ -1204,8 +1372,8 @@
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
-        actualizarMenuSeleccionVisual();
-      } else if (menu === 'estadisticas' || menu === 'levelup') {
+        actualizarMenuSeleccionVisual();}
+       else if (menu === 'estadisticas' || menu === 'levelup') {
         // Mostrar solo la pantalla LevelUp (overlay minimalista)
         // Oculta todo lo demás (ya hecho arriba) y muestra el overlay
         if (document.getElementById('menu-estadisticas')) {
@@ -1258,6 +1426,54 @@
         updateThreeSize();
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
+
+        // Al volver al menú principal: detectar si hay un dorado visible (almacen o ranura)
+        // y actualizar la columna de defensas en consecuencia. Luego, resetear
+        // la posición del modelo 3D/cámara a sus valores por defecto.
+        try {
+          // Priorizar dorado en almacen (si alguno está visible)
+          var almacenDorado = null;
+          try {
+            document.querySelectorAll('.almacen-dorado').forEach(function(d){
+              if (almacenDorado) return;
+              try {
+                var op = parseFloat(window.getComputedStyle(d).opacity) || 0;
+                if (op > 0) almacenDorado = d;
+              } catch(e) {}
+            });
+          } catch(e) { almacenDorado = null; }
+
+          if (almacenDorado) {
+            var wrapper = almacenDorado.closest('[id^="almacen-"]');
+            if (wrapper) {
+              var idx = 0;
+              try { idx = parseInt((wrapper.id || '').split('-')[1], 10) - 1; } catch(e) { idx = 0; }
+              // Mostrar columna C para el tipo de menú secundario (por defecto armaduras)
+              try { if (typeof mostrarColumnaC === 'function') mostrarColumnaC(tipoMenuSecundario || 'menú armaduras', idx); } catch(e) {}
+            }
+          } else {
+            // Si no hay almacen dorado, priorizar ranura-dorado (hover en ranura)
+            try {
+              if (ranuraDoradoActual) {
+                var wrap = ranuraDoradoActual.closest('.ranura-btn-wrapper');
+                if (wrap && typeof mostrarColumnaCPrincipal === 'function') mostrarColumnaCPrincipal(wrap.id);
+              } else if (ultimaRanuraSeleccionada && typeof mostrarColumnaCPrincipal === 'function') {
+                // Fallback a la última ranura seleccionada
+                mostrarColumnaCPrincipal(ultimaRanuraSeleccionada);
+              }
+            } catch(e) {}
+          }
+
+          // Resetear la posición del modelo 3D / cámara a su pose por defecto
+          try { if (typeof resetModelo3DPosition === 'function') resetModelo3DPosition(); } catch(e) {}
+
+          // Restaurar Estado/Totales al volver del overlay si existía un estado previo
+          if (window.__prevEstadoState) {
+            try { if (window.__prevEstadoState.menuEstadoVisible && typeof toggleMenuEstado === 'function') toggleMenuEstado(true); } catch(e){}
+            try { if (window.__prevEstadoState.menuTotalesVisible && typeof toggleMenuTotales === 'function') toggleMenuTotales(true); } catch(e){}
+            try { delete window.__prevEstadoState; } catch(e){}
+          }
+        } catch(e) {}
       }
     }
 
@@ -1827,7 +2043,7 @@
               if (!isNaN(arcCur)) {
                 var discCur = discoveryPorArcano(arcCur);
                 var discCurEl = document.getElementById('stat-number-14');
-                if (discCurEl) discCurEl.textContent = discCur;
+                if (discCurEl) discCurEl.textContent = formatOneDecimal(discCur);
               }
 
               var arcFutSpan = document.querySelector('.flecha-numero[data-fondito="8"]');
@@ -1836,7 +2052,7 @@
                 var discFut = discoveryPorArcano(arcFut);
                 var discFutSpan = document.querySelector('.flecha-numero[data-fondito="14"]');
                 if (discFutSpan) {
-                  discFutSpan.textContent = discFut;
+                  discFutSpan.textContent = formatOneDecimal(discFut);
                   try {
                     var discCurEl2 = document.getElementById('stat-number-14');
                     var discCurVal = discCurEl2 ? parseFloat(discCurEl2.textContent) : NaN;
@@ -3096,6 +3312,8 @@ function volverMenuRanuras() {
   // Si tienes una función ocultarManosSiempre, llama aquí
   if (typeof ocultarManosSiempre === "function") ocultarManosSiempre();
   menuActual = "";
+  // Si el submenú Estado está abierto, restaurar valores hipotéticos
+  try { if (menuEstadoVisible) resetEstadoHoverColors(); } catch(e){}
   // Oculta dorado en almacen
   document.querySelectorAll('.almacen-dorado').forEach(function(d){ d.style.opacity = "0"; });
   limpiarColumnaC();
@@ -3104,6 +3322,8 @@ function volverMenuRanuras() {
   document.getElementById('main-content').style.display = 'flex';
   document.getElementById('menu-inicio').style.display = 'none';
   document.getElementById('menu-seleccion').style.display = 'none';
+  // Al volver a las ranuras, asegurar que el modelo 3D esté en su pose por defecto
+  try { if (typeof resetModelo3DPosition === 'function') resetModelo3DPosition(); } catch(e) {}
 }
     // Asignar eventos a cada ranura
     document.getElementById("ranura-h").addEventListener("mouseenter", function() {
@@ -3161,6 +3381,16 @@ function volverMenuRanuras() {
         var dorado = wrapper.querySelector('.almacen-dorado');
         if (dorado) dorado.style.opacity = "1";
       }
+      // Si Estado está activo, reactivar comparaciones y evaluar/aplicar hipótesis persistente para este almacen
+      try {
+        // cambiar dorado significa que queremos permitir nueva comparación
+        try { window.__disableEstadoComparisons = false; } catch(e){}
+        if (menuEstadoVisible) {
+          var idx = 0;
+          try { idx = parseInt((wrapperId || '').split('-')[1], 10) - 1; } catch(e) { idx = 0; }
+          try { evaluarComparacionAlmacenParaEstado(idx); window.__almacenDoradoIdx = idx; } catch(e) {}
+        }
+      } catch(e) {}
     }
 
     document.getElementById("almacen-1").addEventListener("mouseenter", function() {
@@ -3470,6 +3700,17 @@ function volverMenuRanuras() {
             set(ref(db, sinluzPath), valor);
           }
         }
+        // Si el submenú Estado está activo, actualizar inmediatamente los valores del Estado
+        try {
+          if (menuEstadoVisible) {
+            // recomputar vars y actualizar display
+            window.estadoVars = readEstadoVars();
+            // desactivar comparaciones hasta que el dorado cambie
+            try { window.__disableEstadoComparisons = true; } catch(e){}
+            try { resetEstadoHoverColors(); } catch(e){}
+            try { updateEstadoDisplay(); } catch(e){}
+          }
+        } catch(e){}
       }
     }
 
@@ -3493,6 +3734,658 @@ function volverMenuRanuras() {
   // también registro tooltip para el botón de cerrar en el overlay (si existe)
   try { setupMenuBtnTooltip('btn-cerrar-estadisticas'); } catch(e) {}
 
+  // --- Submenú 'Estado' (menú secundario dentro del menú principal) ---
+  var menuEstadoVisible = false;
+  // Nuevo: estado del Menú Totales
+  var menuTotalesVisible = false;
+  // Lee los valores 'actuales' desde el menú LevelUp y los devuelve como objeto
+  function readEstadoVars() {
+    try {
+      var map = {
+        Nivel: 27,
+        Vigor: 1,
+        Mente: 2,
+        Resistencia: 3,
+        Fuerza: 4,
+        Destreza: 5,
+        Inteligencia: 6,
+        Fe: 7,
+        Arcano: 8,
+        PV: 9,
+        PC: 10,
+        Estamina: 11,
+        Carga: 12,
+        Aplomo: 13,
+        Descubrimiento: 14
+      };
+      var out = {};
+      Object.keys(map).forEach(function(key){
+        var id = map[key];
+        var el = document.getElementById('stat-number-' + id);
+        if (el && el.textContent != null) {
+          out[key] = el.textContent.trim();
+        } else {
+          // fallback: try flecha-numero (future) if current not present
+          var fut = document.querySelector('.flecha-numero[data-fondito="' + id + '"]');
+          out[key] = fut ? fut.textContent.trim() : null;
+        }
+      });
+      // Copias: exponer PV y PC también bajo claves separadas
+      out.PV_copy = out.PV;
+      out.PC_copy = out.PC;
+      // Calcular PosturaEquipo: sumar postura de las piezas equipadas (h,a,g,l)
+      try {
+        var postureSum = 0;
+        ['h','a','g','l'].forEach(function(r){
+          var el = document.getElementById('equipada-' + r);
+          if (el && el.src) {
+            var fname = el.src.split('/').pop();
+            var itemName = (typeof imagenNombre !== 'undefined' && imagenNombre[fname]) ? imagenNombre[fname] : null;
+            if (itemName) {
+              // buscar en almacenDatos por nombre en cualquiera de las categorías
+              try {
+                Object.keys(almacenDatos).forEach(function(cat){
+                  (almacenDatos[cat] || []).forEach(function(it){
+                    if (it && it.nombre === itemName) {
+                      postureSum += Number(it.postura) || 0;
+                    }
+                  });
+                });
+              } catch(e){}
+            }
+          }
+        });
+        out.PosturaEquipo = postureSum + 40; // sumar 40 según solicitud
+      } catch(e) { out.PosturaEquipo = 0; }
+      // Calcular PesoEquipo: sumar 'peso' de las piezas equipadas (h,a,g,l)
+      try {
+        var pesoSum = 0;
+        ['h','a','g','l'].forEach(function(r){
+          var el = document.getElementById('equipada-' + r);
+          if (el && el.src) {
+            var fname = el.src.split('/').pop();
+            var itemName = (typeof imagenNombre !== 'undefined' && imagenNombre[fname]) ? imagenNombre[fname] : null;
+            if (itemName) {
+              try {
+                Object.keys(almacenDatos).forEach(function(cat){
+                  (almacenDatos[cat] || []).forEach(function(it){
+                    if (it && it.nombre === itemName) {
+                      pesoSum += Number(it.peso) || 0;
+                    }
+                  });
+                });
+              } catch(e){}
+            }
+          }
+        });
+        out.PesoEquipo = pesoSum;
+      } catch(e) { out.PesoEquipo = 0; }
+      // Calcular texto de carga según porcentaje PesoEquipo / Carga (Carga es el valor máximo de equipo)
+      try {
+        var cargaMax = parseFloat((out.Carga || '').toString().replace(',', '.')) || 0;
+        var cargaText = '';
+        if (cargaMax > 0) {
+          var pct = (Number(out.PesoEquipo) / cargaMax) * 100;
+          if (pct <= 30) cargaText = 'Carga ligera';
+          else if (pct <= 70) cargaText = 'Carga media';
+          else if (pct <= 100) cargaText = 'Carga pesada';
+          else cargaText = 'Sobrecargado';
+        }
+        out.CargaStatus = cargaText;
+      } catch(e) { out.CargaStatus = ''; }
+      return out;
+    } catch(e) { return {}; }
+  }
+  // Formatea un número con un decimal (usa coma decimal en locale 'es-ES').
+  // Devuelve cadena vacía para valores no numéricos.
+  function formatOneDecimal(val) {
+    try {
+      if (val === null || typeof val === 'undefined' || val === '') return '';
+      var n = Number(('' + val).toString().replace(',', '.'));
+      if (isNaN(n)) return '';
+      // Usar punto decimal y un solo decimal (ej. 12.7)
+      return Number(n).toFixed(1);
+    } catch (e) { try { return (Number(val) || 0).toFixed(1); } catch (ee) { return ''; } }
+  }
+  // Formatea un número como entero (sin decimales). Devuelve '' para valores no numéricos.
+  function formatInteger(val) {
+    try {
+      if (val === null || typeof val === 'undefined' || val === '') return '';
+      var n = Number(('' + val).toString().replace(',', '.'));
+      if (isNaN(n)) return '';
+      return String(Math.round(n));
+    } catch (e) { try { return String(Math.round(Number(val) || 0)); } catch (ee) { return ''; } }
+  }
+  function toggleMenuEstado(show) {
+    try {
+      // 1) Ocultar los elementos marcados explícitamente como 'defensas'
+      var elems = document.querySelectorAll('[data-menu="defensas"]');
+      elems.forEach(function(el){
+        try {
+          if (show) {
+            if (typeof el.dataset.prevDisplay === 'undefined') el.dataset.prevDisplay = el.style.display || '';
+            el.style.display = 'none';
+            el.dataset.hiddenByEstado = 'true';
+          } else {
+            if (el.dataset.hiddenByEstado === 'true') {
+              if (typeof el.dataset.prevDisplay !== 'undefined') {
+                el.style.display = el.dataset.prevDisplay;
+                delete el.dataset.prevDisplay;
+              } else {
+                el.style.display = '';
+              }
+              delete el.dataset.hiddenByEstado;
+            }
+          }
+        } catch(e){}
+      });
+
+      // 2) Ocultar TODO lo que esté en la mitad derecha de la pantalla, excepto botones
+      // Definir selector para elementos que consideramos 'botones' y que NO deben ocultarse
+      var buttonSelector = 'button, [role="button"], .menu-btn-wrapper, .fancy-img-button, .menu-btn-img, .almacen-btn, .almacen-btn-wrapper, .menu-btn-tooltip';
+      if (show) {
+        var midX = window.innerWidth / 2;
+        // Recolectar elementos candidatos dentro del body
+        var all = Array.from(document.body.querySelectorAll('*'));
+        all.forEach(function(el){
+          try {
+            if (!(el instanceof HTMLElement)) return;
+            // never hide the estado separator itself or the estado button
+            if (el.id === 'separator-estado' || el.id === 'btn-estado') return;
+            // don't hide overlays/menus different than main if they are visible? We will still allow hiding
+            // Exclude elements that match buttonSelector anywhere in their ancestry
+            if (el.closest(buttonSelector)) return;
+            var rect = el.getBoundingClientRect();
+            // if element not visible on layout, skip
+            if (rect.width === 0 && rect.height === 0) return;
+            // if element positioned on the right half (left edge >= midX) hide it
+            if (rect.left >= midX) {
+              if (typeof el.dataset.prevDisplay === 'undefined') el.dataset.prevDisplay = el.style.display || '';
+              el.style.display = 'none';
+              el.dataset.hiddenByEstado = 'true';
+            }
+          } catch(e){}
+        });
+      } else {
+        // restore only elements we hid using data-hiddenByEstado
+        var hidden = document.querySelectorAll('[data-hidden-by-estado="true"]');
+        hidden.forEach(function(el){
+          try {
+            if (typeof el.dataset.prevDisplay !== 'undefined') {
+              el.style.display = el.dataset.prevDisplay;
+              delete el.dataset.prevDisplay;
+            } else {
+              el.style.display = '';
+            }
+            delete el.dataset.hiddenByEstado;
+          } catch(e){}
+        });
+      }
+        var sep = document.getElementById('separator-estado');
+      if (sep) sep.style.display = show ? 'block' : 'none';
+      // Si abrimos el menú Estado, leemos los valores actuales del menú LevelUp y los exponemos en window.estadoVars
+      try {
+        if (show) {
+          window.estadoVars = readEstadoVars();
+          // Mapear y mostrar los valores junto a las etiquetas del menú Estado
+          try {
+            // labelMap: texto visible en la etiqueta (puede ser largo)
+            var labelMap = {
+              1: 'Nivel',
+              2: 'Vigor',
+              3: 'Mente',
+              4: 'Resistencia',
+              5: 'Fuerza',
+              6: 'Destreza',
+              7: 'Inteligencia',
+              8: 'Fe',
+              9: 'Arcano',
+              10: 'PV',
+              11: 'PC',
+              12: 'Estamina',
+              13: 'Carga de equipo',
+              14: 'Aplomo',
+              15: 'Descubrimiento',
+              16: '',
+              17: '',
+              18: ''
+            };
+            // keyMap: claves usadas para leer window.estadoVars (deben coincidir con readEstadoVars())
+            var keyMap = {
+              1: 'Nivel',
+              2: 'Vigor',
+              3: 'Mente',
+              4: 'Resistencia',
+              5: 'Fuerza',
+              6: 'Destreza',
+              7: 'Inteligencia',
+              8: 'Fe',
+              9: 'Arcano',
+              10: 'PV',
+              11: 'PC',
+              12: 'Estamina',
+              13: 'Carga',
+              14: 'Aplomo',
+              15: 'Descubrimiento',
+              16: 'PV_copy',
+              17: 'PC_copy',
+              18: 'PosturaEquipo'
+              ,
+              19: 'PesoEquipo'
+            };
+            Object.keys(labelMap).forEach(function(idx){
+              try {
+                var label = document.getElementById('estado-text-' + idx);
+                var valEl = document.getElementById('estado-value-' + idx);
+                if (label && labelMap[idx]) label.textContent = labelMap[idx];
+                var key = keyMap[idx];
+                var val = (window.estadoVars && key && typeof window.estadoVars[key] !== 'undefined') ? window.estadoVars[key] : '';
+                if (valEl) {
+                  // Aplomo (clave 'Aplomo') se muestra sin decimales.
+                  if (key === 'Aplomo') {
+                    valEl.textContent = (val !== '' && val !== null) ? formatInteger(val) : '';
+                  // Descubrimiento y Peso deben mostrar siempre un decimal (incluso .0)
+                  } else if (key === 'Descubrimiento' || key === 'PesoEquipo') {
+                    valEl.textContent = (val !== '' && val !== null) ? formatOneDecimal(val) : '';
+                  // PosturaEquipo: mostrar como entero (sin decimales)
+                  } else if (key === 'PosturaEquipo') {
+                    valEl.textContent = (val !== '' && val !== null) ? formatInteger(val) : '';
+                  } else {
+                    valEl.textContent = (val !== '' && val !== null) ? val : '';
+                  }
+                }
+              } catch(e){}
+            });
+            // Valor adicional: PesoEquipo en estado-value-19
+            try {
+              var pv19 = document.getElementById('estado-value-19');
+              if (pv19) pv19.textContent = (window.estadoVars && typeof window.estadoVars.PesoEquipo !== 'undefined') ? formatOneDecimal(window.estadoVars.PesoEquipo) : '';
+              var cargaStatusEl = document.getElementById('estado-carga-status');
+              if (cargaStatusEl) cargaStatusEl.textContent = (window.estadoVars && typeof window.estadoVars.CargaStatus !== 'undefined') ? window.estadoVars.CargaStatus : '';
+            } catch(e){}
+            try {
+              var tv = document.getElementById('estado-value-1');
+              // tambien mostrar el nivel en el value-1 si existe
+              if (tv) {
+                tv.textContent = (window.estadoVars && window.estadoVars.Nivel) ? window.estadoVars.Nivel : '';
+              }
+            } catch(e){}
+          } catch(e){}
+        }
+      } catch(e){}
+      // Mostrar/ocultar elementos específicos del menú Estado
+      try {
+        var humano = document.getElementById('humano-img');
+        if (humano) humano.style.display = show ? 'block' : 'none';
+        for (var i=1;i<=18;i++){
+          var t = document.getElementById('estado-text-' + i);
+          if (t) t.style.display = show ? 'block' : 'none';
+        }
+        // Mostrar/ocultar también los valores independientes (1..19)
+        for (var j=1;j<=19;j++){
+          var v = document.getElementById('estado-value-' + j);
+          if (v) v.style.display = show ? 'block' : 'none';
+        }
+        // Mostrar/ocultar el texto dinámico de carga
+        var cargaStatusEl = document.getElementById('estado-carga-status');
+        if (cargaStatusEl) cargaStatusEl.style.display = show ? 'block' : 'none';
+        var ts = document.getElementById('estado-text-special');
+        if (ts) ts.style.display = show ? 'block' : 'none';
+      } catch(e){}
+      // visual cue: force dorado visible on active button
+      var btn = document.getElementById('btn-estado');
+      if (btn) {
+        var dor = btn.querySelector('.menu-btn-dorado');
+        if (dor) dor.style.opacity = show ? '1' : '';
+      }
+      menuEstadoVisible = !!show;
+      // Si abrimos o cerramos Estado estando en menú armaduras, detectar almacen-dorado
+      try {
+        // buscar almacen-dorado visible (priorizar opacidad > 0)
+        var almacenes = Array.from(document.querySelectorAll('.almacen-dorado'));
+        for (var i=0;i<almacenes.length;i++){
+          try {
+            var a = almacenes[i];
+            var op2 = parseFloat(getComputedStyle(a).opacity) || 0;
+            if (op2 > 0) {
+              // subir por el DOM hasta encontrar el wrapper con id 'almacen-#'
+              var p = a;
+              while (p && p !== document.body) {
+                if (p.id && /^almacen-\d+$/.test(p.id)) break;
+                p = p.parentNode;
+              }
+              if (p && p.id) {
+                var parts = p.id.split('-');
+                var idx = parseInt(parts[1] || '1', 10) - 1;
+                // Si estamos abriendo Estado (show==true) evaluamos normalmente (Estado visible)
+                // Si estamos cerrando (show==false) forzamos la evaluación para almacenar hipótesis
+                try { evaluarComparacionAlmacenParaEstado(idx, !show ? true : false); } catch(e){}
+                break;
+              }
+            }
+          } catch(e){}
+        }
+      } catch(e){}
+      // Mientras el menú Estado esté activo, aseguramos que nada del 'menú defensas' aparezca.
+      try {
+        if (menuEstadoVisible) {
+          // Attacha un MutationObserver que forzará display:none a cualquier elemento con data-menu="defensas"
+          if (typeof window.__menuDefensasObserver === 'undefined') {
+            window.__menuDefensasObserver = new MutationObserver(function(mutations){
+              try {
+                mutations.forEach(function(m){
+                  if (m.type === 'attributes' && m.attributeName === 'style') {
+                    var target = m.target;
+                    if (target && target.getAttribute && target.getAttribute('data-menu') === 'defensas') {
+                      if (getComputedStyle(target).display !== 'none') {
+                        try { target.style.display = 'none'; } catch(e){}
+                      }
+                    }
+                  }
+                  if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
+                    m.addedNodes.forEach(function(node){
+                      try {
+                        if (node && node.getAttribute && node.getAttribute('data-menu') === 'defensas') {
+                          try { node.style.display = 'none'; } catch(e){}
+                        }
+                        // also scan subtree
+                        if (node && node.querySelectorAll) {
+                          var inner = node.querySelectorAll('[data-menu="defensas"]');
+                          inner.forEach(function(n2){ try { n2.style.display = 'none'; } catch(e){} });
+                        }
+                      } catch(e){}
+                    });
+                  }
+                });
+              } catch(e){}
+            });
+            window.__menuDefensasObserver.observe(document.body, { attributes: true, attributeFilter:['style'], subtree: true, childList: true });
+          }
+          // Force-hide any existing elements marked as menu defensas right now
+          try { document.querySelectorAll('[data-menu="defensas"]').forEach(function(el){ el.style.display = 'none'; }); } catch(e){}
+        } else {
+          // disconnect observer and allow restorations (restore only elements we hid via dataset)
+          try {
+            if (window.__menuDefensasObserver) {
+              window.__menuDefensasObserver.disconnect();
+              delete window.__menuDefensasObserver;
+            }
+          } catch(e){}
+          // restore elements hidden by toggleMenuEstado previously (those with dataset.hiddenByEstado)
+          try {
+            document.querySelectorAll('[data-hidden-by-estado="true"]').forEach(function(el){
+              try {
+                if (typeof el.dataset.prevDisplay !== 'undefined') { el.style.display = el.dataset.prevDisplay; delete el.dataset.prevDisplay; }
+                else el.style.display = '';
+                delete el.dataset.hiddenByEstado;
+              } catch(e){}
+            });
+          } catch(e){}
+          // Restaurar valores hipotéticos al cerrar Estado
+          try { resetEstadoHoverColors(); } catch(e){}
+          // Después de cerrar Estado, detectar qué ranura o almacen tiene el dorado activo
+          try {
+            // Priorizar almacen-dorado si existe (esto cubre el caso de estar en el menú armaduras)
+            var didUpdate = false;
+            try {
+              var almacenes = Array.from(document.querySelectorAll('.almacen-dorado'));
+              for (var i=0;i<almacenes.length;i++){
+                try {
+                  var a = almacenes[i];
+                  var op2 = parseFloat(getComputedStyle(a).opacity) || 0;
+                  if (op2 > 0) {
+                    // subir por el DOM hasta encontrar el wrapper con id 'almacen-#'
+                    var p = a;
+                    while (p && p !== document.body) {
+                      if (p.id && /^almacen-\d+$/.test(p.id)) break;
+                      p = p.parentNode;
+                    }
+                    if (p && p.id) {
+                      var parts = p.id.split('-');
+                      var idx = parseInt(parts[1] || '1', 10) - 1;
+                      // Decide tipo según menuActual
+                      var tipoParaMostrar = (menuActual === 'mano') ? 'menú armas' : 'menú armaduras';
+                      try { mostrarColumnaC(tipoParaMostrar, idx); } catch(e){}
+                      didUpdate = true;
+                      break;
+                    }
+                  }
+                } catch(e){}
+              }
+            } catch(e){}
+            // Si no actualizó por almacen, intentar con la ranura dorada global
+            if (!didUpdate) {
+              if (typeof ranuraDoradoActual !== 'undefined' && ranuraDoradoActual) {
+                try {
+                  var op = parseFloat(getComputedStyle(ranuraDoradoActual).opacity) || 0;
+                  if (op > 0) {
+                    var wrapper = ranuraDoradoActual.closest('.ranura-btn-wrapper');
+                    if (wrapper && wrapper.id) {
+                      mostrarColumnaCPrincipal(wrapper.id);
+                      didUpdate = true;
+                    }
+                  }
+                } catch(e){}
+              }
+            }
+          } catch(e){}
+        }
+      } catch(e){}
+    } catch(e) { console.error('toggleMenuEstado error', e); }
+  }
+
+  // Nuevo: alterna el Menú Totales (muestra 24 textos + 2 especiales) ocultando la mayor parte del menú Estado
+  function toggleMenuTotales(show) {
+    try {
+      menuTotalesVisible = !!show;
+      // Cuando se activa Totales, ocultamos la mayoría de elementos del menú Estado,
+      // excepto el separador, la imagen humano y el texto especial de Estado.
+      if (show) {
+        for (var i = 1; i <= 18; i++) {
+          try {
+            var t = document.getElementById('estado-text-' + i);
+            if (t && t.id !== 'estado-text-special') t.style.display = 'none';
+          } catch(e){}
+        }
+        for (var j = 1; j <= 19; j++) {
+          try { var v = document.getElementById('estado-value-' + j); if (v) v.style.display = 'none'; } catch(e){}
+        }
+        try { var cargaStatusEl = document.getElementById('estado-carga-status'); if (cargaStatusEl) cargaStatusEl.style.display = 'none'; } catch(e){}
+        // Mostrar totales
+        try { document.getElementById('totales-text-special-1').style.display = 'block'; } catch(e){}
+        try { document.getElementById('totales-text-special-2').style.display = 'block'; } catch(e){}
+        for (var k = 1; k <= 24; k++) { try { var tt = document.getElementById('totales-text-' + k); if (tt) tt.style.display = 'block'; var tv = document.getElementById('totales-value-' + k); if (tv) tv.style.display = 'block'; } catch(e){} }
+        // Populate Totales values into independent value spans
+        try {
+          var tvars = readTotalesVars();
+          var derivedKeys = ['fisico','golpe','tajo','puncion','magico','fuego','rayo','sagrado','inmunidad','robustez','concentracion','vitalidad'];
+          for (var d = 0; d < derivedKeys.length; d++) {
+            try {
+              var valEl = document.getElementById('totales-value-' + (d + 1));
+              var key = derivedKeys[d];
+              if (valEl) {
+                var txt = (tvars.derived && typeof tvars.derived[key] !== 'undefined' && tvars.derived[key] !== null) ? formatInteger(tvars.derived[key]) : '';
+                valEl.textContent = txt;
+                try { valEl.setAttribute('alt', txt); } catch(e){}
+              }
+            } catch(e){}
+          }
+          var equipKeys = ['fisico','golpe','tajo','puncion','magico','fuego','rayo','sagrado','inmunidad','robustez','concentracion','vitalidad'];
+          for (var eidx = 0; eidx < equipKeys.length; eidx++) {
+            try {
+              var valEl2 = document.getElementById('totales-value-' + (13 + eidx));
+              var k2 = equipKeys[eidx];
+              if (!valEl2) continue;
+              if (['inmunidad','robustez','concentracion','vitalidad'].indexOf(k2) !== -1) {
+                var txt2 = (tvars.equipSum && typeof tvars.equipSum[k2] !== 'undefined') ? formatInteger(tvars.equipSum[k2]) : '';
+                valEl2.textContent = txt2;
+                try { valEl2.setAttribute('alt', txt2); } catch(e){}
+              } else {
+                var txt3 = (tvars.equipSum && typeof tvars.equipSum[k2] !== 'undefined') ? formatOneDecimal(tvars.equipSum[k2]) : '';
+                valEl2.textContent = txt3;
+                try { valEl2.setAttribute('alt', txt3); } catch(e){}
+              }
+            } catch(e){}
+          }
+        } catch(e) { console.error('populate totales error', e); }
+        // Si estamos en menú armaduras y hay una pieza dorada en el almacen,
+        // evaluar la comparación al abrir Totales (para mostrar hipótesis inmediatamente).
+        try {
+          if (menuActual && (tipoMenuSecundario === 'menú armaduras' || ['h','a','g','l'].includes(menuActual))) {
+            var almacenesCheck = Array.from(document.querySelectorAll('.almacen-dorado'));
+            for (var ai=0; ai<almacenesCheck.length; ai++) {
+              try {
+                var ael = almacenesCheck[ai];
+                var op2 = parseFloat(getComputedStyle(ael).opacity) || 0;
+                if (op2 > 0) {
+                  // Subir hasta encontrar el contenedor almacen-#
+                  var p = ael;
+                  while (p && p !== document.body) {
+                    if (p.id && /^almacen-\d+$/.test(p.id)) break;
+                    p = p.parentNode;
+                  }
+                  if (p && p.id) {
+                    var parts = p.id.split('-');
+                    var idx = parseInt(parts[1] || '1', 10) - 1;
+                    try { evaluarComparacionAlmacenParaEstado(idx, true); } catch(e){}
+                    break;
+                  }
+                }
+              } catch(e){}
+            }
+          }
+        } catch(e){}
+        // Posicionar los spans de valor: derivados a la columna derecha mayor, sumas a la columna menor
+        try {
+          for (var p = 1; p <= 12; p++) {
+            try { var vsp = document.getElementById('totales-value-' + p); if (vsp) { vsp.style.position = 'absolute'; vsp.style.right = 'calc(273px - 22px)'; } } catch(e){}
+          }
+          for (var p2 = 13; p2 <= 24; p2++) {
+            try { var vsp2 = document.getElementById('totales-value-' + p2); if (vsp2) { vsp2.style.position = 'absolute'; vsp2.style.right = 'calc(203px - 22px)'; } } catch(e){}
+          }
+        } catch(e){}
+      } else {
+        // Ocultamos totales (textos y valores)
+        try { document.getElementById('totales-text-special-1').style.display = 'none'; } catch(e){}
+        try { document.getElementById('totales-text-special-2').style.display = 'none'; } catch(e){}
+        for (var k2 = 1; k2 <= 24; k2++) { try { var tt2 = document.getElementById('totales-text-' + k2); if (tt2) tt2.style.display = 'none'; var tv2 = document.getElementById('totales-value-' + k2); if (tv2) { tv2.style.display = 'none'; try { tv2.style.right = ''; tv2.style.position = ''; } catch(e){} } } catch(e){} }
+        // Restaurar elementos del Estado sólo si el menú Estado está abierto
+        if (menuEstadoVisible) {
+          try { document.getElementById('separator-estado').style.display = 'block'; } catch(e){}
+          try { document.getElementById('humano-img').style.display = 'block'; } catch(e){}
+          try { document.getElementById('estado-text-special').style.display = 'block'; } catch(e){}
+          for (var ii = 1; ii <= 18; ii++) { try { var tt = document.getElementById('estado-text-' + ii); if (tt) tt.style.display = 'block'; } catch(e){} }
+          for (var jj = 1; jj <= 19; jj++) { try { var vv = document.getElementById('estado-value-' + jj); if (vv) vv.style.display = 'block'; } catch(e){} }
+          try { var cargaEl2 = document.getElementById('estado-carga-status'); if (cargaEl2) cargaEl2.style.display = 'block'; } catch(e){}
+        }
+        // Restaurar valores/colores hipotéticos que pudieron haberse aplicado a Totales
+        try { resetEstadoHoverColors(); } catch(e){}
+      }
+    } catch(e) { console.error('toggleMenuTotales error', e); }
+  }
+
+  // La tecla F: cuando Estado está abierto -> abre/cierra Totales; cuando Totales está abierto -> cierra Totales y cierra Estado (muestra defensas);
+  // en cualquier otro estado, mantiene el comportamiento anterior (abrir/cerrar Estado).
+  document.addEventListener('keydown', function(e){
+    try {
+      if (!e || !e.key) return;
+      // Solo responder a la tecla F si estamos en el menú principal visible
+      try {
+        var mainEl = document.getElementById('main-content');
+        if (mainEl && mainEl.style.display !== 'flex') return;
+      } catch(ex){}
+      if (e.key.toLowerCase() === 'f') {
+        var active = document.activeElement;
+        if (active) {
+          var t = (active.tagName || '').toLowerCase();
+          if (t === 'input' || t === 'textarea' || active.isContentEditable) return;
+        }
+
+        if (menuTotalesVisible) {
+          // cerrar Totales y mostrar el menú defensas (cerrar Estado por completo)
+          toggleMenuTotales(false);
+          if (menuEstadoVisible) toggleMenuEstado(false);
+          menuTotalesVisible = false;
+          return;
+        }
+
+        if (menuEstadoVisible && !menuTotalesVisible) {
+          // abrir Totales (Estado queda conceptualmente abierto pero la mayor parte de sus elementos se ocultan)
+          toggleMenuTotales(true);
+          menuTotalesVisible = true;
+          return;
+        }
+
+        // fallback: comportamiento original (abrir/cerrar Estado)
+        menuEstadoVisible = !menuEstadoVisible;
+        toggleMenuEstado(menuEstadoVisible);
+      }
+    } catch(ex) { console.error(ex); }
+  });
+
+  // Lee los valores actuales de los stats derivados y suma atributos de las piezas equipadas
+  function readTotalesVars() {
+    try {
+      var derivedIds = {
+        fisico: 15,
+        golpe: 16,
+        tajo: 17,
+        puncion: 18,
+        magico: 19,
+        fuego: 20,
+        rayo: 21,
+        sagrado: 22,
+        inmunidad: 23,
+        robustez: 24,
+        concentracion: 25,
+        vitalidad: 26
+      };
+      var derived = {};
+      Object.keys(derivedIds).forEach(function(k){
+        try {
+          var id = derivedIds[k];
+          var el = document.getElementById('stat-number-' + id);
+          var val = null;
+          if (el) val = parseFloat(el.textContent);
+          if (isNaN(val)) val = null;
+          derived[k] = val;
+        } catch(e){ derived[k] = null; }
+      });
+
+      // Sumar atributos comunes de equipadas h,a,g,l
+      var equipSum = { fisico:0, golpe:0, tajo:0, puncion:0, magico:0, fuego:0, rayo:0, sagrado:0, inmunidad:0, robustez:0, concentracion:0, vitalidad:0 };
+      ['h','a','g','l'].forEach(function(r){
+        try {
+          var el = document.getElementById('equipada-' + r);
+          if (el && el.src) {
+            var fname = el.src.split('/').pop();
+            var itemName = (typeof imagenNombre !== 'undefined' && imagenNombre[fname]) ? imagenNombre[fname] : null;
+            if (itemName) {
+              Object.keys(almacenDatos).forEach(function(cat){
+                (almacenDatos[cat] || []).forEach(function(it){
+                  try {
+                    if (it && it.nombre === itemName) {
+                      ['fisico','golpe','tajo','puncion','magico','fuego','electrico','sagrado','inmunidad','robustez','concentracion','vitalidad'].forEach(function(field){
+                        try {
+                          var val = Number(it[field]);
+                          if (!isNaN(val)) {
+                            if (field === 'electrico') equipSum.rayo += val; else equipSum[field] += val;
+                          }
+                        } catch(e){}
+                      });
+                    }
+                  } catch(e){}
+                });
+              });
+            }
+          }
+        } catch(e){}
+      });
+
+      return { derived: derived, equipSum: equipSum };
+    } catch(e) { console.error('readTotalesVars error', e); return { derived:{}, equipSum:{} }; }
+  }
+
 
     // Utilidad para formatear saltos de línea en descripciones
     function formatearDescripcion(texto) {
@@ -3513,12 +4406,12 @@ function volverMenuRanuras() {
           <div id="atributo-sagrado">0.0</div>
           <div id="atributo-electrico">0.0</div>
           <div id="atributo-fuego">0.0</div>
-          <div id="atributo-inmunidad">0.0</div>
-          <div id="atributo-robustez">0.0</div>
-          <div id="atributo-concentracion">0.0</div>
-          <div id="atributo-vitalidad">0.0</div>
-          <div id="atributo-peso">0.0</div>
-          <div id="atributo-postura">0.0</div>
+          <div id="atributo-inmunidad">0</div>
+          <div id="atributo-robustez">0</div>
+          <div id="atributo-concentracion">0</div>
+          <div id="atributo-vitalidad">0</div>
+          <div id="atributo-peso">${formatOneDecimal(0)}</div>
+          <div id="atributo-postura">${formatInteger(0)}</div>
           <img id="img-neutro" src="neutro.png" alt="Neutro">
           <img id="img-resistencia" src="resistencia.png" alt="Resistencia">
           <div id="texto-nombre"></div>
@@ -3554,8 +4447,8 @@ function volverMenuRanuras() {
         <div id="atributo-robustez">${datos.robustez}</div>
         <div id="atributo-concentracion">${datos.concentracion}</div>
         <div id="atributo-vitalidad">${datos.vitalidad}</div>
-        <div id="atributo-peso">${datos.peso}</div>
-        <div id="atributo-postura">${datos.postura}</div>
+        <div id="atributo-peso">${formatOneDecimal(typeof datos.peso !== 'undefined' ? datos.peso : '')}</div>
+        <div id="atributo-postura">${formatInteger(typeof datos.postura !== 'undefined' ? datos.postura : '')}</div>
         <img id="img-neutro" src="neutro.png" alt="Neutro">
         <img id="img-resistencia" src="resistencia.png" alt="Resistencia">
         <div id="texto-nombre"></div>
@@ -3607,7 +4500,7 @@ function volverMenuRanuras() {
           <div id="atributo-int_req">0</div>
           <div id="atributo-arc_req">0</div>
           <div id="atributo-categoria">Puño</div>
-          <div id="atributo-peso">0.0</div>
+          <div id="atributo-peso">${formatOneDecimal(0)}</div>
           <div id="atributo-tipo_ataque">Golpe</div>
           <img id="img-requisito" src="requisito.png" alt="Requisito">
           <img id="img-negacion" src="negacion.png" alt="Negación">
@@ -3670,7 +4563,7 @@ function volverMenuRanuras() {
         <div id="atributo-int_req">${datos.int_req}</div>
         <div id="atributo-arc_req">${datos.arc_req}</div>
         <div id="atributo-categoria">${datos.categoria}</div>
-        <div id="atributo-peso">${datos.peso}</div>
+        <div id="atributo-peso">${formatOneDecimal(typeof datos.peso !== 'undefined' ? datos.peso : '')}</div>
         <div id="atributo-tipo_ataque">${datos.tipo_ataque}</div>
         <img id="img-requisito" src="requisito.png" alt="Requisito">
         <img id="img-negacion" src="negacion.png" alt="Negación">
@@ -3711,6 +4604,13 @@ function volverMenuRanuras() {
     // Muestra la imagen vinculada a los atributos mostrados in columna C
     function mostrarAtributoImg(tipo, idx) {
       const img = document.getElementById("atributo-img");
+      // Si el menú Estado está activo, no mostrar nada en la columna derecha
+      try {
+        if (typeof menuEstadoVisible !== 'undefined' && menuEstadoVisible) {
+          if (img) img.style.display = 'none';
+          return;
+        }
+      } catch(e){}
       let src = "";
       let ranura = "";
 
@@ -3766,6 +4666,14 @@ function volverMenuRanuras() {
 
     // Mostrar atributos en columna C en el menú principal según lo equipado en la última ranura sobre la que estuvo el mouse
     function mostrarColumnaCPrincipal(wrapperId) {
+      // Si el menú Estado está activo, no actualizar la columna C ni mostrar imágenes
+      try {
+        if (typeof menuEstadoVisible !== 'undefined' && menuEstadoVisible) {
+          var _tmpCont = document.getElementById('columna-c-contenido'); if (_tmpCont) _tmpCont.innerHTML = '';
+          var _tmpImg = document.getElementById('atributo-img'); if (_tmpImg) _tmpImg.style.display = 'none';
+          return;
+        }
+      } catch(e){}
       let html = "";
       let datos = null;
       let tipoImg = "";
@@ -3807,6 +4715,14 @@ function volverMenuRanuras() {
 
     // Mostrar atributos en columna C según el menú secundario y selección
     function mostrarColumnaC(tipo, idx) {
+      // Si el menú Estado está activo, no actualizar la columna C ni mostrar imágenes
+      try {
+        if (typeof menuEstadoVisible !== 'undefined' && menuEstadoVisible) {
+          var _tmpCont2 = document.getElementById('columna-c-contenido'); if (_tmpCont2) _tmpCont2.innerHTML = '';
+          var _tmpImg2 = document.getElementById('atributo-img'); if (_tmpImg2) _tmpImg2.style.display = 'none';
+          return;
+        }
+      } catch(e){}
       const cont = document.getElementById("columna-c-contenido");
       let html = "";
       if (tipo === "menú armaduras") {
@@ -3854,14 +4770,236 @@ function volverMenuRanuras() {
 
     // Mostrar atributos al seleccionar imagen en almacen secundario
     document.getElementById("almacen-1").addEventListener("mouseenter", function() {
-      mostrarColumnaC(tipoMenuSecundario, 0);
+      // Si Estado está activo y estamos en menú armaduras, evaluar comparación y colorear valores
+      if (menuEstadoVisible && tipoMenuSecundario === 'menú armaduras') {
+        try { evaluarComparacionAlmacenParaEstado(0); } catch(e){}
+      } else {
+        mostrarColumnaC(tipoMenuSecundario, 0);
+      }
     });
     document.getElementById("almacen-2").addEventListener("mouseenter", function() {
-      mostrarColumnaC(tipoMenuSecundario, 1);
+      if (menuEstadoVisible && tipoMenuSecundario === 'menú armaduras') {
+        try { evaluarComparacionAlmacenParaEstado(1); } catch(e){}
+      } else {
+        mostrarColumnaC(tipoMenuSecundario, 1);
+      }
     });
     document.getElementById("almacen-3").addEventListener("mouseenter", function() {
-      mostrarColumnaC(tipoMenuSecundario, 2);
+      if (menuEstadoVisible && tipoMenuSecundario === 'menú armaduras') {
+        try { evaluarComparacionAlmacenParaEstado(2); } catch(e){}
+      } else {
+        mostrarColumnaC(tipoMenuSecundario, 2);
+      }
     });
+
+    // Evalúa la comparación entre la pieza bajo el dorado en el almacen y la pieza actualmente equipada
+    function evaluarComparacionAlmacenParaEstado(idx, force) {
+      try {
+          // Si las comparaciones están deshabilitadas (por ejemplo después de equipar), salir
+          if (window.__disableEstadoComparisons) return;
+          // Si no estamos forzando y el menú Estado no está visible, no hacemos la evaluación
+          if (!force && !menuEstadoVisible) return;
+          // Solo aplica en menú armaduras (o si menuActual corresponde a ranura h/a/g/l)
+          if (tipoMenuSecundario !== 'menú armaduras' && !['h','a','g','l'].includes(menuActual)) return;
+
+        var ranura = menuActual; // 'h','a','g','l'
+        if (!ranura) return;
+        var almacenCat = almacenDatos[ranura];
+        if (!almacenCat || !almacenCat[idx]) return;
+        var doradoData = almacenCat[idx];
+
+        // obtener src del almacen para chequear si es la misma imagen que la equipada
+        var imgElem = document.getElementById('almacen-img-' + (idx + 1));
+        var dorFile = imgElem && imgElem.src ? imgElem.src.split('/').pop() : null;
+        var equipSrc = equipadas[ranura] || null;
+        var equipFile = equipSrc ? equipSrc.split('/').pop() : null;
+
+        // Si el dorado está sobre la misma imagen ya equipada, restaurar colores y salir
+        if (dorFile && equipFile && dorFile === equipFile) {
+          resetEstadoHoverColors();
+          return;
+        }
+
+        // Datos de la pieza equipada (si existe)
+        var equipData = null;
+        if (equipFile) {
+          var equipName = (typeof imagenNombre !== 'undefined' && imagenNombre[equipFile]) ? imagenNombre[equipFile] : null;
+          if (equipName && almacenDatos[ranura]) {
+            for (var i=0;i<almacenDatos[ranura].length;i++) {
+              var it = almacenDatos[ranura][i];
+              if (it && it.nombre === equipName) { equipData = it; break; }
+            }
+          }
+        }
+
+        var eqPost = equipData ? Number(equipData.postura) || 0 : 0;
+        var eqPeso = equipData ? Number(equipData.peso) || 0 : 0;
+        var dorPost = Number(doradoData.postura) || 0;
+        var dorPeso = Number(doradoData.peso) || 0;
+
+        // Calcular valores hipotéticos
+        var curPosturaTotal = Number(window.estadoVars && window.estadoVars.PosturaEquipo) || 0;
+        var curPesoTotal = Number(window.estadoVars && window.estadoVars.PesoEquipo) || 0;
+        var nuevoPosturaTotal = curPosturaTotal - eqPost + dorPost;
+        var nuevoPesoTotal = curPesoTotal - eqPeso + dorPeso;
+        // Si el menú Estado está visible, actualizar la UI; si se forzó la evaluación
+        // pero Estado está oculto, solo guardamos la hipótesis en memoria.
+        if (menuEstadoVisible) {
+          // Colorear Postura (azul si dorado.postura > equipada.postura, rojo si menor)
+          var postEl = document.getElementById('estado-value-18');
+          if (postEl) {
+            postEl.textContent = (isNaN(nuevoPosturaTotal) ? '' : formatInteger(nuevoPosturaTotal));
+            if (dorPost > eqPost) postEl.style.color = '#4A6EB5';
+            else if (dorPost < eqPost) postEl.style.color = '#C22F35';
+            else postEl.style.color = '#D0D0D0';
+          }
+
+          // Colorear Peso (inverso: azul si dorado.peso < equipada.peso, rojo si mayor)
+          var pesoEl = document.getElementById('estado-value-19');
+          if (pesoEl) {
+            pesoEl.textContent = (isNaN(nuevoPesoTotal) ? '' : formatOneDecimal(nuevoPesoTotal));
+            if (dorPeso < eqPeso) pesoEl.style.color = '#4A6EB5';
+            else if (dorPeso > eqPeso) pesoEl.style.color = '#C22F35';
+            else pesoEl.style.color = '#D0D0D0';
+          }
+
+          // Comprobar cambio hipotético de CargaStatus al substituir la pieza equipada por la del almacen
+          var cargaEl = document.getElementById('estado-carga-status');
+          if (cargaEl && window.estadoVars) {
+            var cargaMax = parseFloat((window.estadoVars.Carga || '').toString().replace(',', '.')) || 0;
+            var totalPeso = Number(window.estadoVars.PesoEquipo) || 0;
+            var hipoteticoPeso = totalPeso - eqPeso + dorPeso;
+            var nuevoTexto = '';
+            if (cargaMax > 0) {
+              var pct = (hipoteticoPeso / cargaMax) * 100;
+              if (pct <= 30) nuevoTexto = 'Carga ligera';
+              else if (pct <= 70) nuevoTexto = 'Carga media';
+              else if (pct <= 100) nuevoTexto = 'Carga pesada';
+              else nuevoTexto = 'Sobrecargado';
+            }
+            var anteriorTexto = window.estadoVars && window.estadoVars.CargaStatus ? window.estadoVars.CargaStatus : '';
+            cargaEl.textContent = nuevoTexto;
+            // si cambia, colorear segun direccion (subida -> rojo, bajada -> azul)
+            var estados = ['Carga ligera','Carga media','Carga pesada','Sobrecargado'];
+            var oldIdx = estados.indexOf(anteriorTexto);
+            var newIdx = estados.indexOf(nuevoTexto);
+            if (oldIdx === -1) oldIdx = 0;
+            if (newIdx === -1) newIdx = 0;
+            if (newIdx > oldIdx) cargaEl.style.color = '#C22F35';
+            else if (newIdx < oldIdx) cargaEl.style.color = '#4A6EB5';
+            else cargaEl.style.color = '#C9BBA1';
+          }
+            // Si el menú Totales está visible, actualizar las sumas hipotéticas y colorearlas
+            try {
+              if (menuTotalesVisible && (tipoMenuSecundario === 'menú armaduras' || ['h','a','g','l'].includes(menuActual))) {
+                var tvarsNow = readTotalesVars();
+                var currentEquip = tvarsNow && tvarsNow.equipSum ? tvarsNow.equipSum : {};
+                var fields = ['fisico','golpe','tajo','puncion','magico','fuego','rayo','sagrado','inmunidad','robustez','concentracion','vitalidad'];
+                fields.forEach(function(f, idxField){
+                  try {
+                    var cur = Number(currentEquip[f]) || 0;
+                    var eqVal = 0;
+                    try { if (equipData && typeof equipData[f] !== 'undefined') eqVal = Number(equipData[f]) || 0; } catch(e){}
+                    var dorVal = 0;
+                    try { if (f === 'rayo') dorVal = Number(doradoData.electrico) || 0; else dorVal = Number(doradoData[f]) || 0; } catch(e){}
+                    var nuevo = cur - eqVal + dorVal;
+                    var spanIdx = 13 + idxField; // 13..24
+                    var spanEl = document.getElementById('totales-value-' + spanIdx);
+                    if (spanEl) {
+                      var txt = (['inmunidad','robustez','concentracion','vitalidad'].indexOf(f) !== -1) ? formatInteger(nuevo) : formatOneDecimal(nuevo);
+                      spanEl.textContent = txt;
+                      try { spanEl.setAttribute('alt', txt); } catch(e){}
+                      if (nuevo < cur) spanEl.style.color = '#C22F35';
+                      else if (nuevo > cur) spanEl.style.color = '#4A6EB5';
+                      else spanEl.style.color = '#D0D0D0';
+                    }
+                  } catch(e){}
+                });
+              }
+            } catch(e){}
+        } else {
+          // Estado oculto: solo guardamos la hipótesis en memoria para referencia
+          try { window.__estadoHipotetico = { almacenIdx: idx, ranura: ranura, nuevaPostura: nuevoPosturaTotal, nuevoPeso: nuevoPesoTotal }; } catch(e) {}
+        }
+        // Marcar que hay una hipótesis activa para este almacen (si no fue guardada arriba)
+        try { window.__estadoHipotetico = window.__estadoHipotetico || { almacenIdx: idx, ranura: ranura, nuevaPostura: nuevoPosturaTotal, nuevoPeso: nuevoPesoTotal, nuevoCargaText: (typeof cargaEl !== 'undefined' && cargaEl ? cargaEl.textContent : '') }; } catch(e) {}
+      } catch(e) { console.error('evaluarComparacionAlmacenParaEstado', e); }
+    }
+
+    // Restaura colores por defecto del menú Estado cuando se deja el hover del almacen
+    function resetEstadoHoverColors() {
+      try {
+        var postEl = document.getElementById('estado-value-18'); if (postEl) { postEl.style.color = '#D0D0D0'; postEl.textContent = (window.estadoVars && typeof window.estadoVars.PosturaEquipo !== 'undefined') ? formatInteger(window.estadoVars.PosturaEquipo) : ''; }
+        var pesoEl = document.getElementById('estado-value-19'); if (pesoEl) { pesoEl.style.color = '#D0D0D0'; pesoEl.textContent = (window.estadoVars && typeof window.estadoVars.PesoEquipo !== 'undefined') ? formatOneDecimal(window.estadoVars.PesoEquipo) : ''; }
+        var cargaEl = document.getElementById('estado-carga-status'); if (cargaEl && window.estadoVars) { cargaEl.textContent = window.estadoVars.CargaStatus || ''; cargaEl.style.color = '#C9BBA1'; }
+        try { delete window.__estadoHipotetico; } catch(e){}
+        // Restaurar colores y valores en Totales si está visible
+        try {
+          if (menuTotalesVisible && (tipoMenuSecundario === 'menú armaduras' || ['h','a','g','l'].includes(menuActual))) {
+            var tvarsNow2 = readTotalesVars();
+            var currEquip = tvarsNow2 && tvarsNow2.equipSum ? tvarsNow2.equipSum : {};
+            var fields2 = ['fisico','golpe','tajo','puncion','magico','fuego','rayo','sagrado','inmunidad','robustez','concentracion','vitalidad'];
+            fields2.forEach(function(f2, idf){
+              try {
+                var idxSpan = 13 + idf;
+                var sp = document.getElementById('totales-value-' + idxSpan);
+                if (!sp) return;
+                var valNow = currEquip[f2];
+                var txt2 = (['inmunidad','robustez','concentracion','vitalidad'].indexOf(f2) !== -1) ? formatInteger(valNow) : formatOneDecimal(valNow);
+                sp.textContent = txt2;
+                try { sp.setAttribute('alt', txt2); } catch(e){}
+                sp.style.color = '#D0D0D0';
+              } catch(e){}
+            });
+          }
+        } catch(e){}
+      } catch(e) {}
+    }
+
+    // Actualiza visualmente todos los valores del submenú Estado desde window.estadoVars
+    function updateEstadoDisplay() {
+      try {
+        if (!window.estadoVars) window.estadoVars = readEstadoVars();
+        var keyMap = {
+          1: 'Nivel', 2: 'Vigor', 3: 'Mente', 4: 'Resistencia', 5: 'Fuerza', 6: 'Destreza', 7: 'Inteligencia', 8: 'Fe', 9: 'Arcano',
+          10: 'PV', 11: 'PC', 12: 'Estamina', 13: 'Carga', 14: 'Aplomo', 15: 'Descubrimiento', 16: 'PV_copy', 17: 'PC_copy', 18: 'PosturaEquipo', 19: 'PesoEquipo'
+        };
+        Object.keys(keyMap).forEach(function(k){
+          try {
+            var idx = parseInt(k,10);
+            var key = keyMap[idx];
+            var val = (window.estadoVars && key && typeof window.estadoVars[key] !== 'undefined') ? window.estadoVars[key] : '';
+            var valEl = document.getElementById('estado-value-' + idx);
+            if (valEl) {
+                // format specific numeric fields according to rules:
+                // - Aplomo: integer
+                // - Descubrimiento: always one decimal
+                // - PosturaEquipo and PesoEquipo: one decimal
+                  if (key === 'Aplomo') {
+                  valEl.textContent = (val !== '' && val !== null) ? formatInteger(val) : '';
+                } else if (key === 'Descubrimiento' || key === 'PosturaEquipo' || key === 'PesoEquipo') {
+                  // Descubrimiento and Peso keep one decimal; PosturaEquipo must be integer
+                  if (key === 'PosturaEquipo') {
+                    valEl.textContent = (val !== '' && val !== null) ? formatInteger(val) : '';
+                  } else {
+                    valEl.textContent = (val !== '' && val !== null) ? formatOneDecimal(val) : '';
+                  }
+                } else {
+                  valEl.textContent = (val !== '' && val !== null) ? val : '';
+                }
+              // reset color defaults
+              valEl.style.color = '#D0D0D0';
+            }
+          } catch(e){}
+        });
+        // nivel en value-1
+        try { var tv = document.getElementById('estado-value-1'); if (tv) tv.textContent = (window.estadoVars && window.estadoVars.Nivel) ? window.estadoVars.Nivel : tv.textContent; } catch(e){}
+        // carga status
+        try { var cargaStatusEl = document.getElementById('estado-carga-status'); if (cargaStatusEl) { cargaStatusEl.textContent = (window.estadoVars && typeof window.estadoVars.CargaStatus !== 'undefined') ? window.estadoVars.CargaStatus : ''; cargaStatusEl.style.color = '#C9BBA1'; } } catch(e){}
+        // clear hypothetic marker
+        try { delete window.__estadoHipotetico; } catch(e){}
+      } catch(e) {}
+    }
 
     // Limpiar columna C al volver al menú principal
     function limpiarColumnaC() {
@@ -4228,6 +5366,32 @@ function updateThreeSize() {
   renderer.setSize(width, height);
 }
 
+// Restaura la posición/cámara/control/modelos 3D a un estado por defecto
+function resetModelo3DPosition() {
+  try {
+    if (camera) {
+      camera.position.set(0, 1.5, 3.3);
+      try { camera.lookAt(0, 1, 0); } catch(e) {}
+    }
+    if (controls) {
+      try { controls.target.set(0, 1, 0); } catch(e) {}
+      try { controls.update(); } catch(e) {}
+    }
+    // Reiniciar transformaciones de modelos cargados a un estado neutro
+    try {
+      Object.keys(modelos3D).forEach(function(n){
+        try {
+          var m = modelos3D[n];
+          if (!m) return;
+          if (m.position) m.position.set(0,0,0);
+          if (m.rotation) m.rotation.set(0,0,0);
+          if (m.scale && (m.scale.x === 0 || m.scale.y === 0 || m.scale.z === 0)) m.scale.set(1,1,1);
+        } catch(e) {}
+      });
+    } catch(e) {}
+  } catch(e) {}
+}
+
 // Permite cargar varios modelos GLB en la misma escena
 const modelos3D = {}; // { nombre: objeto3D }
 // NUEVO: tokens de carga para evitar callbacks obsoletos
@@ -4458,6 +5622,7 @@ function actualizarModelos3D() {
   }
 }
   </script>
+
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
 
@@ -4465,3 +5630,4 @@ function actualizarModelos3D() {
 
 
 
+    
