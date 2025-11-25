@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elden Armor</title>
+  <link rel="icon" type="image/png" href="elden-ring.png">
+
+  <style>
+    @font-face {
+      font-family: 'FuentePersonalizada';
+      src: url('Fuente.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-style: normal;
+    }
+    /* --- Estilos generales y fondo --- */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'FuentePersonalizada', sans-serif;
+      background: black;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow: hidden !important; /* <--- evita scrolls */
+      width: 100vw !important;     /* <--- fuerza ancho */
+      height: 100vh !important;    /* <--- fuerza alto */
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 39.45% 35.55% 25%;
+      grid-template-rows: 14.38% 73.29% 12.33%;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Filas */
+    .fila-c { grid-row: 3; grid-column: 1 / 4; color: white; padding: 20px 32px; z-index: 1; }
+    .fila-b { grid-row: 2; grid-column: 1 / 4; display: contents; }
+    .fila-a { grid-row: 1; grid-column: 1 / 4; color: white; padding: 20px 32px; z-index: 1; }
+
+    /* Columnas dentro de la fila B */
+    .columna-a { grid-row: 2; grid-column: 1; background: transparent; padding: 10px; position: relative; z-index: 1; }
+    .columna-b { grid-row: 2; grid-column: 2; background: transparent; padding: 10px; position: relative; z-index: 1; }
+    .columna-c { grid-row: 2; grid-column: 3; background: transparent; padding: 10px; position: relative; z-index: 1; }
+
+    /* Separadores */
+    .separator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      height: 100%;
+      width: 10px;
+      z-index: 2;
+      object-fit: contain;
+      left: 33.33vw; /* primer tercio */
+      transform: translateX(-50%);
+    }
+    .separator.second {
+      left: 66.66vw; /* segundo tercio */
+      transform: translateX(-50%);
+    }
+    .separator.middle {
+      left: 50vw; /* medio de la pantalla */
+      transform: translateX(-50%);
+    }
+
+    /* Capas de fondo */
+    .base-wallpaper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("Fondo.jpg") center/cover no-repeat;
+      z-index: -3;
+    }
+    .dark-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.89); /*Recordatorio: (0, 0, 0, 0.89)*/
+      z-index: -2;
+    }
+    .overlay-wallpaper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("Fondo-inventario.png") center/cover no-repeat;
+      opacity: 0.7;
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
+
+    /* Barra-equipo dentro de fila-a */
+    .barra-equipo-container {
+      position: absolute;
+      left: 0;
+      top: 7%; /* centro vertical de la fila */
+      transform: translateY(-50%);
+      width: 39.45vw; /* igual al ancho de la columna A */
+      height: 66.66%; /* puedes ajustar si quieres menos alto */
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .barra-equipo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .fila-a {
+      position: relative;
+    }
+    .fila-c {
+      position: relative;
+    }
+    .fila-a-text {
+      position: absolute;
+      top: 33px;   /* Cambia este valor para mover el texto verticalmente */
+      left: 80px;  /* Cambia este valor para mover el texto horizontalmente */
+      margin: 0;
+      color: #C9BBA1;
+      text-shadow: 2px 2px 4px rgba(0,0,0,1);
+      z-index: 2;
+      font-size: 1.33em; /* Cambia este valor para modificar el tamaño del texto "Equipo" */
+    }
+    .fila-c-text {
+      position: absolute;
+      bottom: 55px;   /* Cambia este valor para mover el texto verticalmente */
+      left: 55px;   /* Centra horizontalmente */
+      transform: translateX(-50%); /* Centra horizontalmente */
+      margin: 0;
+      width: 300px;
+      color: white;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8); /* sombra más suave */
+      z-index: 2;
+      font-size: 1.01em; /* Cambia este valor para modificar el tamaño del texto "Abajo" */
+      letter-spacing: 0.02em;
+    }
+    .fila-b p {
+      text-shadow: 2px 2px 4px rgba(0,0,0,1);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Aplicar sombra a la mayoría de elementos textuales para cubrir textos/números
+       que no tuvieran shadow explícito. Excluye imágenes. Ajusta si quieres
+       un valor distinto o selectores más concretos. */
+    p, div, span, label, a, button, input[type="text"], input[type="button"], h1, h2, h3, h4, h5, h6 {
+      text-shadow: 1px 1px 2px #000;
+    }
+    .fila-a-text,
+    .fila-c-text,
+    .seleccionado-text,
+    .columna-a p,
+    .columna-b p,
+    .columna-c p,
+    .fila-b p {
+      font-family: 'FuentePersonalizada', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    #rectangulo-img {
+      position: absolute; /* Puedes cambiar a fixed si lo prefieres */
+      top: 110px;         /* Cambia este valor para mover verticalmente */
+      left: 23px;        /* Cambia este valor para mover horizontalmente */
+      width: auto;       /* Cambia este valor para modificar el ancho */
+      height: 460px;       /* Cambia este valor para modificar el alto, si lo deseas */
+      z-index: 20;        /* Asegura que esté por encima de otros elementos si es necesario */
+    }
+
+    .seleccionado-text {
+      position: absolute;
+      top: 90px;    /* Cambia este valor para mover verticalmente */
+      left: -30px;   /* Cambia este valor para mover horizontalmente */
+      color: #C9BBA1;
+      font-size: 1em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,1);
+      z-index: 21;
+      font-family: 'FuentePersonalizada', sans-serif;
+      pointer-events: none;
+    }
+
+    /* Estilos para las ranuras */
+    .ranura-btn {
+      width: 100%;
+      height: 100%;
+      z-index: 30;
+      cursor: pointer;
+    }
+    .ranura-btn-wrapper {
+      position: absolute;
+      width: var(--ranura-size, 64px);
+      height: var(--ranura-size, 64px);
+      z-index: 30;
+      /* Cambia top/left para ubicar cada ranura */
+    }
+    .ranura-dorado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 31;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .almacen-btn-wrapper {
+      position: absolute;
+      width: var(--almacen-size, 100px);
+      height: var(--almacen-size, 100px);
+      z-index: 40;
+      display: none; /* Oculto por defecto */
+    }
+    .almacen-btn {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 40;
+    }
+    .almacen-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 5; /* Debajo del dorado (dorado z-index:20) */
+      pointer-events: none;
+    }
+    .almacen-dorado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .equipada-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .menu-btn-wrapper {
+      position: absolute;
+      width: var(--menu-btn-size, 64px);
+      height: var(--menu-btn-size, 64px);
+      z-index: 50;
+      /* Cambia top/left para ubicar cada botón */
+    }
+    .menu-btn-img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 50;
+      object-fit: contain;
+    }
+    .menu-btn-dorado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 51;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .menu-btn-wrapper:hover .menu-btn-dorado {
+      opacity: 1;
+    }
+    .menu-btn-tooltip {
+      position: absolute;
+      left: 50%;
+      top: -35px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #C9BBA1;
+      padding: 6px 18px;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: 'FuentePersonalizada', sans-serif;
+      white-space: nowrap;
+      z-index: 52;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .menu-btn-wrapper.show-tooltip .menu-btn-tooltip {
+      opacity: 1;
+    }
+
+    /* --- NUEVO: Inputs de texto personalizados --- */
+    .sinluz-input {
+      background: url('input.png') center center no-repeat;
+      background-size: contain;
+      width: 230px;
+      height: 45px;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #fff;
+      text-align: center;
+      font-size: 1.1em;
+      font-family: inherit;
+      margin-bottom: 20px;
+      transition: background-image 0.2s ease;
+      padding: 6px 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    /* Hover solo aplica cuando el input NO está en foco (evita que hover en etiqueta/elementos adyacentes afecte mientras se escribe) */
+    .sinluz-input:not(:focus):hover {
+      background-image: url('dorado-input.png');
+    }
+    /* Focus siempre muestra escribiendo.png; incluso si el puntero está encima, mantener este estado */
+    .sinluz-input:focus,
+    .sinluz-input:focus:hover {
+      background-image: url('escribiendo.png') !important;
+      outline: none;
+      box-shadow: none;
+    }
+
+    /* Color del placeholder (con prefijos para compatibilidad) */
+    .sinluz-input::placeholder { color: #aaa; }
+    .sinluz-input::-webkit-input-placeholder { color: #aaa; }
+    .sinluz-input::-moz-placeholder { color: #aaa; }
+
+    /* Estilos individuales para cada atributo (puedes modificar left, top, font-size, width, etc. para cada uno) */
+    #atributo-img {
+      position: absolute;
+      display: none;
+      z-index: 4;
+      /* El tamaño y posición se ajustan dinámicamente por JS */
+    }
+
+    #atributo-nombre          { position: absolute; left: 790px; top: 97px;  font-size: 1.5em;  width: 290px; color: #D0D0D0; }
+    #atributo-fisico          { position: absolute; left:   920px; top: 247px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-golpe           { position: absolute; left:  920px; top: 272px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-tajo            { position: absolute; left:  920px; top: 297px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-puncion         { position: absolute; left:  920px; top: 322px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-magico          { position: absolute; left:  920px; top: 347px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-sagrado         { position: absolute; left:  920px; top: 422px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-electrico       { position: absolute; left:  920px; top: 397px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-fuego           { position: absolute; left:  920px; top: 372px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-inmunidad       { position: absolute; left: 1140px; top: 247px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-robustez        { position: absolute; left: 1140px; top: 272px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-concentracion   { position: absolute; left: 1140px; top: 297px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-vitalidad       { position: absolute; left: 1140px; top: 322px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-peso            { position: absolute; left:  920px; top: 179px; font-size: 1em; width: 60px; color: #D0D0D0; }
+    #atributo-postura         { position: absolute; left: 1140px; top: 347px; font-size: 1em; width: 60px; color: #D0D0D0; }
+
+    #img-neutro               { position: absolute; left:  767px; top: 222px; height: auto; width: 20px;}
+    #img-resistencia          { position: absolute; left:  985px; top: 222px; height: auto; width: 20px;}
+    #texto-nombre             { position: absolute; left:  790px; top:  97px; font-size: 1.5em; width: 300px; color: #D0D0D0; }
+    #texto-neutro             { position: absolute; left:  790px; top: 222px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-resistencia        { position: absolute; left: 1010px; top: 222px; font-size: 1em; width: 200px; color: #C9BBA1; }
+    #texto-fisico             { position: absolute; left:  790px; top: 247px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-golpe              { position: absolute; left:  790px; top: 272px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-tajo               { position: absolute; left:  790px; top: 297px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-puncion            { position: absolute; left:  790px; top: 322px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-magico             { position: absolute; left:  790px; top: 347px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-sagrado            { position: absolute; left:  790px; top: 422px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-electrico          { position: absolute; left:  790px; top: 397px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-fuego              { position: absolute; left:  790px; top: 372px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-inmunidad          { position: absolute; left: 1010px; top: 247px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-robustez           { position: absolute; left: 1010px; top: 272px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-concentracion      { position: absolute; left: 1010px; top: 297px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-vitalidad          { position: absolute; left: 1010px; top: 322px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-peso               { position: absolute; left:  790px; top: 179px; font-size: 1em; width: 200px; color: #D0D0D0; }
+    #texto-postura            { position: absolute; left: 1010px; top: 347px; font-size: 1em; width: 200px; color: #D0D0D0; }
+
+
+    /* Elementos UI que deben seguir siendo clickeables: mantenelos en pointer-events:auto */
+    .ranura-btn-wrapper,
+    .ranura-btn,
+    .menu-btn-wrapper,
+    .menu-btn-img,
+    .almacen-btn-wrapper,
+    .almacen-btn,
+    #btn-guardar,
+    #btn-cargar,
+    .ranura-btn,
+    .menu-btn-wrapper * {
+      pointer-events: auto !important;
+      z-index: 1100; 
+    }
+
+    /* Ajustá estos valores si querés que ciertos botones aparezcan por encima del modelo */
+    .menu-btn-wrapper { z-index: 1101; }
+    .ranura-btn-wrapper { z-index: 1101; }
+
+    /* --- CURSOR MANITA EN BOTONES INTERACTIVOS --- */
+    .ranura-btn,
+    .almacen-btn,
+    .menu-btn-img,
+    .menu-btn-wrapper,
+    .almacen-btn-wrapper,
+    .ranura-btn-wrapper {
+      cursor: pointer !important;
+    }
+
+    /* Fuerza que las ranuras Mano Izq y Mano Der sean invisibles SIEMPRE */
+    #ranura-mano-izq, #ranura-mano-der {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+
+    /* Botones estilo imagen (Menú inicio y Selección)
+       - Fondo por defecto: boton-pordefecto.png (grayscale)
+       - Hover/focus: boton.png (color)
+       - Color de letras siempre: #D0D0D0
+       - Variables para ajustar tamaño: --fancy-btn-width, --fancy-btn-height, --fancy-btn-padding, --fancy-btn-font-size
+    */
+    :root {
+      --fancy-btn-width: 100px;          /* podés sobrescribir en :root o inline */
+      --fancy-btn-height: 100px;
+      --fancy-btn-padding: 10px 28px;
+      --fancy-btn-font-size: 1.1em;
+    }
+    .fancy-img-button {
+      display: inline-block;
+      background-image: url('boton-pordefecto.png');
+      /* mostrar la imagen completa sin recortar */
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: grayscale(100%);
+      color: #D0D0D0;
+      border: none;
+      outline: none;
+      padding: var(--fancy-btn-padding);
+      font-family: 'FuentePersonalizada', sans-serif;
+      font-size: var(--fancy-btn-font-size);
+      cursor: pointer;
+      border-radius: 8px; /* conservá el contorno de la ventana, esto es interno del botón */
+      transition: filter 0.15s ease, background-image 0.15s ease;
+      width: var(--fancy-btn-width);
+      height: var(--fancy-btn-height);
+      text-align: center;
+      box-shadow: none;
+      background-color: transparent;
+    }
+    .fancy-img-button:hover,
+    .fancy-img-button:focus {
+      background-image: url('boton.png');
+      filter: none;
+      color: #D0D0D0;
+    }
+
+    /* Fonditos: brillo por defecto al 50% dentro del overlay LevelUp
+       Selecciona por id que empieza por "fondito-" para no afectar otros elementos. */
+    #menu-estadisticas img[id^="fondito-"] {
+      filter: brightness(50%);
+      transition: filter 0.15s ease;
+    }
+    /* NOTE: quitamos el :hover global para implementar comportamiento persistente
+       sólo para fondito-1..8 desde JS (el brillo por defecto se mantiene 50%). */
+
+  </style>
+</head>
+<body>
+  <script>
+  // Script para cargar/gestionar modelos 3D al equipar desde el almacén.
+  (function(){
+    'use strict';
+
+    const almacenModelos3D = [
+      'bandit-s.glb',
+      'night-flame.glb',
+      'uchigatana.glb',
+      'arma4.glb',   // mapa para almacen-4 (índice 3)
+      'arma5.glb'    // mapa para almacen-5 (índice 4)
+    ];
+
+    function loadModelViewerOnce(){
+      try{
+        if (!customElements.get || !customElements.get('model-viewer')){
+          const s = document.createElement('script');
+          s.type = 'module';
+          s.src = 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js';
+          document.head.appendChild(s);
+        }
+      }catch(e){ console.warn('loadModelViewerOnce error', e); }
+    }
+
+    function ensureModelViewer(){
+      let mv = document.getElementById('modelo3d');
+      if (!mv){
+        const container = document.createElement('div');
+        container.className = 'modelo-3d-interaction-area';
+        container.style.position = 'fixed';
+        container.style.left = '39.45vw';
+        container.style.top = '0';
+        container.style.width = '35.55vw';
+        container.style.height = '100vh';
+        container.style.zIndex = '999';
+        container.style.pointerEvents = 'auto';
+
+        mv = document.createElement('model-viewer');
+        mv.id = 'modelo3d';
+        mv.setAttribute('camera-controls', '');
+        mv.setAttribute('alt', 'Modelo equipado');
+        mv.style.width = '100%';
+        mv.style.height = '80vh';
+        mv.style.maxWidth = '100%';
+        mv.style.background = 'transparent';
+
+        container.appendChild(mv);
+        document.body.appendChild(container);
+      }
+      return mv;
+    }
+
+    function setModelForIndex(idx){
+      const mv = ensureModelViewer();
+      const modelo = almacenModelos3D[idx];
+      if (!modelo){ console.info('No hay modelo 3D mapeado para idx=', idx); return; }
+      mv.setAttribute('src', modelo);
+      if (typeof mv.load === 'function'){
+        try{ mv.load(); }catch(e){ console.warn('model-viewer load error', e); }
+      }
+      console.log('[modelo3d] actualizado a:', modelo);
+    }
+
+    function attachAlmacenListeners(){
+      for (let i = 1; i <= 5; i++){
+        const wrapper = document.getElementById('almacen-' + i);
+        if (!wrapper) continue;
+        if (wrapper.dataset._mvListenerAttached) continue;
+        wrapper.dataset._mvListenerAttached = '1';
+        wrapper.addEventListener('click', function(){
+          const idx = i - 1;
+          if (typeof window.equiparAlmacen === 'function'){
+            try{ window.equiparAlmacen(idx); }catch(e){ console.warn('equiparAlmacen error', e); }
+          }
+          // Delay pequeño para dejar que la UI actualice
+          setTimeout(function(){ setModelForIndex(idx); }, 80);
+        });
+      }
+    }
+
+    // Ejecutar cuando la página cargue para asegurar elementos presentes
+    window.addEventListener('load', function(){
+      loadModelViewerOnce();
+      attachAlmacenListeners();
+    });
+
+  })();
+  </script>
+  <div class="base-wallpaper"></div>
+  <div class="dark-overlay"></div>
+  <div class="overlay-wallpaper"></div>
+
+  <!-- MENÚ INICIO MODAL -->
+  <div id="menu-inicio" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);backdrop-filter:blur(2px);">
+    <!-- Imagen "copia" del rectángulo escalada al tamaño de la ventana.
+         Está detrás del contenido pero dentro del modal (se puede reemplazar por otra imagen si querés). -->
+    <img id="rectangulo-inicio" src="rectangulo.png" alt="Rectángulo inicio"
+      style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:550px; height:auto; object-fit:contain; z-index:2001; pointer-events:none;">
+
+    <!-- Contenido del modal superpuesto sobre la imagen (transparente para mantener el contorno visual) -->
+    <div id="menu-inicio-content"
+         style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:clamp(300px, 60vw, 900px); z-index:2002; display:flex; flex-direction:column; align-items:center; gap:24px; padding:40px 32px; box-sizing:border-box;">
+      <h2 style="color:#C9BBA1;font-size:2em;margin-bottom:10px;">Bienvenido</h2>
+      <label for="usuario-inicio" style="color:#fff;font-size:1.1em;margin-bottom:6px;">Ingresa tu usuario:</label>
+      <input id="usuario-inicio" type="text" placeholder="Usuario" class="sinluz-input" maxlength="13"
+        style="width:220px;font-size:1.1em;font-family: 'FuentePersonalizada', sans-serif;">
+
+      <div style="display:flex;gap:18px;margin-top:18px;">
+        <button id="btn-identificar" class="fancy-img-button" style="--fancy-btn-width:220px; --fancy-btn-font-size:1.1em;">Listo</button>
+        <button id="btn-omitir" class="fancy-img-button" style="--fancy-btn-width:220px; --fancy-btn-font-size:1.1em;">Omitir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENÚ SELECCIÓN MODAL -->
+  <div id="menu-seleccion" style="display:none;position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);backdrop-filter:blur(1.5px);">
+    <!-- Elimina la ventana interna del menú selección -->
+    <!-- Solo se muestra el fondo y los separadores -->
+    <img src="separador.png" alt="Separador 1" class="separator" style="display:none; height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw; z-index:2100;">
+    <img src="separador.png" alt="Separador 2" class="separator second" style="display:none; height: 75%; top: 50%; transform: translate(-50%, -50%); left: 66.66vw; z-index:2100;">
+    <!-- Barra-equipo igual que in menú principal -->
+    <div class="barra-equipo-container" style="position: absolute; left: 0; top: 7%; width: 39.45vw; height: 66.66%; z-index: 2101; pointer-events: none;">
+      <img src="barra-equipo-sola.png" alt="Barra equipo sola" class="barra-equipo-img">
+      <img src="load.png" alt="Load icon" class="barra-equipo-load" style="position:absolute; right:446px; bottom:199px; width:40px; height:auto; pointer-events:none; z-index:2102;">
+    </div>
+    <!-- Texto "Equipo" igual que en menú principal (oculto en este modal) -->
+    <p id="menu-seleccion-equipo" class="fila-a-text" style="display:none; position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2102; font-size: 1.33em;">Equipo</p>
+    <!-- Nuevo texto en el mismo lugar para el menú selección -->
+    <p id="menu-seleccion-elegir" class="fila-a-text" style="position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2102; font-size: 1.33em;">Elegir Sinluz</p>
+    <!-- Copias de rectángulo -->
+    <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
+    <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
+    <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
+<!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
+    <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
+    <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
+      style="display:none; position: absolute; top: 87px; left: 210px; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
+    <input id="nombre-sinluz-2" type="text" placeholder="Sinluz 2" class="sinluz-input" maxlength="15"
+      style="display:none; position: absolute; top: 87px; left: 50vw; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
+    <input id="nombre-sinluz-3" type="text" placeholder="Sinluz 3" class="sinluz-input" maxlength="15"
+      style="display:none; position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
+
+    <!-- Contenedor recortado para fichas: edita manualmente left/top/width/height para mover y redimensionar -->
+    <div id="sinluz-fichas" style="position:absolute; top: 120px; left: 33px; width: 770px; height: 435px; overflow:hidden; z-index:2215;">
+      <!-- Lista interna scrollable; el scroll real se activa solo si hay >3 fichas -->
+      <div id="sinluz-fichas-list" style="position:relative; width:100%; height:100%; overflow-y:hidden; padding-right:12px; box-sizing:border-box;">
+        <!-- Fichas: tamaño uniforme igual a la ficha de prueba -->
+        <div id="sinluz-ficha-probe" class="sinluz-ficha" style="position:relative; margin:8px auto; width:738px; height:94px; background-color:#100F0C; border:2px solid #6C685F; box-shadow:0 0 8px rgba(108,104,95,0.18); border-radius:6px; z-index:2216; pointer-events:auto;">
+          <!-- Decoración editable: cambia left/top/width/height inline para mover o redimensionar -->
+          <img id="deco-probe" src="deco.png" alt="deco" style="position:absolute; left:-2px; top:8px; width:64px; height:auto; z-index:2220; pointer-events:auto; transform:rotate(180deg);">
+          <img id="sep-probe-1" src="mini-separador.png" alt="sep1" style="position:absolute; left:150px; top:-70px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <img id="sep-probe-2" src="mini-separador.png" alt="sep2" style="position:absolute; left:635px; top:-70px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <img id="sep-probe-3" src="mini-separador.png" alt="sep3" style="position:absolute; left:150px; top:-25px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <img id="sep-probe-4" src="mini-separador.png" alt="sep4" style="position:absolute; left:635px; top:-25px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <div class="sinluz-ficha-nivel" style="position:absolute; bottom:17px; left:93px; transform:translateX(-50%); color:#D0D0D0; font-family:'FuentePersonalizada'; text-shadow:1px 1px 2px #000;">Nivel</div>
+          <!-- Probe: fields that will be bound to the first Sinluz for easy visual editing -->
+          <input id="probe-nombre-input" class="sinluz-name-input-probe" type="text" placeholder="Sinluz 1"
+            style="position:absolute; left:-28px; top:10px; width:160px; background:transparent; border:none; color:#D0D0D0; font-family:FuentePersonalizada, sans-serif; font-size:1em; text-align:right; z-index:2230;">
+          <span id="probe-nivel-span" class="sinluz-level-span-probe" style="position:absolute; right:520px; bottom:17px; width:60px; text-align:right; color:#D0D0D0; font-family:FuentePersonalizada, sans-serif; z-index:2230;">1</span>
+          <span id="probe-last-span" style="position:absolute; right:10px; bottom:17px; font-size:1em; color:#A0A0A0; z-index:2230;">&nbsp;</span>
+          <span id="probe-owner-span" style="position:absolute; right:10px; top:10px; font-size:1em; color:#B0A68F; z-index:2230;">&nbsp;</span>
+        </div>
+        <!-- Only the probe ficha remains; below it add an 'add new' ficha (shows a +) -->
+        <div id="sinluz-ficha-add" class="sinluz-ficha sinluz-ficha-add" style="position:relative; margin:8px auto; width:738px; height:94px; display:flex; align-items:center; justify-content:center; background-color:rgba(255,255,255,0.02); border:2px dashed rgba(255,255,255,0.06); border-radius:6px; z-index:2216; cursor:pointer;">
+          <div style="font-size:32px; color:#C9BBA1; font-family:'FuentePersonalizada';">+</div>
+        </div>
+      </div>
+    </div>
+    <!-- Barra de scroll personalizada: posición/left la puedes mover tú manualmente -->
+    <img id="scroll-vacio" src="scroll-vacio.png" alt="Scroll track" style="position:absolute; left: 802px; top:120px; height:435px; display:none; z-index:2218; pointer-events:auto;">
+    <img id="scroll-barra" src="scroll-barra.png" alt="Scroll thumb" style="position:absolute; left:805px; top:120px; height:80px; width:3px; display:none; z-index:2219; pointer-events:auto; cursor:pointer;">
+
+    <!-- Elementos extra fuera de la lista dentro del menú selección (editable) -->
+    <div id="menu-seleccion-extra" style="position:absolute; top:120px; left:820px; width:260px; height:360px; z-index:2215;">
+      <!-- Mini separador adicional -->
+      <img id="ms-mini-separador" src="mini-separador.png" alt="Mini separador menu" style="position:absolute; left:0; top:0; width:6px; height:200px; z-index:2216;">
+      <!-- Humano icon -->
+      <img id="ms-humano" src="humano.png" alt="Humano" style="position:absolute; left:-2px; top:-20px; width:auto; height:22px; z-index:2216;">
+      <!-- Ocho textos color #D0D0D0 -->
+      <div id="ms-text-1" style="position:absolute; left:13px; top:calc(13px - 6px); color:#D0D0D0; z-index:2216;">Vigor</div>
+      <div id="ms-text-2" style="position:absolute; left:13px; top:calc(36px - 6px); color:#D0D0D0; z-index:2216;">Mente</div>
+      <div id="ms-text-3" style="position:absolute; left:13px; top:calc(59px - 6px); color:#D0D0D0; z-index:2216;">Resistencia</div>
+      <div id="ms-text-4" style="position:absolute; left:13px; top:calc(82px - 6px); color:#D0D0D0; z-index:2216;">Fuerza</div>
+      <div id="ms-text-5" style="position:absolute; left:13px; top:calc(105px - 6px); color:#D0D0D0; z-index:2216;">Destreza</div>
+      <div id="ms-text-6" style="position:absolute; left:13px; top:calc(128px - 6px); color:#D0D0D0; z-index:2216;">Inteligencia</div>
+      <div id="ms-text-7" style="position:absolute; left:13px; top:calc(151px - 6px); color:#D0D0D0; z-index:2216;">Fe</div>
+      <div id="ms-text-8" style="position:absolute; left:13px; top:calc(174px - 6px); color:#D0D0D0; z-index:2216;">Arcano</div>
+      <!-- Un texto destacado color #C9BBA1 -->
+      <div id="ms-text-highlight" style="position:absolute; left:13px; top:-16px; color:#C9BBA1; z-index:2216;">Estado de personaje</div>
+      <!-- Ranuras principales -->
+      <img id="ms-ranura-a" src="ranura-a.png" alt="Ranura A" style="position:absolute; left:calc(80px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+      <img id="ms-ranura-g" src="ranura-g.png" alt="Ranura G" style="position:absolute; left:calc(120px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+      <img id="ms-ranura-h" src="ranura-h.png" alt="Ranura H" style="position:absolute; left:calc(40px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+      <img id="ms-ranura-l" src="ranura-l.png" alt="Ranura L" style="position:absolute; left:calc(160px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+    </div>
+  </div>
+
+  <!-- MENÚ LEVELUP (nuevo) -->
+  <div id="menu-estadisticas" style="display:none;position:fixed;z-index:2500;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:transparent;">
+    <!-- Barra-levelup -->
+    <div class="barra-levelup-container" style="position:absolute;left:0;top:7%;transform:translateY(-50%);width:39.45vw;height:66.66%;display:flex;align-items:flex-start;justify-content:flex-start;pointer-events:none;z-index:2502;">
+      <img src="Barra-levelup.png" alt="Barra LevelUp" class="barra-levelup-img" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">
+    </div>
+    <!-- Texto similar a 'Equipo' en el menú principal -->
+    <p class="fila-a-text" style="position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2503; font-size: 1.33em;">Subir de nivel</p>
+    <!-- Mostramos una copia grande del rectángulo con variables CSS para ajustar tamaño -->
+    <img id="rectangulo-estadisticas" src="rectangulo.png" alt="Rectángulo LevelUp"
+      style="position: absolute; top: var(--rect-stats-top, 240px); left: var(--rect-stats-left, 23px); width: var(--rect-stats-width, 380px); height: var(--rect-stats-height, 330px); z-index: 2501; pointer-events: none; object-fit: fill;">
+    <!-- Botón de cerrar para volver al menú principal -->
+    <div class="menu-btn-wrapper" id="btn-cerrar-estadisticas" style="position:absolute; top:24px; right:24px; --menu-btn-size:44px; z-index:2503;">
+      <img src="esc.png" alt="Cerrar" class="menu-btn-img" style="width:100%; height:100%; object-fit:contain;">
+      <span class="menu-btn-tooltip">Volver</span>
+    </div>
+    <!-- Botón de confirmar para volver al menú principal -->
+    <button id="btn-confirmar-levelup" class="fancy-img-button" style="position:absolute; bottom:80px; left:16%; transform:translateX(-50%); --fancy-btn-width:220px; --fancy-btn-font-size:1.1em; z-index:2503;">Confirmar</button>
+    <!-- Copias adicionales de mini-separadores dentro del menú levelup -->
+    <img src="mini-separador.png" alt="Mini Separador 1 Copia B" id="mini-separador-1b" style="position: absolute; left: 66.66%; top: 44%; transform: translateX(-50%); width: 6px; height: 140px; z-index: 2502;"> <!-- resistencias-->
+    <img src="mini-separador.png" alt="Mini Separador 2 Copia A" id="mini-separador-2a" style="position: absolute; width: 6px; height: 170px; z-index: 2502; left: 66.5%; top: calc(50% - 37.5vh);"> <!-- defensas--> 
+    <img src="mini-separador.png" alt="Mini Separador 2 Copia B" id="mini-separador-2b" style="position: absolute; width: 6px; height: 170px; z-index: 2502; left: 4%; top: 44%;"> <!-- subir de nivel-->
+    <!-- Mini separador adicional para ubicar -->
+    <img src="mini-separador.png" alt="Mini Separador Extra" id="mini-separador-extra" style="position: absolute; width: 6px; height: 100px; z-index: 2502; left: 4%; top: 80px;"> <!-- runas-->
+    <!-- Imágenes para el menú levelup -->
+    <img src="brazo.png" alt="Brazo" id="img-brazo" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 3.5%; top: 41%;">
+    <img src="resistencia2.png" alt="Resistencia 2" id="img-resistencia2" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 66%; top: 41%;">
+    <img src="defensa2.png" alt="Defensa 2" id="img-defensa2" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 66%; top: 9.5%;">
+    <img src="stats.png" alt="Stats" id="img-stats" style="position: absolute; height: 20px; width: auto; z-index: 2502; left: 32.9%; top: 9.5%;">
+    <!-- Textos junto a las imágenes (color #C9BBA1). Edita left/top para moverlos. -->
+    <style>
+      .stat-label { position: absolute; color: #C9BBA1; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 1px 1px 2px #000; pointer-events: none; z-index: 2504; }
+    </style>
+    <div id="label-brazo" class="stat-label" style="left:5.3%; top:43%; transform:translateY(-50%);">Puntos de atributo</div>
+    <div id="numero-levelup" style="position:absolute; right:82%; top:43%; transform:translateY(-50%); color:#C9BBA1; font-size:20px; font-family:'FuentePersonalizada',sans-serif; text-shadow:1px 1px 2px #000; z-index:2504; white-space:nowrap;"></div>
+    <div id="label-resistencia2" class="stat-label" style="left:68.1%; top:42.5%; transform:translateY(-50%);">Cuerpo</div>
+    <div id="label-defensa2" class="stat-label" style="left:68.2%; top:11.2%; transform:translateY(-50%);">Neutralización de daño</div>
+    <div id="label-stats" class="stat-label" style="left:34.5%; top:11.2%; transform:translateY(-50%);">Estadísticas básicas</div>
+    <!-- Fonditos añadidos (8 copias) - altura: 20px, ancho: 340px - ubícalos manualmente cambiando left/top -->
+    <img src="fondito.png" alt="Fondito Vigor"        id="fondito-1" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 46.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Mente"        id="fondito-2" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 49.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Resistencia"  id="fondito-3" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 52.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Fuerza"       id="fondito-4" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 55.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Destreza"     id="fondito-5" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 58.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Inteligencia" id="fondito-6" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 61.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Fe"           id="fondito-7" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 64.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Arcano"       id="fondito-8" style="position: absolute; height: 20px; width: 320px; z-index: 2502; left: 16.5%; top: 67.5%; transform: translate(-50%,-50%);">  
+    <!-- 18 fondito adicionales añadidos; ubícalos cambiando inline left/top -->
+    <img src="fondito.png" alt="Fondito PS"           id="fondito-9"  style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 15%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito PC"           id="fondito-10" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 18%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Estamina"     id="fondito-11" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 21%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Carga de equipo" id="fondito-12" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 27%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Aplomo"       id="fondito-13" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 33%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito Descubrimiento" id="fondito-14" style="position: absolute; height: 20px; width: 430px; z-index: 2502; left: 50%; top: 36%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 15" id="fondito-15" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 15%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 16" id="fondito-16" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 18%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 17" id="fondito-17" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 21%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 18" id="fondito-18" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 24%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 19" id="fondito-19" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 27%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 20" id="fondito-20" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 30%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 21" id="fondito-21" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 33%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 22" id="fondito-22" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 36%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 23" id="fondito-23" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 46.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 24" id="fondito-24" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 49.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 25" id="fondito-25" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 52.5%; transform: translate(-50%,-50%);">
+    <img src="fondito.png" alt="Fondito 26" id="fondito-26" style="position: absolute; height: 20px; width: 400px; z-index: 2502; left: 82.2%; top: 55.5%; transform: translate(-50%,-50%);">
+    <!-- Labels/textos sobre cada fondito: puedes editarlos y moverlos cambiando left/top -->
+    <style>
+      .fondito-label{ position:absolute; color:#D0D0D0; font-size:1em; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; pointer-events:none; z-index:2504; }
+      .stat-number {
+        position:absolute;
+        color:#D0D0D0;
+        font-size:1em;
+        font-family:'FuentePersonalizada',sans-serif;
+        text-shadow:1px 1px 2px #000;
+        z-index:2504;
+        white-space:nowrap;
+        /* Prevent selecting the actual numbers and allow pointer events to pass through */
+        user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -moz-user-select: none;
+        pointer-events: none;
+      }
+  .flecha-stat { position: absolute; width: 15px; height: auto; z-index: 2503; pointer-events: none; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8)); }
+  .flecha-numero {
+    position: absolute;
+    color: #D0D0D0;
+    font-size: 1em;
+    font-family: 'FuentePersonalizada',sans-serif;
+    text-shadow: 1px 1px 2px #000;
+    z-index: 2504;
+    white-space: nowrap;
+    /* Prevent selecting the numbers with the mouse */
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    /* Allow pointer events to pass through so the underlying fondito receives hover/click */
+    pointer-events: none;
+  }
+  /* mas-menos icons next to flecha-numero: hidden by default, shown when fondito active */
+  .mas-menos { display: none; position: absolute; height: 18px; width: auto; z-index: 2503; pointer-events: auto; cursor: pointer; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.8)); }
+    </style>
+    <div id="fondito-text-1"  class="fondito-label" style="left: 6.7%; top:49%; transform:translate(-50%,-140%);">Vigor</div>
+  <div id="stat-number-1" class="stat-number" alt="Vigor actual" style="right:82%; top:46.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 1" class="flecha-stat" style="right:80%; top:46.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 1 left" class="mas-menos" data-fondito="1" style="right:76%; top:46.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="1" data-default="1" alt="Vigor futuro" style="right:74%; top:46.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 1 right" class="mas-menos" data-fondito="1" style="right:72.5%; top:46.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-2" class="fondito-label" style="left: 7%; top:52%; transform:translate(-50%,-140%);">Mente</div>
+  <div id="stat-number-2" class="stat-number" alt="Mente actual" style="right:82%; top:49.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 2" class="flecha-stat" style="right:80%; top:49.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 2 left" class="mas-menos" data-fondito="2" style="right:76%; top:49.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="2" data-default="1" alt="Mente futura" style="right:74%; top:49.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 2 right" class="mas-menos" data-fondito="2" style="right:72.5%; top:49.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-3" class="fondito-label" style="left: 8.3%; top:55%; transform:translate(-50%,-140%);">Resistencia</div>
+  <div id="stat-number-3" class="stat-number" alt="Resistencia actual" style="right:82%; top:52.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 3" class="flecha-stat" style="right:80%; top:52.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 3 left" class="mas-menos" data-fondito="3" style="right:76%; top:52.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="3" data-default="1" alt="Resistencia futura" style="right:74%; top:52.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 3 right" class="mas-menos" data-fondito="3" style="right:72.5%; top:52.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-4" class="fondito-label" style="left: 7.2%; top:58%; transform:translate(-50%,-140%);">Fuerza</div>
+  <div id="stat-number-4" class="stat-number" alt="Fuerza actual" style="right:82%; top:55.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 4" class="flecha-stat" style="right:80%; top:55.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 4 left" class="mas-menos" data-fondito="4" style="right:76%; top:55.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="4" data-default="1" alt="Fuerza futura" style="right:74%; top:55.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 4 right" class="mas-menos" data-fondito="4" style="right:72.5%; top:55.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-5" class="fondito-label" style="left: 7.7%; top:61%; transform:translate(-50%,-140%);">Destreza</div>
+  <div id="stat-number-5" class="stat-number" alt="Destreza actual" style="right:82%; top:58.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 5" class="flecha-stat" style="right:80%; top:58.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 5 left" class="mas-menos" data-fondito="5" style="right:76%; top:58.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="5" data-default="1" alt="Destreza futura" style="right:74%; top:58.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 5 right" class="mas-menos" data-fondito="5" style="right:72.5%; top:58.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-6" class="fondito-label" style="left: 8.4%; top:64%; transform:translate(-50%,-140%);">Inteligencia</div>
+  <div id="stat-number-6" class="stat-number" alt="Inteligencia actual" style="right:82%; top:61.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 6" class="flecha-stat" style="right:80%; top:61.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 6 left" class="mas-menos" data-fondito="6" style="right:76%; top:61.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="6" data-default="1" alt="Inteligencia futura" style="right:74%; top:61.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 6 right" class="mas-menos" data-fondito="6" style="right:72.5%; top:61.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-7" class="fondito-label" style="left: 6%; top:67%; transform:translate(-50%,-140%);">Fe</div>
+  <div id="stat-number-7" class="stat-number" alt="Fe actual" style="right:82%; top:64.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 7" class="flecha-stat" style="right:80%; top:64.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 7 left" class="mas-menos" data-fondito="7" style="right:76%; top:64.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="7" data-default="1" alt="Fe futura" style="right:74%; top:64.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 7 right" class="mas-menos" data-fondito="7" style="right:72.5%; top:64.5%; transform:translateY(-50%) scaleX(-1);">
+    
+    <div id="fondito-text-8" class="fondito-label" style="left: 7.2%; top:70%; transform:translate(-50%,-140%);">Arcano</div>
+  <div id="stat-number-8" class="stat-number" alt="Arcano actual" style="right:82%; top:67.5%; transform:translateY(-50%);">10</div>
+  <img src="flecha.png" alt="Flecha 8" class="flecha-stat" style="right:80%; top:67.5%; transform:translateY(-50%);">
+  <img src="mas menos.png" alt="MasMenos 8 left" class="mas-menos" data-fondito="8" style="right:76%; top:67.5%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="8" data-default="1" alt="Arcano futuro" style="right:74%; top:67.5%; transform:translateY(-50%);">10</span>
+  <img src="mas menos.png" alt="MasMenos 8 right" class="mas-menos" data-fondito="8" style="right:72.5%; top:67.5%; transform:translateY(-50%) scaleX(-1);">
+
+    <div id="fondito-text-9" class="fondito-label" style="left:35.2%; top:17.6%; transform:translate(-50%,-140%);">PS</div>
+    <div id="stat-number-9" class="stat-number" alt="PS actual" style="right:46%; top:15%; transform:translateY(-50%);">100</div>
+    <img src="flecha.png" alt="Flecha 9" class="flecha-stat" style="right:42%; top:15%; transform:translateY(-50%);">
+  <span class="flecha-numero" data-fondito="9" data-default="9" alt="PS futuro" style="right:37%; top:15%; transform:translateY(-50%)... (Restantes: 327 KB)
