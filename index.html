@@ -532,8 +532,6 @@
     <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
-    <!-- Contenedor 3D específico para el menú selección (tercer tercio de la pantalla) -->
-    <div id="threejs-seleccion-container" style="display:none; position:absolute; right:0; top:-20px; width:33.33vw; height:100vh; z-index:2050; pointer-events:auto; background:transparent;"></div>
     <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
@@ -1476,23 +1474,6 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         // (async) actualizar visual del menú selección
         try { actualizarMenuSeleccionVisual(); } catch(e){}
-        // Mover el renderer 3D al contenedor derecho (tercer tercio) para el menú selección
-        try {
-          if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container');
-          else {
-            const tgt = document.getElementById('threejs-seleccion-container');
-            if (renderer && renderer.domElement && tgt) {
-              try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e){}
-              tgt.appendChild(renderer.domElement);
-              try { updateThreeSize(); } catch(e){}
-            }
-          }
-        } catch(e) { console.warn('Error moviendo renderer al menú selección', e); }
-        // Mostrar el contenedor 3D de selección
-        try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'block'; } catch(e) {}
-        // Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
-        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') scheduleActualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -1565,10 +1546,6 @@
         initThreeJS();
         // Asegura que el renderer tenga el tamaño correcto ahora que el contenedor es visible
         updateThreeSize();
-        // Restaurar el renderer al contenedor principal (columna B)
-        try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container'); } catch(e) {}
-        // Ocultar el contenedor 3D de selección si existe
-        try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'none'; } catch(e) {}
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
 
@@ -2442,119 +2419,6 @@ function bonusFisicoPorFuerza(fuerza) {
   }
   return bonus;
 }
-// Helpers para sincronizar modelos 3D usando el estado mostrado en el menú selección (MS)
-function obtenerEquipStateDesdeMS() {
-  try {
-    const types = ['h','a','g','l'];
-    const state = { h: null, a: null, g: null, l: null };
-    types.forEach(t => {
-      try {
-        const el = document.getElementById('equipada-ms-' + t);
-        if (el && el.src) state[t] = el.src;
-      } catch(e) {}
-    });
-    return state;
-  } catch(e) { return { h:null,a:null,g:null,l:null }; }
-}
-
-// Scheduler helper: call actualizarModelos3DConEstado immediately and retry a couple times
-function scheduleActualizarModelos3DConEstado(state) {
-  try {
-    if (typeof actualizarModelos3DConEstado !== 'function') return;
-    try { actualizarModelos3DConEstado(state); } catch(e) {}
-    // retries to handle DOM/renderer timing edge-cases
-    setTimeout(function(){ try { actualizarModelos3DConEstado(state); } catch(e) {} }, 80);
-    setTimeout(function(){ try { actualizarModelos3DConEstado(state); } catch(e) {} }, 220);
-  } catch(e) {}
-}
-
-function actualizarModelos3DConEstado(equipState) {
-  try {
-    if (!scene || !renderer) return;
-    try { console.debug && console.debug('actualizarModelos3DConEstado', equipState); } catch(e){}
-    function mostrarModelo(nombre, ruta) {
-      if (!modelos3D[nombre]) {
-        cargarModeloGLB(ruta, nombre);
-      }
-      if (modelos3D[nombre]) modelos3D[nombre].visible = true;
-    }
-    function ocultarModelo(nombre) {
-      if (modelos3D[nombre]) modelos3D[nombre].visible = false;
-    }
-
-    const getBasename = (p) => {
-      if (!p) return '';
-      try {
-        let s = String(p).split('?')[0].split('#')[0];
-        s = s.split('/').pop() || s;
-        return s.toLowerCase();
-      } catch(e) { return String(p || '').toLowerCase(); }
-    };
-    // --- Ranura H ---
-    if (!equipState || !equipState.h) {
-      mostrarModelo('cabeza', './Cabeza.glb');
-      ocultarModelo('H_Raging_Wolf');
-    } else {
-      ocultarModelo('cabeza');
-      if (getBasename(equipState.h) === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
-      else ocultarModelo('H_Raging_Wolf');
-    }
-
-    // --- Ranura A ---
-    if (!equipState || !equipState.a) {
-      mostrarModelo('pecho', './Pecho.glb');
-      ocultarModelo('A_Raging_Wolf');
-      ocultarModelo('A_Alberich');
-      ocultarModelo('A_Preceptor');
-    } else {
-      ocultarModelo('pecho');
-      const imgA = getBasename(equipState.a);
-      if (imgA === 'wolf-a.png') {
-        mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
-        ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
-      } else if (imgA === 'carian-a.png') {
-        mostrarModelo('A_Alberich', './A_Alberich.glb'); ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Preceptor');
-      } else if (imgA === 'samurai-a.png') {
-        mostrarModelo('A_Preceptor', './A_Preceptor.glb'); ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich');
-      } else {
-        ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
-      }
-    }
-
-    // --- Ranura G ---
-    if (!equipState || !equipState.g) {
-      mostrarModelo('manos', './Manos.glb');
-      ocultarModelo('G_Raging_Wolf');
-    } else if (getBasename(equipState.g) === 'wolf-g.png') {
-      ocultarModelo('manos');
-      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
-    } else {
-      ocultarModelo('manos');
-      ocultarModelo('G_Raging_Wolf');
-    }
-
-    // --- Ranura L ---
-    if (!equipState || !equipState.l) {
-      mostrarModelo('piernas', './Piernas.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
-    } else {
-      ocultarModelo('piernas');
-      const imgL = getBasename(equipState.l);
-      if (imgL === 'wolf-l.png') {
-        mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
-      } else if (imgL === 'carian-l.png') {
-        mostrarModelo('L_Alberich', './L_Alberich.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Preceptor');
-      } else if (imgL === 'samurai-l.png') {
-        mostrarModelo('L_Preceptor', './L_Preceptor.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich');
-      } else {
-        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
-      }
-    }
-  } catch(e) { console.error('actualizarModelos3DConEstado error', e); }
-}
-
 
 // ===================== INTELIGENCIA → Magia =====================
 
@@ -5490,14 +5354,6 @@ function limpiarEquipadaEnMs(tipo) {
   const id = `equipada-ms-${tipo}`;
   const prev = document.getElementById(id);
   if (prev) prev.remove();
-  try { console.debug && console.debug('limpiarEquipadaEnMs', tipo); } catch(e){}
-  // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D (con reintentos)
-  try {
-    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
-      const state = obtenerEquipStateDesdeMS();
-      scheduleActualizarModelos3DConEstado(state);
-    }
-  } catch(e) { /* silencioso */ }
 }
 
 // Muestra imagen equipada sobre el elemento `ms-ranura-{tipo}` y ajusta tamaño a su estilo
@@ -5549,66 +5405,8 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
       img.style.height = ranuraElem.style.height || '48px';
     }
     parent.appendChild(img);
-    try { console.debug && console.debug('mostrarEquipadaEnMsRanura appended', { tipo: tipo, src: imgSrc }); } catch(e){}
-    // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
-    try {
-      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
-        const state = obtenerEquipStateDesdeMS();
-        try { console.debug && console.debug('mostrarEquipadaEnMsRanura calling scheduleActualizarModelos3DConEstado', state); } catch(e){}
-        scheduleActualizarModelos3DConEstado(state);
-      }
-    } catch(e) { /* silencioso */ }
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
-
-// Init a MutationObserver to detect when `#equipada-ms-*` overlays are added/removed
-function initMsEquipObserver() {
-  try {
-    var container = document.getElementById('menu-seleccion') || document.body;
-    if (!container) return;
-    // If already initialized, skip
-    if (container.__msEquipObserverInitialized) return;
-    container.__msEquipObserverInitialized = true;
-
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(m) {
-        try {
-          if (m.type === 'childList') {
-            // Check added nodes for equip overlays
-            Array.from(m.addedNodes || []).forEach(function(n) {
-              try {
-                if (n && n.id && String(n.id).indexOf('equipada-ms-') === 0) {
-                  try { console.debug && console.debug('MS observer: equip overlay added', n.id, n.src); } catch(e){}
-                  if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
-                    scheduleActualizarModelos3DConEstado(obtenerEquipStateDesdeMS());
-                  }
-                }
-              } catch(e){}
-            });
-            // Check removed nodes for equip overlays
-            Array.from(m.removedNodes || []).forEach(function(n) {
-              try {
-                if (n && n.id && String(n.id).indexOf('equipada-ms-') === 0) {
-                  try { console.debug && console.debug('MS observer: equip overlay removed', n.id); } catch(e){}
-                  if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
-                    scheduleActualizarModelos3DConEstado(obtenerEquipStateDesdeMS());
-                  }
-                }
-              } catch(e){}
-            });
-          }
-        } catch(e) {}
-      });
-    });
-
-    observer.observe(container, { childList: true, subtree: true });
-    // Store observer reference incase we need to disconnect later
-    container.__msEquipObserver = observer;
-  } catch(e) { console.error('initMsEquipObserver error', e); }
-}
-
-// Start observer now in case the menu is already rendered
-try { initMsEquipObserver(); } catch(e) {}
 
 // Global helper: ensure a `setSelected` function is available for handlers
 // Some selection handlers (defined earlier) call `setSelected` expecting it
@@ -6483,26 +6281,6 @@ function updateThreeSize() {
   renderer.setSize(width, height);
 }
 
-// Mueve el canvas WebGL del renderer a otro contenedor (útil para mostrarlo en overlays)
-function moveThreeRendererTo(containerId) {
-  try {
-    if (!renderer || !renderer.domElement) return;
-    const tgt = document.getElementById(containerId);
-    if (!tgt) return;
-    // quitar del padre actual si existe
-    try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e) {}
-    // asegurar que el canvas ocupe todo el contenedor
-    renderer.domElement.style.position = 'absolute';
-    renderer.domElement.style.top = '0';
-    renderer.domElement.style.left = '0';
-    renderer.domElement.style.width = '100%';
-    renderer.domElement.style.height = '100%';
-    tgt.appendChild(renderer.domElement);
-    // actualizar cámara/renderer al nuevo tamaño
-    try { updateThreeSize(); } catch(e) {}
-  } catch (e) { console.error('moveThreeRendererTo error', e); }
-}
-
 // Restaura la posición/cámara/control/modelos 3D a un estado por defecto
 function resetModelo3DPosition() {
   try {
@@ -6610,14 +6388,7 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
         model.visible = false;
       } else {
         // Determinar visibilidad inicial según estado actual de "equipadas"
-        const getBasename = (p) => {
-          if (!p) return '';
-          try {
-            let s = String(p).split('?')[0].split('#')[0];
-            s = s.split('/').pop() || s;
-            return s.toLowerCase();
-          } catch(e) { return String(p || '').toLowerCase(); }
-        };
+        const getBasename = (p) => (p || "").split('/').pop();
         const hImg = equipadas.h ? getBasename(equipadas.h) : null;
         const aImg = equipadas.a ? getBasename(equipadas.a) : null;
         const gImg = equipadas.g ? getBasename(equipadas.g) : null;
@@ -6670,29 +6441,6 @@ function actualizarModelos3D() {
   if (!scene || !renderer) return;
   const container = document.getElementById('threejs-container');
 
-  // Determine equip state: use menu-selection overlays when renderer is shown inside the selection container,
-  // otherwise fall back to global `equipadas`.
-  var currentEquip = (typeof equipadas !== 'undefined') ? equipadas : { h:null,a:null,g:null,l:null };
-  try {
-    var selCont = document.getElementById('threejs-seleccion-container');
-    var inSelection = false;
-    if (selCont && selCont.style && selCont.style.display !== 'none') inSelection = true;
-    if (renderer && renderer.domElement && renderer.domElement.parentNode && renderer.domElement.parentNode.id === 'threejs-seleccion-container') inSelection = true;
-    if (inSelection && typeof obtenerEquipStateDesdeMS === 'function') {
-      var msState = obtenerEquipStateDesdeMS();
-      if (msState) currentEquip = msState;
-    }
-  } catch(e) { /* silent */ }
-
-  const getBasename = (p) => {
-    if (!p) return '';
-    try {
-      let s = String(p).split('?')[0].split('#')[0];
-      s = s.split('/').pop() || s;
-      return s.toLowerCase();
-    } catch(e) { return String(p || '').toLowerCase(); }
-  };
-
   function mostrarModelo(nombre, ruta) {
     if (!modelos3D[nombre]) {
       cargarModeloGLB(ruta, nombre);
@@ -6708,12 +6456,12 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura H ---
-    if (!currentEquip.h) {
+  if (!equipadas.h) {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
   } else {
     ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if (getBasename(currentEquip.h) === 'wolf-h.png') {
+    if (equipadas.h.split('/').pop() === 'wolf-h.png') {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
     } else {
       ocultarModelo('H_Raging_Wolf');
@@ -6721,14 +6469,14 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura A ---
-  if (!currentEquip.a) {
+  if (!equipadas.a) {
     mostrarModelo('pecho', './Pecho.glb');
     ocultarModelo('A_Raging_Wolf');
     ocultarModelo('A_Alberich');
     ocultarModelo('A_Preceptor');
   } else {
     ocultarModelo('pecho');
-    const imgA = getBasename(currentEquip.a);
+    const imgA = equipadas.a.split('/').pop();
     if (imgA === 'wolf-a.png') {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
       ocultarModelo('A_Alberich');
@@ -6749,10 +6497,10 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura G ---
-  if (!currentEquip.g) {
+  if (!equipadas.g) {
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
-  } else if (getBasename(currentEquip.g) === 'wolf-g.png') {
+  } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
     ocultarModelo('manos');
     mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
   } else {
@@ -6761,14 +6509,14 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura L ---
-  if (!currentEquip.l) {
+  if (!equipadas.l) {
     mostrarModelo('piernas', './Piernas.glb');
     ocultarModelo('L_Raging_Wolf');
     ocultarModelo('L_Alberich');
     ocultarModelo('L_Preceptor');
   } else {
     ocultarModelo('piernas');
-    const imgL = getBasename(currentEquip.l);
+    const imgL = equipadas.l.split('/').pop();
     if (imgL === 'wolf-l.png') {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
       ocultarModelo('L_Alberich');
