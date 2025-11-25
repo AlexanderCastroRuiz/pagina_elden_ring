@@ -5453,38 +5453,76 @@ function volverMenuRanuras() {
       }
     });
   });
-    // Mapeo de armadura a imagen
-const imagenPorArmadura = {
-  "Armadura de Lobo Furioso": "wolf-a.png",
-  "Vestido de Alberich": "carian-a.png",
-  "Vestido de preceptor": "samurai-a.png",
-};
+    // Mapeos dinámicos (se poblarán desde Firebase si existe la ruta 'mappings').
+    // Se inicializan con valores por defecto para compatibilidad offline/fallback.
+    let imagenPorArmadura = {
+      "Armadura de Lobo Furioso": "wolf-a.png",
+      "Vestido de Alberich": "carian-a.png",
+      "Vestido de preceptor": "samurai-a.png",
+    };
 
-// Mapeo de yelmo a imagen
-const imagenPorYelmo = {
-  "Yelmo de Lobo Furioso": "wolf-h.png",
-};
+    let imagenPorYelmo = {
+      "Yelmo de Lobo Furioso": "wolf-h.png",
+    };
 
-// Mapeo de guanteletes a imagen
-const imagenPorGuanteletes = {
-  "Guanteletes de Lobo Furioso": "wolf-g.png",
-};
+    let imagenPorGuanteletes = {
+      "Guanteletes de Lobo Furioso": "wolf-g.png",
+    };
 
-// Mapeo de botas a imagen
-const imagenPorBotas = {
-  "Grebas de Lobo Furioso": "wolf-l.png",
-  "Pantalones de Alberich": "carian-l.png",
-  "Pantalones de preceptor": "samurai-l.png"
-};
+    let imagenPorBotas = {
+      "Grebas de Lobo Furioso": "wolf-l.png",
+      "Pantalones de Alberich": "carian-l.png",
+      "Pantalones de preceptor": "samurai-l.png"
+    };
 
-// Utilidad para obtener imagen por nombre y tipo de ranura
-function obtenerImagenPorNombre(tipo, nombre) {
-  if (tipo === "h") return imagenPorYelmo[nombre] || "";
-  if (tipo === "a") return imagenPorArmadura[nombre] || "";
-  if (tipo === "g") return imagenPorGuanteletes[nombre] || "";
-  if (tipo === "l") return imagenPorBotas[nombre] || "";
-  return "";
-}
+    // Utilidad para obtener imagen por nombre y tipo de ranura (usa los mapas dinámicos)
+    function obtenerImagenPorNombre(tipo, nombre) {
+      try {
+        if (!nombre) return "";
+        if (tipo === "h") return imagenPorYelmo[nombre] || imagenPorYelmo[nombre.trim()] || "";
+        if (tipo === "a") return imagenPorArmadura[nombre] || imagenPorArmadura[nombre.trim()] || "";
+        if (tipo === "g") return imagenPorGuanteletes[nombre] || imagenPorGuanteletes[nombre.trim()] || "";
+        if (tipo === "l") return imagenPorBotas[nombre] || imagenPorBotas[nombre.trim()] || "";
+      } catch (e) { console.error('obtenerImagenPorNombre error', e); }
+      return "";
+    }
+
+    // Carga desde Firebase los mapeos (opcional). Ruta esperada en Realtime DB:
+    // /mappings -> { yelmo: {"Yelmo Nombre": "file.png"}, armadura: {...}, guanteletes: {...}, botas: {...} }
+    // Si la ruta no existe, se mantienen los valores por defecto.
+    async function loadImageMappingsFromFirebase() {
+      try {
+        const db = getDatabase();
+        const snap = await get(ref(db, 'mappings'));
+        if (!snap || !snap.exists()) {
+          // intentar ruta alternativa 'mapeos'
+          const snap2 = await get(ref(db, 'mapeos'));
+          if (snap2 && snap2.exists()) {
+            applyMappingsObject(snap2.val());
+          }
+          return;
+        }
+        applyMappingsObject(snap.val());
+      } catch (e) { console.warn('loadImageMappingsFromFirebase failed, using defaults', e); }
+    }
+
+    function applyMappingsObject(obj) {
+      try {
+        if (!obj) return;
+        if (obj.armadura && typeof obj.armadura === 'object') imagenPorArmadura = Object.assign({}, imagenPorArmadura, obj.armadura);
+        if (obj.yelmo && typeof obj.yelmo === 'object') imagenPorYelmo = Object.assign({}, imagenPorYelmo, obj.yelmo);
+        if (obj.guanteletes && typeof obj.guanteletes === 'object') imagenPorGuanteletes = Object.assign({}, imagenPorGuanteletes, obj.guanteletes);
+        if (obj.botas && typeof obj.botas === 'object') imagenPorBotas = Object.assign({}, imagenPorBotas, obj.botas);
+        // soporte nombres en español o rutas alternativas
+        if (obj.armaduras && typeof obj.armaduras === 'object') imagenPorArmadura = Object.assign({}, imagenPorArmadura, obj.armaduras);
+        if (obj.yelmos && typeof obj.yelmos === 'object') imagenPorYelmo = Object.assign({}, imagenPorYelmo, obj.yelmos);
+        if (obj.guantelettes && typeof obj.guantelettes === 'object') imagenPorGuanteletes = Object.assign({}, imagenPorGuanteletes, obj.guantelettes);
+        if (obj.botas && typeof obj.botas === 'object') imagenPorBotas = Object.assign({}, imagenPorBotas, obj.botas);
+      } catch (e) { console.error('applyMappingsObject error', e); }
+    }
+
+    // Intentar cargar mapeos al inicio (no bloqueante)
+    try { if (typeof loadImageMappingsFromFirebase === 'function') loadImageMappingsFromFirebase(); } catch(e) {}
 
 // note: copia-based ranura overlays were removed; we only use overlays inside/above
 // `ms-ranura-*`. Previous helper functions handling `ranura-*-copia-*` were removed
