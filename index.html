@@ -532,9 +532,9 @@
     <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
-    <!-- Contenedor 3D específico para el menú selección (tercer tercio de la pantalla) -->
-    <div id="threejs-seleccion-container" style="display:none; position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2050; pointer-events:auto; background:transparent;"></div>
-    <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
+    <!-- Contenedor 3D para el menú selección: ocupa el tercer tercio (derecha) -->
+    <div id="threejs-selection-container" style="position:absolute; left:66.66vw; top:0; width:33.34vw; height:100vh; z-index:2195; pointer-events:none; display:block;"></div>
+<!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
       style="display:none; position: absolute; top: 87px; left: 210px; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
@@ -1476,23 +1476,11 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         // (async) actualizar visual del menú selección
         try { actualizarMenuSeleccionVisual(); } catch(e){}
-        // Mover el renderer 3D al contenedor derecho (tercer tercio) para el menú selección
-        try {
-          if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container');
-          else {
-            const tgt = document.getElementById('threejs-seleccion-container');
-            if (renderer && renderer.domElement && tgt) {
-              try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e){}
-              tgt.appendChild(renderer.domElement);
-              try { updateThreeSize(); } catch(e){}
-            }
-          }
-        } catch(e) { console.warn('Error moviendo renderer al menú selección', e); }
-        // Mostrar el contenedor 3D de selección
-        try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'block'; } catch(e) {}
-        // Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
+// Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
         try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
+        // Mover el renderer al contenedor de selección (tercer tercio) y actualizar modelos desde Firebase
+        try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-selection-container'); } catch(e) {}
+        try { if (typeof fetchEquipStateFromFirebaseAndUpdate === 'function') fetchEquipStateFromFirebaseAndUpdate(); else if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -1568,7 +1556,7 @@
         // Restaurar el renderer al contenedor principal (columna B)
         try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container'); } catch(e) {}
         // Ocultar el contenedor 3D de selección si existe
-        try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'none'; } catch(e) {}
+        // Contenedor 3D de selección eliminado previamente; no hay nada que ocultar aquí.
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
 
@@ -2456,6 +2444,29 @@ function obtenerEquipStateDesdeMS() {
     return state;
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
 }
+// Asíncrono: intenta leer desde Firebase (si hay usuario + sinluz seleccionado) y actualizar modelos.
+async function fetchEquipStateFromFirebaseAndUpdate() {
+  try {
+    const usuario = document.getElementById('usuario-inicio') ? document.getElementById('usuario-inicio').value.trim() : '';
+    if (!usuario || !window.sinluzSeleccionado) {
+      // fallback a la lectura desde DOM (imágenes mostradas en MS)
+      try { const s = obtenerEquipStateDesdeMS(); actualizarModelos3DConEstado(s); } catch(e){}
+      return;
+    }
+    const db = getDatabase();
+    const snap = await get(ref(db, `usuario/${usuario}/${window.sinluzSeleccionado}`));
+    const data = (snap && snap.exists()) ? snap.val() : null;
+    const state = { h: null, a: null, g: null, l: null };
+    if (data) {
+      state.h = data.Yelmo || data.YelmoNombre || '';
+      state.a = data.Armadura || '';
+      state.g = data.Guanteletes || '';
+      state.l = data.Botas || '';
+    }
+    // Llamar a la función que actualiza los modelos con el estado resuelto
+    try { actualizarModelos3DConEstado(state); } catch(e) { console.error(e); }
+  } catch(e) { console.error('fetchEquipStateFromFirebaseAndUpdate error', e); }
+}
 
 function actualizarModelos3DConEstado(equipState) {
   try {
@@ -2471,17 +2482,23 @@ function actualizarModelos3DConEstado(equipState) {
     }
 
     const getBasename = (p) => (p || '').split('/').pop();
-    try {
-      const dbg = { h: getBasename((equipState||{}).h), a: getBasename((equipState||{}).a), g: getBasename((equipState||{}).g), l: getBasename((equipState||{}).l) };
-      console.debug('actualizarModelos3DConEstado - equipState basenames:', dbg, 'fullState:', equipState);
-    } catch(e) {}
+    // Resolve helper: if value looks like a filename/path, return it; otherwise try to map textual name to image filename
+    const resolveToImage = (tipo, val) => {
+      if (!val) return '';
+      if (typeof val !== 'string') return '';
+      if (val.indexOf('.') !== -1 || val.indexOf('/') !== -1) return val; // already a path/filename
+      // otherwise try mapping via obtenerImagenPorNombre
+      try { const img = obtenerImagenPorNombre(tipo, val); return img || val; } catch(e) { return val; }
+    };
+
     // --- Ranura H ---
     if (!equipState || !equipState.h) {
       mostrarModelo('cabeza', './Cabeza.glb');
       ocultarModelo('H_Raging_Wolf');
     } else {
       ocultarModelo('cabeza');
-      if (getBasename(equipState.h) === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+      const resolvedH = getBasename(resolveToImage('h', equipState.h));
+      if (resolvedH === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
       else ocultarModelo('H_Raging_Wolf');
     }
 
@@ -2493,7 +2510,7 @@ function actualizarModelos3DConEstado(equipState) {
       ocultarModelo('A_Preceptor');
     } else {
       ocultarModelo('pecho');
-      const imgA = getBasename(equipState.a);
+      const imgA = getBasename(resolveToImage('a', equipState.a));
       if (imgA === 'wolf-a.png') {
         mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
         ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
@@ -2510,12 +2527,15 @@ function actualizarModelos3DConEstado(equipState) {
     if (!equipState || !equipState.g) {
       mostrarModelo('manos', './Manos.glb');
       ocultarModelo('G_Raging_Wolf');
-    } else if (getBasename(equipState.g) === 'wolf-g.png') {
-      ocultarModelo('manos');
-      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
     } else {
-      ocultarModelo('manos');
-      ocultarModelo('G_Raging_Wolf');
+      const imgG = getBasename(resolveToImage('g', equipState.g));
+      if (imgG === 'wolf-g.png') {
+        ocultarModelo('manos');
+        mostrarModelo('G_Raging_Wolf', './G_RAGING_WOLF.glb');
+      } else {
+        ocultarModelo('manos');
+        ocultarModelo('G_Raging_Wolf');
+      }
     }
 
     // --- Ranura L ---
@@ -2526,7 +2546,7 @@ function actualizarModelos3DConEstado(equipState) {
       ocultarModelo('L_Preceptor');
     } else {
       ocultarModelo('piernas');
-      const imgL = getBasename(equipState.l);
+      const imgL = getBasename(resolveToImage('l', equipState.l));
       if (imgL === 'wolf-l.png') {
         mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
       } else if (imgL === 'carian-l.png') {
@@ -3312,8 +3332,6 @@ function bonusGeneralRes(attrLevel) {
             mostrarColumnaCPrincipal("ranura-h");
           }
         }, 0);
-        // After updating the UI equip images, ensure the 3D models match the loaded Sinluz
-        try { if (typeof actualizarModelos3DDesdeSinluzSeleccionado === 'function') await actualizarModelos3DDesdeSinluzSeleccionado(sinKey); } catch(e) {}
         return true;
       } catch (e) {
         // En caso de error, limpiar equipadas
@@ -5468,69 +5486,6 @@ function obtenerImagenPorNombre(tipo, nombre) {
   return "";
 }
 
-// Construye el estado de equipamiento (h,a,g,l) a partir de la ficha Sinluz
-// seleccionada leyendo la caché local o Firebase y actualiza los modelos 3D.
-async function actualizarModelos3DDesdeSinluzSeleccionado(keyArg) {
-  try {
-    const key = keyArg || window.sinluzSeleccionado;
-    if (!key) return;
-    const usuario = (document.getElementById('usuario-inicio') || {}).value;
-    if (!usuario) return;
-    const cacheKey = 'sinluz_cache_' + usuario + '_' + key;
-
-    // Try cache first
-    let equipImages = null;
-    try {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        equipImages = parsed && parsed.equipImages ? parsed.equipImages : null;
-      }
-    } catch (e) { /* ignore cache errors */ }
-
-    // If no cache, fetch from Firebase
-    if (!equipImages) {
-      try {
-        const db = getDatabase();
-        const snap = await get(ref(db, `usuario/${usuario}/${key}`));
-        const sdata = snap && snap.exists() ? snap.val() : null;
-        const yelmo = (sdata && (sdata.Yelmo || sdata.YelmoNombre)) ? (sdata.Yelmo || sdata.YelmoNombre) : '';
-        const armadura = (sdata && sdata.Armadura) ? sdata.Armadura : '';
-        const guanteletes = (sdata && sdata.Guanteletes) ? sdata.Guanteletes : '';
-        const botas = (sdata && sdata.Botas) ? sdata.Botas : '';
-        equipImages = {
-          h: obtenerImagenPorNombre('h', yelmo) || null,
-          a: obtenerImagenPorNombre('a', armadura) || null,
-          g: obtenerImagenPorNombre('g', guanteletes) || null,
-          l: obtenerImagenPorNombre('l', botas) || null
-        };
-        try { console.debug('actualizarModelos3DDesdeSinluzSeleccionado - equipImages computed', equipImages); } catch(e) {}
-      } catch (e) { equipImages = { h: null, a: null, g: null, l: null }; }
-    }
-
-    const state = { h: equipImages && equipImages.h ? equipImages.h : null,
-                    a: equipImages && equipImages.a ? equipImages.a : null,
-                    g: equipImages && equipImages.g ? equipImages.g : null,
-                    l: equipImages && equipImages.l ? equipImages.l : null };
-    try { console.debug('actualizarModelos3DDesdeSinluzSeleccionado - state ->', state); } catch(e) {}
-
-    // Mantener sincronizado el objeto global `equipadas` para el resto de la app
-    try {
-      if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null };
-      window.equipadas.h = state.h;
-      window.equipadas.a = state.a;
-      window.equipadas.g = state.g;
-      window.equipadas.l = state.l;
-    } catch(e) {}
-
-    if (typeof actualizarModelos3DConEstado === 'function') {
-      try { actualizarModelos3DConEstado(state); } catch(e) {}
-    }
-    // También actualizar la ruta principal que usa `equipadas`
-    try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-  } catch(e) { console.error('actualizarModelos3DDesdeSinluzSeleccionado error', e); }
-}
-
 // note: copia-based ranura overlays were removed; we only use overlays inside/above
 // `ms-ranura-*`. Previous helper functions handling `ranura-*-copia-*` were removed
 // to avoid keeping unused code paths.
@@ -5543,7 +5498,10 @@ function limpiarEquipadaEnMs(tipo) {
   try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
   // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
   try {
-    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+    if (typeof fetchEquipStateFromFirebaseAndUpdate === 'function') {
+      fetchEquipStateFromFirebaseAndUpdate();
+    } else if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      // fallback sincronico
       const state = obtenerEquipStateDesdeMS();
       actualizarModelos3DConEstado(state);
     }
@@ -5605,7 +5563,9 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
     try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      if (typeof fetchEquipStateFromFirebaseAndUpdate === 'function') {
+        fetchEquipStateFromFirebaseAndUpdate();
+      } else if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
         const state = obtenerEquipStateDesdeMS();
         actualizarModelos3DConEstado(state);
       }
@@ -5937,7 +5897,6 @@ async function actualizarMenuSeleccionVisual() {
                 if (imgL) mostrarEquipadaEnMsRanura('l', imgL);
               } catch(e){}
             } catch(e) { console.error('Error mostrando equipadas en probe', e); }
-            try { await actualizarModelos3DDesdeSinluzSeleccionado(firstKey); } catch(e) {}
           } catch(e) { console.error('Error seleccionando probe Sinluz', e); }
         };
         probe.addEventListener('mouseenter', onProbeSelect);
@@ -6140,8 +6099,6 @@ async function actualizarMenuSeleccionVisual() {
               } catch(e){}
             } catch(e) { console.error('Error mostrando equipadas en clone select', e); }
           } catch(e) { console.error('Error leyendo Sinluz al seleccionar', e); }
-          // Ensure 3D models reflect the selected Sinluz (maps DB texts -> images -> modelos)
-          try { if (typeof actualizarModelos3DDesdeSinluzSeleccionado === 'function') await actualizarModelos3DDesdeSinluzSeleccionado(key); } catch(e) {}
         } catch(e){}
       };
       clone.addEventListener('mouseenter', onSelectSinluz);
@@ -6189,7 +6146,7 @@ async function actualizarMenuSeleccionVisual() {
         // Try cache first (fast). Only fetch from Firebase if cache miss.
         try {
           const cached = localStorage.getItem(cacheKey);
-              if (cached) {
+          if (cached) {
             try {
               const parsed = JSON.parse(cached);
               const attrsParsed = (parsed && parsed.atributos) ? parsed.atributos : parsed;
@@ -6207,8 +6164,6 @@ async function actualizarMenuSeleccionVisual() {
                   if (eq.l) mostrarEquipadaEnMsRanura('l', eq.l);
                 }
               } catch(e){}
-                  // Ensure 3D models reflect cached equip images too
-                  try { if (typeof actualizarModelos3DDesdeSinluzSeleccionado === 'function') await actualizarModelos3DDesdeSinluzSeleccionado(key); } catch(e) {}
               return;
             } catch(e) { /* parse error -> fallback to fetch */ }
           }
@@ -6485,7 +6440,7 @@ function animate() {
 function updateThreeSize() {
   if (!renderer || !renderer.domElement || !camera) return;
   // Use the actual parent of the canvas if available (so size is correct
-  // cuando el renderer se movió a `threejs-seleccion-container`).
+  // cuando el renderer se movió a otro contenedor).
   const parent = renderer.domElement.parentNode || document.getElementById('threejs-container');
   if (!parent) return;
   const rect = parent.getBoundingClientRect();
@@ -6510,17 +6465,9 @@ function moveThreeRendererTo(containerId) {
     renderer.domElement.style.left = '0';
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
-    // Reset any previous transform applied to containers
-    try { var prev = document.getElementById('threejs-seleccion-container'); if (prev) prev.style.transform = ''; } catch(e) {}
     tgt.appendChild(renderer.domElement);
-    // Si movemos al contenedor de selección, desplazar 20px hacia arriba
-    try {
-      if (containerId === 'threejs-seleccion-container') {
-        tgt.style.transform = 'translateY(-20px)';
-      } else {
-        tgt.style.transform = '';
-      }
-    } catch(e) {}
+    // Clear any transform applied to the target container
+    try { tgt.style.transform = ''; } catch(e) {}
     // actualizar cámara/renderer al nuevo tamaño (usa el parent real)
     try { updateThreeSize(); } catch(e) {}
   } catch (e) { console.error('moveThreeRendererTo error', e); }
