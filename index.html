@@ -2449,11 +2449,16 @@ function obtenerEquipStateDesdeMS() {
     const state = { h: null, a: null, g: null, l: null };
     types.forEach(t => {
       try {
-        // Preferir las ranuras del menú selección (`ms-ranura-*`). Si no existen,
-        // caer en el fallback histórico `equipada-ms-*` para compatibilidad.
-        var el = document.getElementById('ms-ranura-' + t);
-        if (!el) el = document.getElementById('equipada-ms-' + t);
-        if (el && el.src) state[t] = el.src;
+        // Preferir la imagen overlay `equipada-ms-*` (creada por mostrarEquipadaEnMsRanura),
+        // porque las `ms-ranura-*` son los sprites de ranura (p. ej. "ranura-a.png").
+        // Si no existe overlay, entonces usar el `ms-ranura-*` como fallback.
+        var overlay = document.getElementById('equipada-ms-' + t);
+        if (overlay && overlay.src) {
+          state[t] = overlay.src;
+        } else {
+          var slot = document.getElementById('ms-ranura-' + t);
+          if (slot && slot.src) state[t] = slot.src;
+        }
       } catch(e) {}
     });
     return state;
