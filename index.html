@@ -532,8 +532,8 @@
     <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
-    <!-- Contenedor 3D para el menú selección: ocupa el tercer tercio (derecha) -->
-    <div id="threejs-selection-container" style="position:absolute; left:66.66vw; top:0; width:33.34vw; height:100vh; z-index:2195; pointer-events:none; display:block;"></div>
+    <!-- Contenedor 3D para el menú selección (tercer tercio / columna derecha) -->
+    <div id="threejs-container-seleccion" style="display:none; position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2299; pointer-events:none; background:transparent;"></div>
 <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
@@ -1474,13 +1474,24 @@
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
+        // Mostrar el contenedor 3D del menú selección (tercer tercio)
+        try {
+          // Asegurar inicialización de ThreeJS
+          if (typeof initThreeJS === 'function') initThreeJS();
+          // Mover el canvas del renderer al contenedor específico de selección
+          try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container-seleccion'); } catch(e) {}
+          // Hacer visible el contenedor para que calcule tamaños correctamente
+          const selCont = document.getElementById('threejs-container-seleccion');
+          if (selCont) selCont.style.display = 'block';
+          // Ajustar tamaño del renderer al nuevo contenedor
+          try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e) {}
+        } catch(e) { console.warn('Error al preparar contenedor 3D de selección', e); }
+
         // (async) actualizar visual del menú selección
         try { actualizarMenuSeleccionVisual(); } catch(e){}
-// Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
+        // Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
         try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-        // Mover el renderer al contenedor de selección (tercer tercio) y actualizar modelos desde Firebase
-        try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-selection-container'); } catch(e) {}
-        try { if (typeof fetchEquipStateFromFirebaseAndUpdate === 'function') fetchEquipStateFromFirebaseAndUpdate(); else if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
+        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -2444,29 +2455,6 @@ function obtenerEquipStateDesdeMS() {
     return state;
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
 }
-// Asíncrono: intenta leer desde Firebase (si hay usuario + sinluz seleccionado) y actualizar modelos.
-async function fetchEquipStateFromFirebaseAndUpdate() {
-  try {
-    const usuario = document.getElementById('usuario-inicio') ? document.getElementById('usuario-inicio').value.trim() : '';
-    if (!usuario || !window.sinluzSeleccionado) {
-      // fallback a la lectura desde DOM (imágenes mostradas en MS)
-      try { const s = obtenerEquipStateDesdeMS(); actualizarModelos3DConEstado(s); } catch(e){}
-      return;
-    }
-    const db = getDatabase();
-    const snap = await get(ref(db, `usuario/${usuario}/${window.sinluzSeleccionado}`));
-    const data = (snap && snap.exists()) ? snap.val() : null;
-    const state = { h: null, a: null, g: null, l: null };
-    if (data) {
-      state.h = data.Yelmo || data.YelmoNombre || '';
-      state.a = data.Armadura || '';
-      state.g = data.Guanteletes || '';
-      state.l = data.Botas || '';
-    }
-    // Llamar a la función que actualiza los modelos con el estado resuelto
-    try { actualizarModelos3DConEstado(state); } catch(e) { console.error(e); }
-  } catch(e) { console.error('fetchEquipStateFromFirebaseAndUpdate error', e); }
-}
 
 function actualizarModelos3DConEstado(equipState) {
   try {
@@ -2482,23 +2470,13 @@ function actualizarModelos3DConEstado(equipState) {
     }
 
     const getBasename = (p) => (p || '').split('/').pop();
-    // Resolve helper: if value looks like a filename/path, return it; otherwise try to map textual name to image filename
-    const resolveToImage = (tipo, val) => {
-      if (!val) return '';
-      if (typeof val !== 'string') return '';
-      if (val.indexOf('.') !== -1 || val.indexOf('/') !== -1) return val; // already a path/filename
-      // otherwise try mapping via obtenerImagenPorNombre
-      try { const img = obtenerImagenPorNombre(tipo, val); return img || val; } catch(e) { return val; }
-    };
-
     // --- Ranura H ---
     if (!equipState || !equipState.h) {
       mostrarModelo('cabeza', './Cabeza.glb');
       ocultarModelo('H_Raging_Wolf');
     } else {
       ocultarModelo('cabeza');
-      const resolvedH = getBasename(resolveToImage('h', equipState.h));
-      if (resolvedH === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+      if (getBasename(equipState.h) === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
       else ocultarModelo('H_Raging_Wolf');
     }
 
@@ -2510,7 +2488,7 @@ function actualizarModelos3DConEstado(equipState) {
       ocultarModelo('A_Preceptor');
     } else {
       ocultarModelo('pecho');
-      const imgA = getBasename(resolveToImage('a', equipState.a));
+      const imgA = getBasename(equipState.a);
       if (imgA === 'wolf-a.png') {
         mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
         ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
@@ -2527,15 +2505,12 @@ function actualizarModelos3DConEstado(equipState) {
     if (!equipState || !equipState.g) {
       mostrarModelo('manos', './Manos.glb');
       ocultarModelo('G_Raging_Wolf');
+    } else if (getBasename(equipState.g) === 'wolf-g.png') {
+      ocultarModelo('manos');
+      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
     } else {
-      const imgG = getBasename(resolveToImage('g', equipState.g));
-      if (imgG === 'wolf-g.png') {
-        ocultarModelo('manos');
-        mostrarModelo('G_Raging_Wolf', './G_RAGING_WOLF.glb');
-      } else {
-        ocultarModelo('manos');
-        ocultarModelo('G_Raging_Wolf');
-      }
+      ocultarModelo('manos');
+      ocultarModelo('G_Raging_Wolf');
     }
 
     // --- Ranura L ---
@@ -2546,7 +2521,7 @@ function actualizarModelos3DConEstado(equipState) {
       ocultarModelo('L_Preceptor');
     } else {
       ocultarModelo('piernas');
-      const imgL = getBasename(resolveToImage('l', equipState.l));
+      const imgL = getBasename(equipState.l);
       if (imgL === 'wolf-l.png') {
         mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
       } else if (imgL === 'carian-l.png') {
@@ -5453,76 +5428,38 @@ function volverMenuRanuras() {
       }
     });
   });
-    // Mapeos dinámicos (se poblarán desde Firebase si existe la ruta 'mappings').
-    // Se inicializan con valores por defecto para compatibilidad offline/fallback.
-    let imagenPorArmadura = {
-      "Armadura de Lobo Furioso": "wolf-a.png",
-      "Vestido de Alberich": "carian-a.png",
-      "Vestido de preceptor": "samurai-a.png",
-    };
+    // Mapeo de armadura a imagen
+const imagenPorArmadura = {
+  "Armadura de Lobo Furioso": "wolf-a.png",
+  "Vestido de Alberich": "carian-a.png",
+  "Vestido de preceptor": "samurai-a.png",
+};
 
-    let imagenPorYelmo = {
-      "Yelmo de Lobo Furioso": "wolf-h.png",
-    };
+// Mapeo de yelmo a imagen
+const imagenPorYelmo = {
+  "Yelmo de Lobo Furioso": "wolf-h.png",
+};
 
-    let imagenPorGuanteletes = {
-      "Guanteletes de Lobo Furioso": "wolf-g.png",
-    };
+// Mapeo de guanteletes a imagen
+const imagenPorGuanteletes = {
+  "Guanteletes de Lobo Furioso": "wolf-g.png",
+};
 
-    let imagenPorBotas = {
-      "Grebas de Lobo Furioso": "wolf-l.png",
-      "Pantalones de Alberich": "carian-l.png",
-      "Pantalones de preceptor": "samurai-l.png"
-    };
+// Mapeo de botas a imagen
+const imagenPorBotas = {
+  "Grebas de Lobo Furioso": "wolf-l.png",
+  "Pantalones de Alberich": "carian-l.png",
+  "Pantalones de preceptor": "samurai-l.png"
+};
 
-    // Utilidad para obtener imagen por nombre y tipo de ranura (usa los mapas dinámicos)
-    function obtenerImagenPorNombre(tipo, nombre) {
-      try {
-        if (!nombre) return "";
-        if (tipo === "h") return imagenPorYelmo[nombre] || imagenPorYelmo[nombre.trim()] || "";
-        if (tipo === "a") return imagenPorArmadura[nombre] || imagenPorArmadura[nombre.trim()] || "";
-        if (tipo === "g") return imagenPorGuanteletes[nombre] || imagenPorGuanteletes[nombre.trim()] || "";
-        if (tipo === "l") return imagenPorBotas[nombre] || imagenPorBotas[nombre.trim()] || "";
-      } catch (e) { console.error('obtenerImagenPorNombre error', e); }
-      return "";
-    }
-
-    // Carga desde Firebase los mapeos (opcional). Ruta esperada en Realtime DB:
-    // /mappings -> { yelmo: {"Yelmo Nombre": "file.png"}, armadura: {...}, guanteletes: {...}, botas: {...} }
-    // Si la ruta no existe, se mantienen los valores por defecto.
-    async function loadImageMappingsFromFirebase() {
-      try {
-        const db = getDatabase();
-        const snap = await get(ref(db, 'mappings'));
-        if (!snap || !snap.exists()) {
-          // intentar ruta alternativa 'mapeos'
-          const snap2 = await get(ref(db, 'mapeos'));
-          if (snap2 && snap2.exists()) {
-            applyMappingsObject(snap2.val());
-          }
-          return;
-        }
-        applyMappingsObject(snap.val());
-      } catch (e) { console.warn('loadImageMappingsFromFirebase failed, using defaults', e); }
-    }
-
-    function applyMappingsObject(obj) {
-      try {
-        if (!obj) return;
-        if (obj.armadura && typeof obj.armadura === 'object') imagenPorArmadura = Object.assign({}, imagenPorArmadura, obj.armadura);
-        if (obj.yelmo && typeof obj.yelmo === 'object') imagenPorYelmo = Object.assign({}, imagenPorYelmo, obj.yelmo);
-        if (obj.guanteletes && typeof obj.guanteletes === 'object') imagenPorGuanteletes = Object.assign({}, imagenPorGuanteletes, obj.guanteletes);
-        if (obj.botas && typeof obj.botas === 'object') imagenPorBotas = Object.assign({}, imagenPorBotas, obj.botas);
-        // soporte nombres en español o rutas alternativas
-        if (obj.armaduras && typeof obj.armaduras === 'object') imagenPorArmadura = Object.assign({}, imagenPorArmadura, obj.armaduras);
-        if (obj.yelmos && typeof obj.yelmos === 'object') imagenPorYelmo = Object.assign({}, imagenPorYelmo, obj.yelmos);
-        if (obj.guantelettes && typeof obj.guantelettes === 'object') imagenPorGuanteletes = Object.assign({}, imagenPorGuanteletes, obj.guantelettes);
-        if (obj.botas && typeof obj.botas === 'object') imagenPorBotas = Object.assign({}, imagenPorBotas, obj.botas);
-      } catch (e) { console.error('applyMappingsObject error', e); }
-    }
-
-    // Intentar cargar mapeos al inicio (no bloqueante)
-    try { if (typeof loadImageMappingsFromFirebase === 'function') loadImageMappingsFromFirebase(); } catch(e) {}
+// Utilidad para obtener imagen por nombre y tipo de ranura
+function obtenerImagenPorNombre(tipo, nombre) {
+  if (tipo === "h") return imagenPorYelmo[nombre] || "";
+  if (tipo === "a") return imagenPorArmadura[nombre] || "";
+  if (tipo === "g") return imagenPorGuanteletes[nombre] || "";
+  if (tipo === "l") return imagenPorBotas[nombre] || "";
+  return "";
+}
 
 // note: copia-based ranura overlays were removed; we only use overlays inside/above
 // `ms-ranura-*`. Previous helper functions handling `ranura-*-copia-*` were removed
@@ -5536,10 +5473,7 @@ function limpiarEquipadaEnMs(tipo) {
   try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
   // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
   try {
-    if (typeof fetchEquipStateFromFirebaseAndUpdate === 'function') {
-      fetchEquipStateFromFirebaseAndUpdate();
-    } else if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
-      // fallback sincronico
+    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
       const state = obtenerEquipStateDesdeMS();
       actualizarModelos3DConEstado(state);
     }
@@ -5601,9 +5535,7 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
     try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof fetchEquipStateFromFirebaseAndUpdate === 'function') {
-        fetchEquipStateFromFirebaseAndUpdate();
-      } else if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
         const state = obtenerEquipStateDesdeMS();
         actualizarModelos3DConEstado(state);
       }
