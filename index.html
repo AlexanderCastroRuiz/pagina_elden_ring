@@ -2465,6 +2465,28 @@ function obtenerEquipStateDesdeMS() {
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
 }
 
+// Lee el estado de equipamiento (nombres de imagen) desde Firebase para una
+// ficha Sinluz concreta. Devuelve un objeto {h,a,g,l} con nombres o null.
+async function obtenerEquipStateDesdeFirebase(usuario, sinluzKey) {
+  try {
+    if (!usuario || !sinluzKey) return { h: null, a: null, g: null, l: null };
+    const db = getDatabase();
+    const snap = await get(ref(db, `usuario/${usuario}/${sinluzKey}`));
+    if (!snap || !snap.exists()) return { h: null, a: null, g: null, l: null };
+    const datos = snap.val() || {};
+    const yelmo = datos.Yelmo || datos.YelmoNombre || '';
+    const armadura = datos.Armadura || '';
+    const guanteletes = datos.Guanteletes || '';
+    const botas = datos.Botas || '';
+    return {
+      h: obtenerImagenPorNombre('h', yelmo) || null,
+      a: obtenerImagenPorNombre('a', armadura) || null,
+      g: obtenerImagenPorNombre('g', guanteletes) || null,
+      l: obtenerImagenPorNombre('l', botas) || null
+    };
+  } catch (e) { console.error('obtenerEquipStateDesdeFirebase error', e); return { h: null, a: null, g: null, l: null }; }
+}
+
 function actualizarModelos3DConEstado(equipState) {
   try {
     if (!scene || !renderer) return;
@@ -5482,9 +5504,17 @@ function limpiarEquipadaEnMs(tipo) {
   try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
   // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
   try {
-    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
-      const state = obtenerEquipStateDesdeMS();
-      actualizarModelos3DConEstado(state);
+    if (typeof actualizarModelos3DConEstado === 'function') {
+      const usuario = document.getElementById('usuario-inicio') ? document.getElementById('usuario-inicio').value.trim() : '';
+      if (usuario && window.sinluzSeleccionado) {
+        obtenerEquipStateDesdeFirebase(usuario, window.sinluzSeleccionado)
+          .then(state => actualizarModelos3DConEstado(state))
+          .catch(err => {
+            try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
+          });
+      } else {
+        try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
+      }
     }
     // También actualizar la lógica principal que usa `equipadas`
     try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
@@ -5544,9 +5574,17 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
     try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
-        const state = obtenerEquipStateDesdeMS();
-        actualizarModelos3DConEstado(state);
+      if (typeof actualizarModelos3DConEstado === 'function') {
+        const usuario = document.getElementById('usuario-inicio') ? document.getElementById('usuario-inicio').value.trim() : '';
+        if (usuario && window.sinluzSeleccionado) {
+          obtenerEquipStateDesdeFirebase(usuario, window.sinluzSeleccionado)
+            .then(state => actualizarModelos3DConEstado(state))
+            .catch(err => {
+              try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
+            });
+        } else {
+          try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
+        }
       }
       // También actualizar la lógica principal que usa `equipadas` para evitar desincronías
       try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
