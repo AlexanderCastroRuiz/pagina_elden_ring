@@ -1378,25 +1378,25 @@
           }
           if (typeof updateRunasDisplay === 'function') updateRunasDisplay(isNaN(nivel) ? undefined : nivel);
         } catch(e){}
-        // Force threejs-container placement for the selection menu:
+        // Ensure the threejs container is visible even though #main-content is hidden.
         try {
           const c = document.getElementById('threejs-container');
           if (c) {
+            // Move the container to the document body so it isn't hidden by #main-content
+            if (c.parentNode !== document.body) document.body.appendChild(c);
+            // Use fixed positioning so it sits relative to the viewport and is visible
+            c.style.position = 'fixed';
             // Same size as main menu's 3D but placed in the middle of the third tercio
-            // Width matches main: 33.33vw; height matches main: 120vh
             c.style.width = '33.33vw';
             c.style.height = '120vh';
-            // Place to cover exactly the third third (left: 66.666vw) — this centers the block
+            // Place in the middle of the third third horizontally
             c.style.left = '66.666vw';
-            // Keep same top offset as main scene
+            // Keep same vertical offset used before
             c.style.top = '-6vw';
-            // Put it behind all selection UI visuals (very low z-index)
+            // Place it behind selection UI visuals (low z-index) but visible
             c.style.zIndex = '50';
-            // Make sure it does not intercept pointer events for the menu
             c.style.pointerEvents = 'none';
-            c.style.position = 'absolute';
             c.style.display = 'block';
-            // Ensure Three.js is initialized and sized
             try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e){}
             try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e){}
             try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
@@ -1583,6 +1583,23 @@
         }
       } else if (menu === 'principal') {
         document.getElementById('main-content').style.display = 'flex';
+        // If threejs-container was moved to body for the selection menu, restore it
+        try {
+          const c = document.getElementById('threejs-container');
+          const colB = document.querySelector('.columna-b');
+          if (c && colB) {
+            if (c.parentNode !== colB) colB.appendChild(c);
+            // restore sizing/position used in main menu
+            c.style.position = 'absolute';
+            c.style.left = '39.45vw';
+            c.style.top = '0';
+            c.style.width = '35.55vw';
+            c.style.height = '100vh';
+            c.style.zIndex = '1000';
+            c.style.pointerEvents = 'auto';
+            c.style.display = 'block';
+          }
+        } catch(e) {}
         // Inicializa Three.js solo la primera vez
         initThreeJS();
         // Asegura que el renderer tenga el tamaño correcto ahora que el contenedor es visible
@@ -6853,7 +6870,6 @@ function actualizarModelos3D() {
       window.selectFirstSinluzFicha = function(){ const f = list.querySelector('.sinluz-ficha'); if(f) setSelected(f); };
     })();
   </script>
-
 
 
 
