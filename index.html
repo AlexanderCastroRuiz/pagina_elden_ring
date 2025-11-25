@@ -1492,7 +1492,7 @@
         try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'block'; } catch(e) {}
         // Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
         try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
+        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') scheduleActualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -2457,9 +2457,21 @@ function obtenerEquipStateDesdeMS() {
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
 }
 
+// Scheduler helper: call actualizarModelos3DConEstado immediately and retry a couple times
+function scheduleActualizarModelos3DConEstado(state) {
+  try {
+    if (typeof actualizarModelos3DConEstado !== 'function') return;
+    try { actualizarModelos3DConEstado(state); } catch(e) {}
+    // retries to handle DOM/renderer timing edge-cases
+    setTimeout(function(){ try { actualizarModelos3DConEstado(state); } catch(e) {} }, 80);
+    setTimeout(function(){ try { actualizarModelos3DConEstado(state); } catch(e) {} }, 220);
+  } catch(e) {}
+}
+
 function actualizarModelos3DConEstado(equipState) {
   try {
     if (!scene || !renderer) return;
+    try { console.debug && console.debug('actualizarModelos3DConEstado', equipState); } catch(e){}
     function mostrarModelo(nombre, ruta) {
       if (!modelos3D[nombre]) {
         cargarModeloGLB(ruta, nombre);
@@ -2470,7 +2482,14 @@ function actualizarModelos3DConEstado(equipState) {
       if (modelos3D[nombre]) modelos3D[nombre].visible = false;
     }
 
-    const getBasename = (p) => (p || '').split('/').pop();
+    const getBasename = (p) => {
+      if (!p) return '';
+      try {
+        let s = String(p).split('?')[0].split('#')[0];
+        s = s.split('/').pop() || s;
+        return s.toLowerCase();
+      } catch(e) { return String(p || '').toLowerCase(); }
+    };
     // --- Ranura H ---
     if (!equipState || !equipState.h) {
       mostrarModelo('cabeza', './Cabeza.glb');
@@ -5471,11 +5490,12 @@ function limpiarEquipadaEnMs(tipo) {
   const id = `equipada-ms-${tipo}`;
   const prev = document.getElementById(id);
   if (prev) prev.remove();
-  // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
+  try { console.debug && console.debug('limpiarEquipadaEnMs', tipo); } catch(e){}
+  // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D (con reintentos)
   try {
-    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
       const state = obtenerEquipStateDesdeMS();
-      actualizarModelos3DConEstado(state);
+      scheduleActualizarModelos3DConEstado(state);
     }
   } catch(e) { /* silencioso */ }
 }
@@ -5529,11 +5549,13 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
       img.style.height = ranuraElem.style.height || '48px';
     }
     parent.appendChild(img);
+    try { console.debug && console.debug('mostrarEquipadaEnMsRanura appended', { tipo: tipo, src: imgSrc }); } catch(e){}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
         const state = obtenerEquipStateDesdeMS();
-        actualizarModelos3DConEstado(state);
+        try { console.debug && console.debug('mostrarEquipadaEnMsRanura calling scheduleActualizarModelos3DConEstado', state); } catch(e){}
+        scheduleActualizarModelos3DConEstado(state);
       }
     } catch(e) { /* silencioso */ }
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
@@ -6539,7 +6561,14 @@ function cargarModeloGLB(ruta, nombre, opciones = {}) {
         model.visible = false;
       } else {
         // Determinar visibilidad inicial según estado actual de "equipadas"
-        const getBasename = (p) => (p || "").split('/').pop();
+        const getBasename = (p) => {
+          if (!p) return '';
+          try {
+            let s = String(p).split('?')[0].split('#')[0];
+            s = s.split('/').pop() || s;
+            return s.toLowerCase();
+          } catch(e) { return String(p || '').toLowerCase(); }
+        };
         const hImg = equipadas.h ? getBasename(equipadas.h) : null;
         const aImg = equipadas.a ? getBasename(equipadas.a) : null;
         const gImg = equipadas.g ? getBasename(equipadas.g) : null;
@@ -6606,6 +6635,15 @@ function actualizarModelos3D() {
     }
   } catch(e) { /* silent */ }
 
+  const getBasename = (p) => {
+    if (!p) return '';
+    try {
+      let s = String(p).split('?')[0].split('#')[0];
+      s = s.split('/').pop() || s;
+      return s.toLowerCase();
+    } catch(e) { return String(p || '').toLowerCase(); }
+  };
+
   function mostrarModelo(nombre, ruta) {
     if (!modelos3D[nombre]) {
       cargarModeloGLB(ruta, nombre);
@@ -6621,12 +6659,12 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura H ---
-  if (!currentEquip.h) {
+    if (!currentEquip.h) {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
   } else {
     ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if ((currentEquip.h + '').split('/').pop() === 'wolf-h.png') {
+    if (getBasename(currentEquip.h) === 'wolf-h.png') {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
     } else {
       ocultarModelo('H_Raging_Wolf');
@@ -6641,7 +6679,7 @@ function actualizarModelos3D() {
     ocultarModelo('A_Preceptor');
   } else {
     ocultarModelo('pecho');
-    const imgA = (currentEquip.a + '').split('/').pop();
+    const imgA = getBasename(currentEquip.a);
     if (imgA === 'wolf-a.png') {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
       ocultarModelo('A_Alberich');
@@ -6665,7 +6703,7 @@ function actualizarModelos3D() {
   if (!currentEquip.g) {
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
-  } else if ((currentEquip.g + '').split('/').pop() === 'wolf-g.png') {
+  } else if (getBasename(currentEquip.g) === 'wolf-g.png') {
     ocultarModelo('manos');
     mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
   } else {
@@ -6681,7 +6719,7 @@ function actualizarModelos3D() {
     ocultarModelo('L_Preceptor');
   } else {
     ocultarModelo('piernas');
-    const imgL = (currentEquip.l + '').split('/').pop();
+    const imgL = getBasename(currentEquip.l);
     if (imgL === 'wolf-l.png') {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
       ocultarModelo('L_Alberich');
