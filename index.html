@@ -532,6 +532,8 @@
     <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
+    <!-- Contenedor 3D específico para el menú selección (tercer tercio de la pantalla) -->
+    <div id="threejs-seleccion-container" style="display:none; position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2050; pointer-events:auto; background:transparent;"></div>
     <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
@@ -1474,6 +1476,23 @@
         document.getElementById('menu-seleccion').style.display = 'flex';
         // (async) actualizar visual del menú selección
         try { actualizarMenuSeleccionVisual(); } catch(e){}
+        // Mover el renderer 3D al contenedor derecho (tercer tercio) para el menú selección
+        try {
+          if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container');
+          else {
+            const tgt = document.getElementById('threejs-seleccion-container');
+            if (renderer && renderer.domElement && tgt) {
+              try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e){}
+              tgt.appendChild(renderer.domElement);
+              try { updateThreeSize(); } catch(e){}
+            }
+          }
+        } catch(e) { console.warn('Error moviendo renderer al menú selección', e); }
+        // Mostrar el contenedor 3D de selección
+        try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'block'; } catch(e) {}
+        // Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
+        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -1546,6 +1565,10 @@
         initThreeJS();
         // Asegura que el renderer tenga el tamaño correcto ahora que el contenedor es visible
         updateThreeSize();
+        // Restaurar el renderer al contenedor principal (columna B)
+        try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container'); } catch(e) {}
+        // Ocultar el contenedor 3D de selección si existe
+        try { var tsel = document.getElementById('threejs-seleccion-container'); if (tsel) tsel.style.display = 'none'; } catch(e) {}
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
 
@@ -2419,6 +2442,100 @@ function bonusFisicoPorFuerza(fuerza) {
   }
   return bonus;
 }
+// Helpers para sincronizar modelos 3D usando el estado mostrado en el menú selección (MS)
+function obtenerEquipStateDesdeMS() {
+  try {
+    const types = ['h','a','g','l'];
+    const state = { h: null, a: null, g: null, l: null };
+    types.forEach(t => {
+      try {
+        const el = document.getElementById('equipada-ms-' + t);
+        if (el && el.src) state[t] = el.src;
+      } catch(e) {}
+    });
+    return state;
+  } catch(e) { return { h:null,a:null,g:null,l:null }; }
+}
+
+function actualizarModelos3DConEstado(equipState) {
+  try {
+    if (!scene || !renderer) return;
+    function mostrarModelo(nombre, ruta) {
+      if (!modelos3D[nombre]) {
+        cargarModeloGLB(ruta, nombre);
+      }
+      if (modelos3D[nombre]) modelos3D[nombre].visible = true;
+    }
+    function ocultarModelo(nombre) {
+      if (modelos3D[nombre]) modelos3D[nombre].visible = false;
+    }
+
+    const getBasename = (p) => (p || '').split('/').pop();
+    // --- Ranura H ---
+    if (!equipState || !equipState.h) {
+      mostrarModelo('cabeza', './Cabeza.glb');
+      ocultarModelo('H_Raging_Wolf');
+    } else {
+      ocultarModelo('cabeza');
+      if (getBasename(equipState.h) === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+      else ocultarModelo('H_Raging_Wolf');
+    }
+
+    // --- Ranura A ---
+    if (!equipState || !equipState.a) {
+      mostrarModelo('pecho', './Pecho.glb');
+      ocultarModelo('A_Raging_Wolf');
+      ocultarModelo('A_Alberich');
+      ocultarModelo('A_Preceptor');
+    } else {
+      ocultarModelo('pecho');
+      const imgA = getBasename(equipState.a);
+      if (imgA === 'wolf-a.png') {
+        mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
+        ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
+      } else if (imgA === 'carian-a.png') {
+        mostrarModelo('A_Alberich', './A_Alberich.glb'); ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Preceptor');
+      } else if (imgA === 'samurai-a.png') {
+        mostrarModelo('A_Preceptor', './A_Preceptor.glb'); ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich');
+      } else {
+        ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
+      }
+    }
+
+    // --- Ranura G ---
+    if (!equipState || !equipState.g) {
+      mostrarModelo('manos', './Manos.glb');
+      ocultarModelo('G_Raging_Wolf');
+    } else if (getBasename(equipState.g) === 'wolf-g.png') {
+      ocultarModelo('manos');
+      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+    } else {
+      ocultarModelo('manos');
+      ocultarModelo('G_Raging_Wolf');
+    }
+
+    // --- Ranura L ---
+    if (!equipState || !equipState.l) {
+      mostrarModelo('piernas', './Piernas.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
+    } else {
+      ocultarModelo('piernas');
+      const imgL = getBasename(equipState.l);
+      if (imgL === 'wolf-l.png') {
+        mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+      } else if (imgL === 'carian-l.png') {
+        mostrarModelo('L_Alberich', './L_Alberich.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Preceptor');
+      } else if (imgL === 'samurai-l.png') {
+        mostrarModelo('L_Preceptor', './L_Preceptor.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich');
+      } else {
+        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+      }
+    }
+  } catch(e) { console.error('actualizarModelos3DConEstado error', e); }
+}
+
 
 // ===================== INTELIGENCIA → Magia =====================
 
@@ -5354,6 +5471,16 @@ function limpiarEquipadaEnMs(tipo) {
   const id = `equipada-ms-${tipo}`;
   const prev = document.getElementById(id);
   if (prev) prev.remove();
+  try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
+  // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
+  try {
+    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      const state = obtenerEquipStateDesdeMS();
+      actualizarModelos3DConEstado(state);
+    }
+    // También actualizar la lógica principal que usa `equipadas`
+    try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+  } catch(e) { /* silencioso */ }
 }
 
 // Muestra imagen equipada sobre el elemento `ms-ranura-{tipo}` y ajusta tamaño a su estilo
@@ -5405,6 +5532,17 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
       img.style.height = ranuraElem.style.height || '48px';
     }
     parent.appendChild(img);
+    // Mantener el objeto `equipadas` sincronizado con las imágenes mostradas en MS
+    try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
+    // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
+    try {
+      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+        const state = obtenerEquipStateDesdeMS();
+        actualizarModelos3DConEstado(state);
+      }
+      // También actualizar la lógica principal que usa `equipadas` para evitar desincronías
+      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+    } catch(e) { /* silencioso */ }
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
 
@@ -6271,14 +6409,47 @@ function animate() {
 
 // NUEVA: función para ajustar tamaño del renderer/cámara cuando el contenedor tiene tamaño real
 function updateThreeSize() {
-  const container = document.getElementById('threejs-container');
-  if (!container || !renderer || !camera) return;
-  const rect = container.getBoundingClientRect();
+  if (!renderer || !renderer.domElement || !camera) return;
+  // Use the actual parent of the canvas if available (so size is correct
+  // cuando el renderer se movió a `threejs-seleccion-container`).
+  const parent = renderer.domElement.parentNode || document.getElementById('threejs-container');
+  if (!parent) return;
+  const rect = parent.getBoundingClientRect();
   const width = rect.width || Math.max(300, Math.floor(window.innerWidth * 0.3555));
   const height = rect.height || Math.max(300, window.innerHeight);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
+}
+
+// Mueve el canvas WebGL del renderer a otro contenedor (útil para mostrarlo en overlays)
+function moveThreeRendererTo(containerId) {
+  try {
+    if (!renderer || !renderer.domElement) return;
+    const tgt = document.getElementById(containerId);
+    if (!tgt) return;
+    // quitar del padre actual si existe
+    try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e) {}
+    // asegurar que el canvas ocupe todo el contenedor
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.top = '0';
+    renderer.domElement.style.left = '0';
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    // Reset any previous transform applied to containers
+    try { var prev = document.getElementById('threejs-seleccion-container'); if (prev) prev.style.transform = ''; } catch(e) {}
+    tgt.appendChild(renderer.domElement);
+    // Si movemos al contenedor de selección, desplazar 20px hacia arriba
+    try {
+      if (containerId === 'threejs-seleccion-container') {
+        tgt.style.transform = 'translateY(-20px)';
+      } else {
+        tgt.style.transform = '';
+      }
+    } catch(e) {}
+    // actualizar cámara/renderer al nuevo tamaño (usa el parent real)
+    try { updateThreeSize(); } catch(e) {}
+  } catch (e) { console.error('moveThreeRendererTo error', e); }
 }
 
 // Restaura la posición/cámara/control/modelos 3D a un estado por defecto
