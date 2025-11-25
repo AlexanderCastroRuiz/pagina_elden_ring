@@ -5561,6 +5561,55 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
 
+// Init a MutationObserver to detect when `#equipada-ms-*` overlays are added/removed
+function initMsEquipObserver() {
+  try {
+    var container = document.getElementById('menu-seleccion') || document.body;
+    if (!container) return;
+    // If already initialized, skip
+    if (container.__msEquipObserverInitialized) return;
+    container.__msEquipObserverInitialized = true;
+
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        try {
+          if (m.type === 'childList') {
+            // Check added nodes for equip overlays
+            Array.from(m.addedNodes || []).forEach(function(n) {
+              try {
+                if (n && n.id && String(n.id).indexOf('equipada-ms-') === 0) {
+                  try { console.debug && console.debug('MS observer: equip overlay added', n.id, n.src); } catch(e){}
+                  if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
+                    scheduleActualizarModelos3DConEstado(obtenerEquipStateDesdeMS());
+                  }
+                }
+              } catch(e){}
+            });
+            // Check removed nodes for equip overlays
+            Array.from(m.removedNodes || []).forEach(function(n) {
+              try {
+                if (n && n.id && String(n.id).indexOf('equipada-ms-') === 0) {
+                  try { console.debug && console.debug('MS observer: equip overlay removed', n.id); } catch(e){}
+                  if (typeof obtenerEquipStateDesdeMS === 'function' && typeof scheduleActualizarModelos3DConEstado === 'function') {
+                    scheduleActualizarModelos3DConEstado(obtenerEquipStateDesdeMS());
+                  }
+                }
+              } catch(e){}
+            });
+          }
+        } catch(e) {}
+      });
+    });
+
+    observer.observe(container, { childList: true, subtree: true });
+    // Store observer reference incase we need to disconnect later
+    container.__msEquipObserver = observer;
+  } catch(e) { console.error('initMsEquipObserver error', e); }
+}
+
+// Start observer now in case the menu is already rendered
+try { initMsEquipObserver(); } catch(e) {}
+
 // Global helper: ensure a `setSelected` function is available for handlers
 // Some selection handlers (defined earlier) call `setSelected` expecting it
 // to be globally available. Provide a safe implementation to avoid
