@@ -2449,7 +2449,10 @@ function obtenerEquipStateDesdeMS() {
     const state = { h: null, a: null, g: null, l: null };
     types.forEach(t => {
       try {
-        const el = document.getElementById('equipada-ms-' + t);
+        // Preferir las ranuras del menú selección (`ms-ranura-*`). Si no existen,
+        // caer en el fallback histórico `equipada-ms-*` para compatibilidad.
+        var el = document.getElementById('ms-ranura-' + t);
+        if (!el) el = document.getElementById('equipada-ms-' + t);
         if (el && el.src) state[t] = el.src;
       } catch(e) {}
     });
