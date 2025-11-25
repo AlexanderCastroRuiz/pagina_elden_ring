@@ -2471,6 +2471,10 @@ function actualizarModelos3DConEstado(equipState) {
     }
 
     const getBasename = (p) => (p || '').split('/').pop();
+    try {
+      const dbg = { h: getBasename((equipState||{}).h), a: getBasename((equipState||{}).a), g: getBasename((equipState||{}).g), l: getBasename((equipState||{}).l) };
+      console.debug('actualizarModelos3DConEstado - equipState basenames:', dbg, 'fullState:', equipState);
+    } catch(e) {}
     // --- Ranura H ---
     if (!equipState || !equipState.h) {
       mostrarModelo('cabeza', './Cabeza.glb');
@@ -5500,6 +5504,7 @@ async function actualizarModelos3DDesdeSinluzSeleccionado(keyArg) {
           g: obtenerImagenPorNombre('g', guanteletes) || null,
           l: obtenerImagenPorNombre('l', botas) || null
         };
+        try { console.debug('actualizarModelos3DDesdeSinluzSeleccionado - equipImages computed', equipImages); } catch(e) {}
       } catch (e) { equipImages = { h: null, a: null, g: null, l: null }; }
     }
 
@@ -5507,6 +5512,7 @@ async function actualizarModelos3DDesdeSinluzSeleccionado(keyArg) {
                     a: equipImages && equipImages.a ? equipImages.a : null,
                     g: equipImages && equipImages.g ? equipImages.g : null,
                     l: equipImages && equipImages.l ? equipImages.l : null };
+    try { console.debug('actualizarModelos3DDesdeSinluzSeleccionado - state ->', state); } catch(e) {}
 
     // Mantener sincronizado el objeto global `equipadas` para el resto de la app
     try {
