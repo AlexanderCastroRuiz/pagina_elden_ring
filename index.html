@@ -532,6 +532,8 @@
     <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
+    <!-- Contenedor 3D específico para el menú selección (tercer tercio de la pantalla) -->
+    <div id="threejs-seleccion-container" style="display:block; position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2050; pointer-events:auto; background:transparent;"></div>
     <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
@@ -1378,43 +1380,6 @@
           }
           if (typeof updateRunasDisplay === 'function') updateRunasDisplay(isNaN(nivel) ? undefined : nivel);
         } catch(e){}
-        // Force threejs-container placement for the selection menu:
-        try {
-          const c = document.getElementById('threejs-container');
-          if (c) {
-            // Same size as main menu's 3D but placed in the middle of the third tercio
-            // Width matches main: 33.33vw; height matches main: 120vh
-            c.style.width = '33.33vw';
-            c.style.height = '120vh';
-            // Place to cover exactly the third third (left: 66.666vw) — this centers the block
-            c.style.left = '66.666vw';
-            // Keep same top offset as main scene
-            c.style.top = '-6vw';
-            // Put it behind all selection UI visuals (very low z-index)
-            c.style.zIndex = '50';
-            // Make sure it does not intercept pointer events for the menu
-            c.style.pointerEvents = 'none';
-            c.style.position = 'absolute';
-            c.style.display = 'block';
-            // ensure visible and not collapsed
-            c.style.visibility = 'visible';
-            c.style.opacity = '1';
-            // diagnostic logs to help debugging why canvas may be hidden
-            try {
-              console.debug('menu-seleccion: threejs-container computedStyle', window.getComputedStyle(c));
-              console.debug('menu-seleccion: threejs-container rect', c.getBoundingClientRect());
-              console.debug('menu-seleccion: renderer exists?', typeof renderer !== 'undefined' && renderer ? true : false);
-              if (typeof renderer !== 'undefined' && renderer && renderer.domElement) {
-                console.debug('menu-seleccion: renderer.domElement parent', renderer.domElement.parentElement);
-                console.debug('menu-seleccion: renderer.domElement rect', renderer.domElement.getBoundingClientRect());
-              }
-            } catch(e) { console.warn('diag log failed', e); }
-            // Ensure Three.js is initialized and sized
-            try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e){}
-            try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e){}
-            try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
-          }
-        } catch(e){}
       } catch(e) { console.error('Error al copiar futuros a actuales al ocultar levelup', e); }
     }
 
@@ -1510,24 +1475,21 @@
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
         // (async) actualizar visual del menú selección
+        try { actualizarMenuSeleccionVisual(); } catch(e){}
+        // Mover el renderer 3D al contenedor derecho (tercer tercio) para el menú selección
         try {
-          // actualizarMenuSeleccionVisual es async; una vez termine, aseguramos
-          // que el renderer Three.js esté inicializado y visible dentro del menú selección
-          try {
-            const p = actualizarMenuSeleccionVisual();
-            if (p && typeof p.then === 'function') {
-              p.finally(function(){
-                try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e){}
-                try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e){}
-                try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
-              });
-            } else {
-              try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e){}
-              try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e){}
-              try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
+          if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container');
+          else {
+            const tgt = document.getElementById('threejs-seleccion-container');
+            if (renderer && renderer.domElement && tgt) {
+              try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e){}
+              tgt.appendChild(renderer.domElement);
+              try { updateThreeSize(); } catch(e){}
             }
-          } catch(e){}
-        } catch(e){}
+          }
+        } catch(e) { console.warn('Error moviendo renderer al menú selección', e); }
+        // Asegurar que los modelos 3D reflejen las equipadas actuales
+        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -1600,6 +1562,8 @@
         initThreeJS();
         // Asegura que el renderer tenga el tamaño correcto ahora que el contenedor es visible
         updateThreeSize();
+        // Restaurar el renderer al contenedor principal (columna B)
+        try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container'); } catch(e) {}
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
 
@@ -5408,13 +5372,6 @@ function limpiarEquipadaEnMs(tipo) {
   const id = `equipada-ms-${tipo}`;
   const prev = document.getElementById(id);
   if (prev) prev.remove();
-  try {
-    if (typeof equipadas !== 'undefined' && equipadas) {
-      // clear the slot in the 3D state and update models
-      equipadas[tipo] = null;
-      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
-    }
-  } catch(e) {}
 }
 
 // Muestra imagen equipada sobre el elemento `ms-ranura-{tipo}` y ajusta tamaño a su estilo
@@ -5466,16 +5423,6 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
       img.style.height = ranuraElem.style.height || '48px';
     }
     parent.appendChild(img);
-    // Keep 3D scene in sync: set equipadas and update models
-    try {
-      if (typeof equipadas !== 'undefined' && equipadas) {
-        equipadas[tipo] = imgSrc;
-        // Ensure Three.js is initialized and sized for visibility
-        try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e) {}
-        try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e) {}
-        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-      }
-    } catch(e) {}
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
 
@@ -6350,6 +6297,26 @@ function updateThreeSize() {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
+}
+
+// Mueve el canvas WebGL del renderer a otro contenedor (útil para mostrarlo en overlays)
+function moveThreeRendererTo(containerId) {
+  try {
+    if (!renderer || !renderer.domElement) return;
+    const tgt = document.getElementById(containerId);
+    if (!tgt) return;
+    // quitar del padre actual si existe
+    try { if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); } catch(e) {}
+    // asegurar que el canvas ocupe todo el contenedor
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.top = '0';
+    renderer.domElement.style.left = '0';
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    tgt.appendChild(renderer.domElement);
+    // actualizar cámara/renderer al nuevo tamaño
+    try { updateThreeSize(); } catch(e) {}
+  } catch (e) { console.error('moveThreeRendererTo error', e); }
 }
 
 // Restaura la posición/cámara/control/modelos 3D a un estado por defecto
