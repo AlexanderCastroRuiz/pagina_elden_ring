@@ -2469,10 +2469,26 @@ function actualizarModelos3DConEstado(equipState) {
     if (!equipState || !equipState.h) {
       mostrarModelo('cabeza', './Cabeza.glb');
       ocultarModelo('H_Raging_Wolf');
+      ocultarModelo('H_Alberich');
+      ocultarModelo('H_Preceptor');
+      ocultarModelo('H_Caria');
+      ocultarModelo('H_Vagabond');
     } else {
       ocultarModelo('cabeza');
-      if (getBasename(equipState.h) === 'wolf-h.png') mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
-      else ocultarModelo('H_Raging_Wolf');
+      const hImg = getBasename(equipState.h);
+      if (hImg === 'wolf-h.png') {
+        mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+      } else if (hImg === 'alberich-h.png') {
+        mostrarModelo('H_Alberich', './H_Alberich.glb');
+      } else if (hImg === 'preceptor-h.png') {
+        mostrarModelo('H_Preceptor', './H_Preceptor.glb');
+      } else if (hImg === 'cariank-h.png') {
+        mostrarModelo('H_Caria', './H_Caria.glb');
+      } else if (hImg === 'vagabond-h.png') {
+        mostrarModelo('H_Vagabond', './H_Vagabond.glb');
+      } else {
+        ocultarModelo('H_Raging_Wolf'); ocultarModelo('H_Alberich'); ocultarModelo('H_Preceptor'); ocultarModelo('H_Caria'); ocultarModelo('H_Vagabond');
+      }
     }
 
     // --- Ranura A ---
@@ -2481,18 +2497,23 @@ function actualizarModelos3DConEstado(equipState) {
       ocultarModelo('A_Raging_Wolf');
       ocultarModelo('A_Alberich');
       ocultarModelo('A_Preceptor');
+      ocultarModelo('A_Caria');
+      ocultarModelo('A_Vagabond');
     } else {
       ocultarModelo('pecho');
       const imgA = getBasename(equipState.a);
       if (imgA === 'wolf-a.png') {
         mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
-        ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
       } else if (imgA === 'carian-a.png') {
-        mostrarModelo('A_Alberich', './A_Alberich.glb'); ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Preceptor');
+        mostrarModelo('A_Alberich', './A_Alberich.glb');
       } else if (imgA === 'samurai-a.png') {
-        mostrarModelo('A_Preceptor', './A_Preceptor.glb'); ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich');
+        mostrarModelo('A_Preceptor', './A_Preceptor.glb');
+      } else if (imgA === 'cariank-a.png') {
+        mostrarModelo('A_Caria', './A_Caria.glb');
+      } else if (imgA === 'vagabond-a.png') {
+        mostrarModelo('A_Vagabond', './A_Vagabond.glb');
       } else {
-        ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor');
+        ocultarModelo('A_Raging_Wolf'); ocultarModelo('A_Alberich'); ocultarModelo('A_Preceptor'); ocultarModelo('A_Caria'); ocultarModelo('A_Vagabond');
       }
     }
 
@@ -2500,12 +2521,26 @@ function actualizarModelos3DConEstado(equipState) {
     if (!equipState || !equipState.g) {
       mostrarModelo('manos', './Manos.glb');
       ocultarModelo('G_Raging_Wolf');
-    } else if (getBasename(equipState.g) === 'wolf-g.png') {
-      ocultarModelo('manos');
-      mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+      ocultarModelo('G_Alberich');
+      ocultarModelo('G_Preceptor');
+      ocultarModelo('G_Caria');
+      ocultarModelo('G_Vagabond');
     } else {
       ocultarModelo('manos');
-      ocultarModelo('G_Raging_Wolf');
+      const gImg = getBasename(equipState.g);
+      if (gImg === 'wolf-g.png') {
+        mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
+      } else if (gImg === 'alberich-g.png') {
+        mostrarModelo('G_Alberich', './G_Alberich.glb');
+      } else if (gImg === 'preceptor-g.png') {
+        mostrarModelo('G_Preceptor', './G_Preceptor.glb');
+      } else if (gImg === 'cariank-g.png') {
+        mostrarModelo('G_Caria', './G_Caria.glb');
+      } else if (gImg === 'vagabond-g.png') {
+        mostrarModelo('G_Vagabond', './G_Vagabond.glb');
+      } else {
+        ocultarModelo('G_Raging_Wolf'); ocultarModelo('G_Alberich'); ocultarModelo('G_Preceptor'); ocultarModelo('G_Caria'); ocultarModelo('G_Vagabond');
+      }
     }
 
     // --- Ranura L ---
@@ -2514,17 +2549,23 @@ function actualizarModelos3DConEstado(equipState) {
       ocultarModelo('L_Raging_Wolf');
       ocultarModelo('L_Alberich');
       ocultarModelo('L_Preceptor');
+      ocultarModelo('L_Caria');
+      ocultarModelo('L_Vagabond');
     } else {
       ocultarModelo('piernas');
       const imgL = getBasename(equipState.l);
       if (imgL === 'wolf-l.png') {
-        mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+        mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
       } else if (imgL === 'carian-l.png') {
-        mostrarModelo('L_Alberich', './L_Alberich.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Preceptor');
+        mostrarModelo('L_Alberich', './L_Alberich.glb');
       } else if (imgL === 'samurai-l.png') {
-        mostrarModelo('L_Preceptor', './L_Preceptor.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich');
+        mostrarModelo('L_Preceptor', './L_Preceptor.glb');
+      } else if (imgL === 'cariank-l.png') {
+        mostrarModelo('L_Caria', './L_Caria.glb');
+      } else if (imgL === 'vagabond-l.png') {
+        mostrarModelo('L_Vagabond', './L_Vagabond.glb');
       } else {
-        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor'); ocultarModelo('L_Caria'); ocultarModelo('L_Vagabond');
       }
     }
   } catch(e) { console.error('actualizarModelos3DConEstado error', e); }
@@ -3372,6 +3413,14 @@ function bonusGeneralRes(attrLevel) {
       "carian-l.png": "Pantalones de Alberich",
       "alberich-h.png": "Sombrero puntiagudo de Alberich",
       "alberich-g.png": "Brazales de Alberich",
+      "cariank-h.png": "Yelmo de caballero cariano",
+      "cariank-a.png": "Armadura de caballero cariano",
+      "cariank-g.png": "Guanteletes de caballero cariano",
+      "cariank-l.png": "Grebas de caballero cariano",
+      "vagabond-h.png": "Yelmo de caballero vagabundo",
+      "vagabond-a.png": "Armadura de caballero vagabundo",
+      "vagabond-g.png": "Guanteletes de caballero vagabundo",
+      "vagabond-l.png": "Grebas de caballero vagabundo",
       "preceptor-h.png": "Gran sombrero del preceptor",
       "preceptor-g.png": "Guantes del preceptor",
       "samurai-a.png": "Vestido de preceptor",
@@ -3743,6 +3792,41 @@ function volverMenuRanuras() {
           peso: 2.0,
           postura: 13,
         }
+        ,
+        {
+          nombre: "Yelmo de caballero cariano",
+          fisico: 4.2,
+          golpe: 3.8,
+          tajo: 4.4,
+          puncion: 4.2,
+          magico: 4.4,
+          sagrado: 4.2,
+          electrico: 3.4,
+          fuego: 4.2,
+          inmunidad: 12,
+          robustez: 20,
+          concentracion: 9,
+          vitalidad: 10,
+          peso: 4.6,
+          postura: 6,
+        },
+        {
+          nombre: "Yelmo de caballero vagabundo",
+          fisico: 4.0,
+          golpe: 4.6,
+          tajo: 3.6,
+          puncion: 4.2,
+          magico: 4.0,
+          sagrado: 2.8,
+          electrico: 3.6,
+          fuego: 3.1,
+          inmunidad: 14,
+          robustez: 23,
+          concentracion: 9,
+          vitalidad: 9,
+          peso: 4.0,
+          postura: 7,
+        }
       ],
       a: [
         {
@@ -3795,6 +3879,41 @@ function volverMenuRanuras() {
           vitalidad: 55,
           peso: 8.3, 
           postura: 16,
+        }
+        ,
+        {
+          nombre: "Armadura de caballero cariano",
+          fisico: 11.8,
+          golpe: 10.8,
+          tajo: 12.3,
+          puncion: 11.8,
+          magico: 12.3,
+          sagrado: 11.8,
+          electrico: 9.4,
+          fuego: 11.8,
+          inmunidad: 28,
+          robustez: 46,
+          concentracion: 21,
+          vitalidad: 23,
+          peso: 10.4,
+          postura: 19,
+        },
+        {
+          nombre: "Armadura de caballero vagabundo",
+          fisico: 11.4,
+          golpe: 11.4,
+          tajo: 12.4,
+          puncion: 11.9,
+          magico: 10.2,
+          sagrado: 8.8,
+          electrico: 8.8,
+          fuego: 10.9,
+          inmunidad: 35,
+          robustez: 57,
+          concentracion: 23,
+          vitalidad: 23,
+          peso: 10.6,
+          postura: 22,
         }
       ],
            g: [
@@ -3850,6 +3969,41 @@ function volverMenuRanuras() {
               peso: 1.8,
               postura: 13,
             }
+            ,
+            {
+              nombre: "Guanteletes de caballero cariano",
+              fisico: 2.9,
+              golpe: 2.7,
+              tajo: 3.1,
+              puncion: 2.9,
+              magico: 3.1,
+              sagrado: 2.9,
+              electrico: 2.3,
+              fuego: 2.9,
+              inmunidad: 9,
+              robustez: 15,
+              concentracion: 7,
+              vitalidad: 8,
+              peso: 3.5,
+              postura: 4,
+            },
+            {
+              nombre: "Guanteletes de caballero vagabundo",
+              fisico: 3.3,
+              golpe: 2.8,
+              tajo: 3.1,
+              puncion: 2.9,
+              magico: 2.5,
+              sagrado: 2.1,
+              electrico: 2.1,
+              fuego: 2.7,
+              inmunidad: 12,
+              robustez: 19,
+              concentracion: 8,
+              vitalidad: 8,
+              peso: 3.5,
+              postura: 5,
+            }
       ],
       l: [
         {
@@ -3902,6 +4056,41 @@ function volverMenuRanuras() {
           vitalidad: 34,
           peso: 5.1, 
           postura: 10,
+        }
+        ,
+        {
+          nombre: "Grebas de caballero cariano",
+          fisico: 6.8,
+          golpe: 6.2,
+          tajo: 7.1,
+          puncion: 6.8,
+          magico: 7.1,
+          sagrado: 6.8,
+          electrico: 5.4,
+          fuego: 6.8,
+          inmunidad: 17,
+          robustez: 29,
+          concentracion: 13,
+          vitalidad: 14,
+          peso: 6.6,
+          postura: 11,
+        },
+        {
+          nombre: "Grebas de caballero vagabundo",
+          fisico: 7.4,
+          golpe: 5.8,
+          tajo: 6.8,
+          puncion: 6.5,
+          magico: 5.0,
+          sagrado: 4.5,
+          electrico: 4.5,
+          fuego: 5.8,
+          inmunidad: 20,
+          robustez: 34,
+          concentracion: 13,
+          vitalidad: 13,
+          peso: 5.7,
+          postura: 12,
         }
       ]
     };
@@ -3995,104 +4184,21 @@ function volverMenuRanuras() {
 
         mostrarEquipada(ranura, imgSrc);
 
-        // Actualiza Yelmo en la base de datos si corresponde
-        if (
-          ranura === "h" &&
-          imgName === "wolf-h.png" &&
-          sinluzSeleccionado
-        ) {
-          const usuario = document.getElementById('usuario-inicio').value.trim();
-          if (usuario) {
-            const db = getDatabase();
-            const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Yelmo`;
-            set(ref(db, sinluzPath), "Yelmo de Lobo Furioso");
-          }
-        }
-
-        // También soportar Yelmo para Alberich / Preceptor (usar imagenNombre para el texto)
-        if (
-          ranura === "h" &&
-          sinluzSeleccionado
-        ) {
-          try {
+        // Escritura genérica a Firebase para la pieza equipada (funciona para índices 1..5)
+        try {
+          if (sinluzSeleccionado) {
             const usuario = document.getElementById('usuario-inicio').value.trim();
-            if (usuario) {
-              const nombreLegible = (typeof imagenNombre !== 'undefined' && imagenNombre[imgName]) ? imagenNombre[imgName] : null;
-              if (nombreLegible && (imgName === 'alberich-h.png' || imgName === 'preceptor-h.png')) {
-                const db = getDatabase();
-                const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Yelmo`;
-                set(ref(db, sinluzPath), nombreLegible);
-              }
+            const campoMap = { h: 'Yelmo', a: 'Armadura', g: 'Guanteletes', l: 'Botas' };
+            const campo = campoMap[ranura] || null;
+            const nombreLegible = (typeof imagenNombre !== 'undefined' && imagenNombre[imgName]) ? imagenNombre[imgName] : null;
+            if (usuario && campo && nombreLegible) {
+              const db = getDatabase();
+              const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/${campo}`;
+              // Escribir el nombre legible detectado para cualquier imagen mapeada (incluye almacenes 4 y 5)
+              set(ref(db, sinluzPath), nombreLegible);
             }
-          } catch(e) { /* silencioso */ }
-        }
-
-        // Actualiza Armadura en la base de datos si corresponde
-        if (
-          ranura === "a" &&
-          sinluzSeleccionado
-        ) {
-          const usuario = document.getElementById('usuario-inicio').value.trim();
-          let valor = null;
-          if (imgName === "wolf-a.png") valor = "Armadura de Lobo Furioso";
-          else if (imgName === "carian-a.png") valor = "Vestido de Alberich";
-          else if (imgName === "samurai-a.png") valor = "Vestido de preceptor";
-          if (usuario && valor) {
-            const db = getDatabase();
-            const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Armadura`;
-            set(ref(db, sinluzPath), valor);
           }
-        }
-
-        // Actualiza Guanteletes en la base de datos si corresponde
-        if (
-          ranura === "g" &&
-          imgName === "wolf-g.png" &&
-          sinluzSeleccionado
-        ) {
-          const usuario = document.getElementById('usuario-inicio').value.trim();
-          if (usuario) {
-            const db = getDatabase();
-            const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Guanteletes`;
-            set(ref(db, sinluzPath), "Guanteletes de Lobo Furioso");
-          }
-
-        }
-
-        // También soportar Guanteletes para Alberich / Preceptor (usar imagenNombre para el texto)
-        if (
-          ranura === "g" &&
-          sinluzSeleccionado
-        ) {
-          try {
-            const usuario = document.getElementById('usuario-inicio').value.trim();
-            if (usuario) {
-              const nombreLegibleG = (typeof imagenNombre !== 'undefined' && imagenNombre[imgName]) ? imagenNombre[imgName] : null;
-              if (nombreLegibleG && (imgName === 'alberich-g.png' || imgName === 'preceptor-g.png')) {
-                const db = getDatabase();
-                const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Guanteletes`;
-                set(ref(db, sinluzPath), nombreLegibleG);
-              }
-            }
-          } catch(e) { /* silencioso */ }
-        }
-
-        // Actualiza Botas en la base de datos si corresponde
-        if (
-          ranura === "l" &&
-          sinluzSeleccionado
-        ) {
-          const usuario = document.getElementById('usuario-inicio').value.trim();
-          let valor = null;
-          if (imgName === "wolf-l.png") valor = "Grebas de Lobo Furioso";
-          else if (imgName === "carian-l.png") valor = "Pantalones de Alberich";
-          else if (imgName === "samurai-l.png") valor = "Pantalones de preceptor";
-          if (usuario && valor) {
-            const db = getDatabase();
-            const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Botas`;
-            set(ref(db, sinluzPath), valor);
-          }
-        }
+        } catch(e) { /* silencioso */ }
         // Si el submenú Estado está activo, actualizar inmediatamente los valores del Estado
         try {
           if (menuEstadoVisible) {
@@ -4254,14 +4360,39 @@ function volverMenuRanuras() {
   }
   function toggleMenuEstado(show) {
     try {
+      // Determina si debemos permitir que 'defensas' se muestre (p.ej. cuando el dorado está sobre almacen 4/5)
+      var allowDefensas = false;
+      try {
+        if (show && typeof tipoMenuSecundario !== 'undefined' && tipoMenuSecundario === 'menú armaduras') {
+          var __ads = Array.from(document.querySelectorAll('.almacen-dorado'));
+          __ads.forEach(function(a){ try { var op2 = parseFloat(getComputedStyle(a).opacity) || 0; if (op2 > 0) { var p = a; while (p && p !== document.body) { if (p.id && /^almacen-\d+$/.test(p.id)) break; p = p.parentNode; } if (p && p.id) { var parts = p.id.split('-'); var idxnum = parseInt(parts[1] || '1',10) - 1; if (idxnum >= 3) allowDefensas = true; } } } catch(e){} });
+        }
+      } catch(e) { /* silencioso */ }
       // 1) Ocultar los elementos marcados explícitamente como 'defensas'
       var elems = document.querySelectorAll('[data-menu="defensas"]');
       elems.forEach(function(el){
         try {
           if (show) {
-            if (typeof el.dataset.prevDisplay === 'undefined') el.dataset.prevDisplay = el.style.display || '';
-            el.style.display = 'none';
-            el.dataset.hiddenByEstado = 'true';
+            // Si hay una condición que permite mostrar defensas (almacen 4/5 dorado), no las ocultamos
+            if (allowDefensas) {
+              if (typeof el.dataset.prevDisplay !== 'undefined' && el.dataset.hiddenByEstado === 'true') {
+                // restablecer si estaba oculto por estado
+                if (typeof el.dataset.prevDisplay !== 'undefined') {
+                  el.style.display = el.dataset.prevDisplay;
+                  delete el.dataset.prevDisplay;
+                } else {
+                  el.style.display = '';
+                }
+                delete el.dataset.hiddenByEstado;
+              } else {
+                // aseguramos que esté visible
+                el.style.display = el.style.display || 'block';
+              }
+            } else {
+              if (typeof el.dataset.prevDisplay === 'undefined') el.dataset.prevDisplay = el.style.display || '';
+              el.style.display = 'none';
+              el.dataset.hiddenByEstado = 'true';
+            }
           } else {
             if (el.dataset.hiddenByEstado === 'true') {
               if (typeof el.dataset.prevDisplay !== 'undefined') {
@@ -5044,10 +5175,10 @@ function volverMenuRanuras() {
       if (tipo === "menú armaduras") {
         // Detecta el tipo de ranura según menuActual o ultimaRanuraSeleccionada
         let tipoRanura = menuActual || (ultimaRanuraSeleccionada ? ultimaRanuraSeleccionada.split('-')[1] : null);
-        if (tipoRanura === "h")      { src = ["wolf-h.png","alberich-h.png","preceptor-h.png"][idx]; ranura = "h"; }
-        else if (tipoRanura === "a") { src = ["wolf-a.png","carian-a.png","samurai-a.png"][idx]; ranura = "a"; }
-        else if (tipoRanura === "g") { src = ["wolf-g.png","alberich-g.png","preceptor-g.png"][idx]; ranura = "g"; }
-        else if (tipoRanura === "l") { src = ["wolf-l.png","carian-l.png","samurai-l.png"][idx]; ranura = "l"; }
+        if (tipoRanura === "h")      { src = ["wolf-h.png","alberich-h.png","preceptor-h.png","cariank-h.png","vagabond-h.png"][idx]; ranura = "h"; }
+        else if (tipoRanura === "a") { src = ["wolf-a.png","carian-a.png","samurai-a.png","cariank-a.png","vagabond-a.png"][idx]; ranura = "a"; }
+        else if (tipoRanura === "g") { src = ["wolf-g.png","alberich-g.png","preceptor-g.png","cariank-g.png","vagabond-g.png"][idx]; ranura = "g"; }
+        else if (tipoRanura === "l") { src = ["wolf-l.png","carian-l.png","samurai-l.png","cariank-l.png","vagabond-l.png"][idx]; ranura = "l"; }
       } else if (tipo === "menú armas") {
         src = ["bandit-s.png","night-flame.png","uchigatana.png"][idx];
         ranura = "mano";
@@ -5109,10 +5240,10 @@ function volverMenuRanuras() {
         let tipo = wrapperId.split('-')[1];
         let imgSrc = equipadas[tipo];
         if (imgSrc) {
-          if (tipo === "h") idx = ["wolf-h.png","alberich-h.png","preceptor-h.png"].indexOf(imgSrc.split('/').pop());
-          else if (tipo === "a") idx = ["wolf-a.png","carian-a.png","samurai-a.png"].indexOf(imgSrc.split('/').pop());
-          else if (tipo === "g") idx = ["wolf-g.png","carian-g.png","samurai-g.png"].indexOf(imgSrc.split('/').pop());
-          else if (tipo === "l") idx = ["wolf-l.png","carian-l.png","samurai-l.png"].indexOf(imgSrc.split('/').pop());
+          if (tipo === "h") idx = ["wolf-h.png","alberich-h.png","preceptor-h.png","cariank-h.png","vagabond-h.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "a") idx = ["wolf-a.png","carian-a.png","samurai-a.png","cariank-a.png","vagabond-a.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "g") idx = ["wolf-g.png","alberich-g.png","preceptor-g.png","cariank-g.png","vagabond-g.png"].indexOf(imgSrc.split('/').pop());
+          else if (tipo === "l") idx = ["wolf-l.png","carian-l.png","samurai-l.png","cariank-l.png","vagabond-l.png"].indexOf(imgSrc.split('/').pop());
           if (idx >= 0) datos = almacenDatos[tipo][idx];
         }
         html = htmlArmadura(datos);
@@ -5583,6 +5714,8 @@ const imagenPorArmadura = {
   "Armadura de Lobo Furioso": "wolf-a.png",
   "Vestido de Alberich": "carian-a.png",
   "Vestido de preceptor": "samurai-a.png",
+      "Armadura de caballero cariano": "cariank-a.png",
+      "Armadura de caballero vagabundo": "vagabond-a.png",
 };
 
 // Mapeo de yelmo a imagen
@@ -5590,6 +5723,8 @@ const imagenPorYelmo = {
   "Yelmo de Lobo Furioso": "wolf-h.png",
   "Sombrero puntiagudo de Alberich": "alberich-h.png",
   "Gran sombrero del preceptor": "preceptor-h.png",
+      "Yelmo de caballero cariano": "cariank-h.png",
+      "Yelmo de caballero vagabundo": "vagabond-h.png",
 };
 
 // Mapeo de guanteletes a imagen
@@ -5597,6 +5732,8 @@ const imagenPorGuanteletes = {
   "Guanteletes de Lobo Furioso": "wolf-g.png",
   "Brazales de Alberich": "alberich-g.png",
   "Guantes del preceptor": "preceptor-g.png",
+      "Guanteletes de caballero cariano": "cariank-g.png",
+      "Guanteletes de caballero vagabundo": "vagabond-g.png",
 };
 
 // Mapeo de botas a imagen
@@ -5604,6 +5741,8 @@ const imagenPorBotas = {
   "Grebas de Lobo Furioso": "wolf-l.png",
   "Pantalones de Alberich": "carian-l.png",
   "Pantalones de preceptor": "samurai-l.png"
+      ,"Grebas de caballero cariano": "cariank-l.png",
+      "Grebas de caballero vagabundo": "vagabond-l.png"
 };
 
 // Utilidad para obtener imagen por nombre y tipo de ranura
@@ -6656,16 +6795,24 @@ function preloadAllModels() {
     {ruta: './A_Raging_Wolf.glb', nombre: 'A_Raging_Wolf'},
     {ruta: './A_Alberich.glb', nombre: 'A_Alberich'},
     {ruta: './A_Preceptor.glb', nombre: 'A_Preceptor'},
+    {ruta: './A_Caria.glb', nombre: 'A_Caria'},
+    {ruta: './A_Vagabond.glb', nombre: 'A_Vagabond'},
     {ruta: './H_Alberich.glb', nombre: 'H_Alberich'},
     {ruta: './H_Preceptor.glb', nombre: 'H_Preceptor'},
+    {ruta: './H_Caria.glb', nombre: 'H_Caria'},
+    {ruta: './H_Vagabond.glb', nombre: 'H_Vagabond'},
     {ruta: './Manos.glb', nombre: 'manos'},
     {ruta: './G_Raging_Wolf.glb', nombre: 'G_Raging_Wolf'},
     {ruta: './G_Alberich.glb', nombre: 'G_Alberich'},
     {ruta: './G_Preceptor.glb', nombre: 'G_Preceptor'},
+    {ruta: './G_Caria.glb', nombre: 'G_Caria'},
+    {ruta: './G_Vagabond.glb', nombre: 'G_Vagabond'},
     {ruta: './Piernas.glb', nombre: 'piernas'},
     {ruta: './L_Raging_Wolf.glb', nombre: 'L_Raging_Wolf'},
     {ruta: './L_Alberich.glb', nombre: 'L_Alberich'},
     {ruta: './L_Preceptor.glb', nombre: 'L_Preceptor'}
+    ,{ruta: './L_Caria.glb', nombre: 'L_Caria'},
+    {ruta: './L_Vagabond.glb', nombre: 'L_Vagabond'}
   ];
   lista.forEach(item => {
     // fuerza que, al cargar, el modelo quede oculto hasta que actualizarModelos3D lo muestre
