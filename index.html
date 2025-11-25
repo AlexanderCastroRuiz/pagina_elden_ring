@@ -3308,6 +3308,8 @@ function bonusGeneralRes(attrLevel) {
             mostrarColumnaCPrincipal("ranura-h");
           }
         }, 0);
+        // After updating the UI equip images, ensure the 3D models match the loaded Sinluz
+        try { if (typeof actualizarModelos3DDesdeSinluzSeleccionado === 'function') await actualizarModelos3DDesdeSinluzSeleccionado(sinKey); } catch(e) {}
         return true;
       } catch (e) {
         // En caso de error, limpiar equipadas
@@ -6132,6 +6134,8 @@ async function actualizarMenuSeleccionVisual() {
               } catch(e){}
             } catch(e) { console.error('Error mostrando equipadas en clone select', e); }
           } catch(e) { console.error('Error leyendo Sinluz al seleccionar', e); }
+          // Ensure 3D models reflect the selected Sinluz (maps DB texts -> images -> modelos)
+          try { if (typeof actualizarModelos3DDesdeSinluzSeleccionado === 'function') await actualizarModelos3DDesdeSinluzSeleccionado(key); } catch(e) {}
         } catch(e){}
       };
       clone.addEventListener('mouseenter', onSelectSinluz);
@@ -6179,7 +6183,7 @@ async function actualizarMenuSeleccionVisual() {
         // Try cache first (fast). Only fetch from Firebase if cache miss.
         try {
           const cached = localStorage.getItem(cacheKey);
-          if (cached) {
+              if (cached) {
             try {
               const parsed = JSON.parse(cached);
               const attrsParsed = (parsed && parsed.atributos) ? parsed.atributos : parsed;
@@ -6197,6 +6201,8 @@ async function actualizarMenuSeleccionVisual() {
                   if (eq.l) mostrarEquipadaEnMsRanura('l', eq.l);
                 }
               } catch(e){}
+                  // Ensure 3D models reflect cached equip images too
+                  try { if (typeof actualizarModelos3DDesdeSinluzSeleccionado === 'function') await actualizarModelos3DDesdeSinluzSeleccionado(key); } catch(e) {}
               return;
             } catch(e) { /* parse error -> fallback to fetch */ }
           }
