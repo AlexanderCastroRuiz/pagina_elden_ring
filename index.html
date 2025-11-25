@@ -86,7 +86,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.89);
+      background: rgba(0, 0, 0, 0.89); /*Recordatorio: (0, 0, 0, 0.89)*/
       z-index: -2;
     }
     .overlay-wallpaper {
@@ -241,7 +241,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      z-index: 40; /* Debajo del dorado */
+      z-index: 5; /* Debajo del dorado (dorado z-index:20) */
       pointer-events: none;
     }
     .almacen-dorado {
@@ -250,7 +250,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 41;
+      z-index: 20;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.15s;
@@ -262,7 +262,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      z-index: 30;
+      z-index: 5;
       pointer-events: none;
     }
     .menu-btn-wrapper {
@@ -517,49 +517,83 @@
   <div id="menu-seleccion" style="display:none;position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);backdrop-filter:blur(1.5px);">
     <!-- Elimina la ventana interna del menú selección -->
     <!-- Solo se muestra el fondo y los separadores -->
-    <img src="separador.png" alt="Separador 1" class="separator" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw; z-index:2100;">
-    <img src="separador.png" alt="Separador 2" class="separator second" style="height: 75%; top: 50%; transform: translate(-50%, -50%); left: 66.66vw; z-index:2100;">
+    <img src="separador.png" alt="Separador 1" class="separator" style="display:none; height: 75%; top: 50%; transform: translate(-50%, -50%); left: 33.33vw; z-index:2100;">
+    <img src="separador.png" alt="Separador 2" class="separator second" style="display:none; height: 75%; top: 50%; transform: translate(-50%, -50%); left: 66.66vw; z-index:2100;">
     <!-- Barra-equipo igual que in menú principal -->
     <div class="barra-equipo-container" style="position: absolute; left: 0; top: 7%; width: 39.45vw; height: 66.66%; z-index: 2101; pointer-events: none;">
-      <img src="Barra-equipo.png" alt="Barra equipo" class="barra-equipo-img">
+      <img src="barra-equipo sola.png" alt="Barra equipo sola" class="barra-equipo-img">
+      <img src="load.png" alt="Load icon" class="barra-equipo-load" style="position:absolute; right:446px; bottom:199px; width:40px; height:auto; pointer-events:none; z-index:2102;">
     </div>
-    <!-- Texto "Equipo" igual que en menú principal -->
-    <p class="fila-a-text" style="position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2102; font-size: 1.33em;">Equipo</p>
+    <!-- Texto "Equipo" igual que en menú principal (oculto en este modal) -->
+    <p id="menu-seleccion-equipo" class="fila-a-text" style="display:none; position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2102; font-size: 1.33em;">Equipo</p>
+    <!-- Nuevo texto en el mismo lugar para el menú selección -->
+    <p id="menu-seleccion-elegir" class="fila-a-text" style="position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2102; font-size: 1.33em;">Elegir Sinluz</p>
     <!-- Copias de rectángulo -->
-    <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: auto; height: 460px; z-index: 2200;">
-    <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
-    <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
-    <!-- Copias de ranuras (grupo 1: mismas posiciones originales) -->
-    <img id="ranura-h-copia-1" src="ranura-h.png" alt="Ranura H copia 1" style="position: absolute; top: 137px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-a-copia-1" src="ranura-a.png" alt="Ranura A copia 1" style="position: absolute; top: 237px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-g-copia-1" src="ranura-g.png" alt="Ranura G copia 1" style="position: absolute; top: 337px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-l-copia-1" src="ranura-l.png" alt="Ranura L copia 1" style="position: absolute; top: 437px; left: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-1" class="fancy-img-button" style="position: absolute; top: 520px; left: 9%; z-index: 2202; --fancy-btn-width:100px;">Cargar</button>
-    <!-- Copias de ranuras (grupo 2: centro horizontal, misma altura) -->
-    <img id="ranura-h-copia-2" src="ranura-h.png" alt="Ranura H copia 2" style="position: absolute; top: 137px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-a-copia-2" src="ranura-a.png" alt="Ranura A copia 2" style="position: absolute; top: 237px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-g-copia-2" src="ranura-g.png" alt="Ranura G copia 2" style="position: absolute; top: 337px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-l-copia-2" src="ranura-l.png" alt="Ranura L copia 2" style="position: absolute; top: 437px; left: 50vw; transform: translateX(-50%); width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-2" class="fancy-img-button" style="position: absolute; top: 520px; left: 50vw; transform: translateX(-50%); z-index: 2202; --fancy-btn-width:100px;">
-      Cargar
-    </button>
-    <!-- Copias de ranuras (grupo 3: lado opuesto horizontal, misma altura) -->
-    <img id="ranura-h-copia-3" src="ranura-h.png" alt="Ranura H copia 3" style="position: absolute; top: 137px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-a-copia-3" src="ranura-a.png" alt="Ranura A copia 3" style="position: absolute; top: 237px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-g-copia-3" src="ranura-g.png" alt="Ranura G copia 3" style="position: absolute; top: 337px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <img id="ranura-l-copia-3" src="ranura-l.png" alt="Ranura L copia 3" style="position: absolute; top: 437px; right: 160px; width: 100px; height: 100px; z-index: 2201;">
-    <button id="btn-cargar-3" class="fancy-img-button" style="position: absolute; top: 520px; right: 9%; z-index: 2202; --fancy-btn-width:100px;">
-    Cargar
-    </button>
-    <!-- Contenedor de texto para Sinluz1 -->
+    <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
+    <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
+    <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
+    <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
+    <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
-      style="position: absolute; top: 87px; left: 210px; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
-    <!-- Contenedor de texto para Sinluz2 (añadido: centrado) -->
+      style="display:none; position: absolute; top: 87px; left: 210px; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
     <input id="nombre-sinluz-2" type="text" placeholder="Sinluz 2" class="sinluz-input" maxlength="15"
-      style="position: absolute; top: 87px; left: 50vw; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
-    <!-- Contenedor de texto para Sinluz3 -->
+      style="display:none; position: absolute; top: 87px; left: 50vw; transform: translateX(-50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
     <input id="nombre-sinluz-3" type="text" placeholder="Sinluz 3" class="sinluz-input" maxlength="15"
-      style="position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
+      style="display:none; position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
+
+    <!-- Contenedor recortado para fichas: edita manualmente left/top/width/height para mover y redimensionar -->
+    <div id="sinluz-fichas" style="position:absolute; top: 120px; left: 33px; width: 770px; height: 435px; overflow:hidden; z-index:2215;">
+      <!-- Lista interna scrollable; el scroll real se activa solo si hay >3 fichas -->
+      <div id="sinluz-fichas-list" style="position:relative; width:100%; height:100%; overflow-y:hidden; padding-right:12px; box-sizing:border-box;">
+        <!-- Fichas: tamaño uniforme igual a la ficha de prueba -->
+        <div id="sinluz-ficha-probe" class="sinluz-ficha" style="position:relative; margin:8px auto; width:738px; height:94px; background-color:#100F0C; border:2px solid #6C685F; box-shadow:0 0 8px rgba(108,104,95,0.18); border-radius:6px; z-index:2216; pointer-events:auto;">
+          <!-- Decoración editable: cambia left/top/width/height inline para mover o redimensionar -->
+          <img id="deco-probe" src="deco.png" alt="deco" style="position:absolute; left:-2px; top:8px; width:64px; height:auto; z-index:2220; pointer-events:auto; transform:rotate(180deg);">
+          <img id="sep-probe-1" src="mini-separador.png" alt="sep1" style="position:absolute; left:150px; top:-70px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <img id="sep-probe-2" src="mini-separador.png" alt="sep2" style="position:absolute; left:635px; top:-70px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <img id="sep-probe-3" src="mini-separador.png" alt="sep3" style="position:absolute; left:150px; top:-25px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <img id="sep-probe-4" src="mini-separador.png" alt="sep4" style="position:absolute; left:635px; top:-25px; width:5px; height:200px; z-index:2220; pointer-events:auto; transform:rotate(90deg);">
+          <div class="sinluz-ficha-nivel" style="position:absolute; bottom:17px; left:93px; transform:translateX(-50%); color:#D0D0D0; font-family:'FuentePersonalizada'; text-shadow:1px 1px 2px #000;">Nivel</div>
+          <!-- Probe: fields that will be bound to the first Sinluz for easy visual editing -->
+          <input id="probe-nombre-input" class="sinluz-name-input-probe" type="text" placeholder="Sinluz 1"
+            style="position:absolute; left:-28px; top:10px; width:160px; background:transparent; border:none; color:#D0D0D0; font-family:FuentePersonalizada, sans-serif; font-size:1em; text-align:right; z-index:2230;">
+          <span id="probe-nivel-span" class="sinluz-level-span-probe" style="position:absolute; right:520px; bottom:17px; width:60px; text-align:right; color:#D0D0D0; font-family:FuentePersonalizada, sans-serif; z-index:2230;">1</span>
+          <span id="probe-last-span" style="position:absolute; right:10px; bottom:17px; font-size:1em; color:#A0A0A0; z-index:2230;">&nbsp;</span>
+          <span id="probe-owner-span" style="position:absolute; right:10px; top:10px; font-size:1em; color:#B0A68F; z-index:2230;">&nbsp;</span>
+        </div>
+        <!-- Only the probe ficha remains; below it add an 'add new' ficha (shows a +) -->
+        <div id="sinluz-ficha-add" class="sinluz-ficha sinluz-ficha-add" style="position:relative; margin:8px auto; width:738px; height:94px; display:flex; align-items:center; justify-content:center; background-color:rgba(255,255,255,0.02); border:2px dashed rgba(255,255,255,0.06); border-radius:6px; z-index:2216; cursor:pointer;">
+          <div style="font-size:32px; color:#C9BBA1; font-family:'FuentePersonalizada';">+</div>
+        </div>
+      </div>
+    </div>
+    <!-- Barra de scroll personalizada: posición/left la puedes mover tú manualmente -->
+    <img id="scroll-vacio" src="scroll-vacio.png" alt="Scroll track" style="position:absolute; left: 802px; top:120px; height:435px; display:none; z-index:2218; pointer-events:auto;">
+    <img id="scroll-barra" src="scroll-barra.png" alt="Scroll thumb" style="position:absolute; left:805px; top:120px; height:80px; width:3px; display:none; z-index:2219; pointer-events:auto; cursor:pointer;">
+
+    <!-- Elementos extra fuera de la lista dentro del menú selección (editable) -->
+    <div id="menu-seleccion-extra" style="position:absolute; top:120px; left:820px; width:260px; height:360px; z-index:2215;">
+      <!-- Mini separador adicional -->
+      <img id="ms-mini-separador" src="mini-separador.png" alt="Mini separador menu" style="position:absolute; left:0; top:0; width:6px; height:200px; z-index:2216;">
+      <!-- Humano icon -->
+      <img id="ms-humano" src="humano.png" alt="Humano" style="position:absolute; left:-2px; top:-20px; width:auto; height:22px; z-index:2216;">
+      <!-- Ocho textos color #D0D0D0 -->
+      <div id="ms-text-1" style="position:absolute; left:13px; top:calc(13px - 6px); color:#D0D0D0; z-index:2216;">Vigor</div>
+      <div id="ms-text-2" style="position:absolute; left:13px; top:calc(36px - 6px); color:#D0D0D0; z-index:2216;">Mente</div>
+      <div id="ms-text-3" style="position:absolute; left:13px; top:calc(59px - 6px); color:#D0D0D0; z-index:2216;">Resistencia</div>
+      <div id="ms-text-4" style="position:absolute; left:13px; top:calc(82px - 6px); color:#D0D0D0; z-index:2216;">Fuerza</div>
+      <div id="ms-text-5" style="position:absolute; left:13px; top:calc(105px - 6px); color:#D0D0D0; z-index:2216;">Destreza</div>
+      <div id="ms-text-6" style="position:absolute; left:13px; top:calc(128px - 6px); color:#D0D0D0; z-index:2216;">Inteligencia</div>
+      <div id="ms-text-7" style="position:absolute; left:13px; top:calc(151px - 6px); color:#D0D0D0; z-index:2216;">Fe</div>
+      <div id="ms-text-8" style="position:absolute; left:13px; top:calc(174px - 6px); color:#D0D0D0; z-index:2216;">Arcano</div>
+      <!-- Un texto destacado color #C9BBA1 -->
+      <div id="ms-text-highlight" style="position:absolute; left:13px; top:-16px; color:#C9BBA1; z-index:2216;">Estado de personaje</div>
+      <!-- Ranuras principales -->
+      <img id="ms-ranura-a" src="ranura-a.png" alt="Ranura A" style="position:absolute; left:calc(80px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+      <img id="ms-ranura-g" src="ranura-g.png" alt="Ranura G" style="position:absolute; left:calc(120px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+      <img id="ms-ranura-h" src="ranura-h.png" alt="Ranura H" style="position:absolute; left:calc(40px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+      <img id="ms-ranura-l" src="ranura-l.png" alt="Ranura L" style="position:absolute; left:calc(160px - 31px); top:calc(197px - 6px); width:48px; height:48px; z-index:2216;">
+    </div>
   </div>
 
   <!-- MENÚ LEVELUP (nuevo) -->
@@ -568,6 +602,8 @@
     <div class="barra-levelup-container" style="position:absolute;left:0;top:7%;transform:translateY(-50%);width:39.45vw;height:66.66%;display:flex;align-items:flex-start;justify-content:flex-start;pointer-events:none;z-index:2502;">
       <img src="Barra-levelup.png" alt="Barra LevelUp" class="barra-levelup-img" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">
     </div>
+    <!-- Texto similar a 'Equipo' en el menú principal -->
+    <p class="fila-a-text" style="position: absolute; top: 33px; left: 80px; margin: 0; color: #C9BBA1; text-shadow: 2px 2px 4px rgba(0,0,0,1); z-index: 2503; font-size: 1.33em;">Subir de nivel</p>
     <!-- Mostramos una copia grande del rectángulo con variables CSS para ajustar tamaño -->
     <img id="rectangulo-estadisticas" src="rectangulo.png" alt="Rectángulo LevelUp"
       style="position: absolute; top: var(--rect-stats-top, 240px); left: var(--rect-stats-left, 23px); width: var(--rect-stats-width, 380px); height: var(--rect-stats-height, 330px); z-index: 2501; pointer-events: none; object-fit: fill;">
@@ -815,7 +851,7 @@
     <div id="fondito-text-27" class="fondito-label" style="left:6.7%; top:17.6%; transform:translate(-50%,-140%);">Nivel</div>
   <div id="stat-number-27" class="stat-number" alt="Nivel actual" style="right:82%; top:15%; transform:translateY(-50%);">1</div>
   <img src="flecha.png" alt="Flecha 27" class="flecha-stat" style="right:80%; top:15%; transform:translateY(-50%);">
-  <span class="flecha-numero" data-fondito="27" data-default="-71" alt="Nivel futuro" style="right:74%; top:15%; transform:translateY(-50%);">1</span>
+  <span class="flecha-numero" data-fondito="27" data-default="1" data-min="-71" alt="Nivel futuro" style="right:74%; top:15%; transform:translateY(-50%);">1</span>
     
     <div id="fondito-text-28" class="fondito-label" style="left:9.7%; top:23.5%; transform:translate(-50%,-140%);">Runas necesarias</div>
     <div id="stat-number-28" class="stat-number" alt="Runas necesarias" style="right:74%; top:21%; transform:translateY(-50%);">673</div>
@@ -885,8 +921,13 @@
       <p class="fila-c-text">Selecciona una ranura para usar</p>
       <!-- NUEVO: Contenedor Desequipar/Volver -->
       <div id="desequipar-volver-container" style="position: absolute; left: -97px; bottom: 20px; display: flex; align-items: center; gap: 12px; z-index: 1200;">
-        <img id="desequipar-volver-img" src="erre.png" alt="Tecla R" style="height: 25px; width: auto;">
+        <img id="desequipar-volver-img" src="erre.png" alt="Tecla R" style="height: 25px; width: auto;" tabindex="0">
         <span id="desequipar-volver-text" style="color: white; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 2px 2px 4px #000;">Desequipar</span>
+        <!-- Botón adicional que replica la tecla F -->
+        <div id="btn-efe-container" style="display:flex; align-items:center; gap:8px; margin-left:14px;">
+          <img id="btn-efe" src="efe.png" alt="Tecla F" style="height:25px; width:auto;" tabindex="0">
+          <span id="btn-efe-text" style="color: white; width: 1000px;  font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-shadow: 2px 2px 4px #000;">Cambiar visualización</span>
+        </div>
       </div>
     </div>
   <!-- Solo un separador en el menú principal -->
@@ -968,6 +1009,12 @@
     <style>
       .estado-text { position:absolute; display:none; color:#D0D0D0; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; z-index:9999; white-space: normal; max-width: 600px; overflow: visible !important; width: auto !important; display: none; }
       .estado-text-special { position:absolute; display:none; color:#C9BBA1; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; z-index:2301; }
+      /* Equipado badge en almacen */
+      .equipado-badge-almacen { position: absolute; top: 5px; left: 5px; height: 20px; width: auto; z-index: 1000; pointer-events: none; }
+      /* Asegurar que dorado quede por debajo del badge */
+      .almacen-dorado, .ranura-dorado { z-index: 20; }
+      /* Hacer que el contenedor de botones muestre cursor de mano */
+      #desequipar-volver-container, #btn-efe-container { cursor: pointer; }
       .estado-value { position:absolute; display:none; color:#D0D0D0; font-family:'FuentePersonalizada', sans-serif; text-shadow:1px 1px 2px #000; z-index:2302; }
     </style>
     <!-- Ajusta aquí las posiciones (left/top) de las etiquetas y de las variables del menú 'Estado'. -->
@@ -1071,7 +1118,7 @@
     <span id="estado-value-18" class="estado-value" style="right:calc(203px - 22px); top:calc(482px - 10px);"></span>
     <span id="estado-value-19" class="estado-value" style="right:calc(273px - 22px); top:calc(436px - 10px);"></span>
     <!-- Estado de carga: texto dinámico según porcentaje de PesoEquipo / Carga -->
-    <span id="estado-carga-status" class="estado-text" style="right:calc(203px - 22px); top:calc(459px - 10px); display:none; color:#C9BBA1;"></span>
+    <span id="estado-carga-status" class="estado-text" style="right:calc(203px - 22px); top:calc(459px - 10px); display:none; color:#D0D0D0;"></span>
   </div>
   <!-- Cambia la estructura del modelo 3D para limitar la interacción -->
 
@@ -1106,6 +1153,7 @@
     // --- MENÚ INICIO ---
     // --- INTEGRACIÓN FIREBASE REALTIME DATABASE ---
     import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
     // Función para guardar usuario en la base de datos
     function guardarUsuario(usuario) {
@@ -1141,12 +1189,13 @@
         Arcano: 10
       };
 
+      // Crear la estructura inicial del usuario con una entrada 'Sinluz 1'
+      const inicialSinluzKey = 'Sinluz 1';
+      const inicialSinluz = { ...sinluzDefault, owner: usuario, lastEdited: fechaArg, Atributos: atributosPorDefecto, Nombre: inicialSinluzKey };
       set(ref(db, 'usuario/' + usuario), {
         nombre: usuario,
         fecha: fechaArg,
-        Sinluz1: { ...sinluzDefault, Atributos: atributosPorDefecto },
-        Sinluz2: { ...sinluzDefault, Atributos: atributosPorDefecto },
-        Sinluz3: { ...sinluzDefault, Atributos: atributosPorDefecto }
+        [inicialSinluzKey]: inicialSinluz
       })
       .then(() => {
         mostrarMensaje('¡Usuario guardado exitosamente!', true);
@@ -1164,17 +1213,11 @@
           const usuarios = snapshot.val();
           Object.entries(usuarios).forEach(([usuario, datos]) => {
             console.log('Usuario:', usuario);
-            ['Sinluz1', 'Sinluz2', 'Sinluz3'].forEach(sinluzKey => {
-              if (datos[sinluzKey]) {
-                const sinluz = datos[sinluzKey];
-                console.log(
-                  `${sinluzKey}:`,
-                  `Nombre: ${sinluz.Nombre}`,
-                  `Yelmo: ${sinluz.Yelmo}`,
-                  `Armadura: ${sinluz.Armadura}`,
-                  `Guanteletes: ${sinluz.Guanteletes}`,
-                  `Botas: ${sinluz.Botas}`
-                );
+            // Log any keys that look like Sinluz (Sinluz 1, Sinluz1, Sinluz2...)
+            Object.keys(datos || {}).forEach(k => {
+              if (/^Sinluz\s*\d+$/i.test(k) || /^Sinluz\d+$/i.test(k)) {
+                const sinluz = datos[k] || {};
+                console.log(`${k}:`, `Nombre: ${sinluz.Nombre}`, `Yelmo: ${sinluz.Yelmo}`, `Armadura: ${sinluz.Armadura}`, `Guanteletes: ${sinluz.Guanteletes}`, `Botas: ${sinluz.Botas}`);
               }
             });
           });
@@ -1338,6 +1381,52 @@
       } catch(e) { console.error('Error al copiar futuros a actuales al ocultar levelup', e); }
     }
 
+    // Copia todos los valores "actuales" (stat-number-*) a los "futuros" (flecha-numero[data-fondito])
+    // Esto se usa al SALIR del menú LevelUp: los futuros deben reflejar el estado actual.
+    function copiarActualesAFuturosLevelup() {
+      try {
+        // Copiar cada stat-number al span flecha-numero correspondiente
+        document.querySelectorAll('.stat-number[id^="stat-number-"]').forEach(function(cur){
+          try {
+            var id = cur.id || '';
+            var m = id.match(/stat-number-(\d+)/);
+            if (!m) return;
+            var idx = m[1];
+            var val = cur.textContent;
+            var fut = document.querySelector('.flecha-numero[data-fondito="' + idx + '"]');
+            if (fut) {
+              fut.textContent = val;
+              try { fut.style.color = '#D0D0D0'; } catch(e){}
+            }
+          } catch(e) { /* per-item silent */ }
+        });
+
+        // Recalcular estadísticas futuras dependientes (si existe la función)
+        try {
+          var nivelSpan = document.querySelector('.flecha-numero[data-fondito="27"]');
+          var nivel = NaN;
+          if (nivelSpan) nivel = parseInt(nivelSpan.textContent, 10);
+          if (isNaN(nivel)) {
+            var curN = document.getElementById('stat-number-27');
+            if (curN) nivel = parseInt(curN.textContent, 10);
+          }
+          if (typeof updateFutureStatsFromLevel === 'function') updateFutureStatsFromLevel(isNaN(nivel) ? undefined : nivel);
+        } catch(e) {}
+
+        // Actualizar runas necesarias según el nivel futuro copiado
+        try { if (typeof updateRunasDisplay === 'function') {
+          var nivelSpan2 = document.querySelector('.flecha-numero[data-fondito="27"]');
+          var nivel2 = NaN;
+          if (nivelSpan2) nivel2 = parseInt(nivelSpan2.textContent, 10);
+          if (isNaN(nivel2)) {
+            var curN2 = document.getElementById('stat-number-27');
+            if (curN2) nivel2 = parseInt(curN2.textContent, 10);
+          }
+          updateRunasDisplay(isNaN(nivel2) ? undefined : nivel2);
+        } } catch(e) {}
+      } catch(e) { console.error('Error al copiar actuales a futuros al salir de levelup', e); }
+    }
+
     function mostrarSoloMenu(menu) {
       // Guardar estado previo de Estado/Totales y asegurarnos de cerrarlos
       try {
@@ -1347,6 +1436,16 @@
         // Cerrar Estado (esto restaurará elementos ocultos por Estado)
         try { if (typeof toggleMenuEstado === 'function' && menuEstadoVisible) toggleMenuEstado(false); } catch(e) {}
       } catch(e) {}
+      // Detectar si venimos del menú principal (antes de ocultarlo)
+      var wasMainMenuVisible = false;
+      try {
+        var _mi = document.getElementById('menu-inicio');
+        if (_mi) {
+          var _comp = window.getComputedStyle(_mi).display;
+          if (_comp && _comp !== 'none') wasMainMenuVisible = true;
+        }
+      } catch(e){}
+
       document.getElementById('menu-inicio').style.display = 'none';
       document.getElementById('menu-seleccion').style.display = 'none';
       // Si el overlay LevelUp está visible en este momento, copia los valores futuros a los actuales
@@ -1354,8 +1453,9 @@
       if (_me) {
         var computed = window.getComputedStyle(_me).display;
         if (computed && computed !== 'none') {
-          // copiar mientras está oculto (antes de ocultarlo), para que al volver a mostrar muestre valores actualizados
-          try { copiarFuturosACurrentesLevelup(); } catch(e){}
+          // Al salir del overlay LevelUp: copiar los valores ACTIVOS (actuales) hacia los futuros,
+          // de modo que los futuros reflejen el estado actual en lugar de sobrescribir lo actual.
+          try { copiarActualesAFuturosLevelup(); } catch(e){}
         }
         _me.style.display = 'none';
       }
@@ -1372,7 +1472,46 @@
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
-        actualizarMenuSeleccionVisual();}
+        // (async) actualizar visual del menú selección
+        try {
+          // actualizarMenuSeleccionVisual es async; una vez termine, aseguramos
+          // que el renderer Three.js esté inicializado y visible dentro del menú selección
+          try {
+            const p = actualizarMenuSeleccionVisual();
+            if (p && typeof p.then === 'function') {
+              p.finally(function(){
+                try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e){}
+                try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e){}
+                try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
+              });
+            } else {
+              try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e){}
+              try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e){}
+              try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
+            }
+          } catch(e){}
+        } catch(e){}
+        // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
+        try {
+          if (wasMainMenuVisible) {
+            setTimeout(function(){
+              try {
+                // Limpia cualquier selección residual y fuerza solo la probe seleccionada
+                try {
+                  var listEl = document.getElementById('sinluz-fichas-list');
+                  if (listEl) listEl.querySelectorAll('.sinluz-ficha.selected').forEach(function(x){ try{ x.classList.remove('selected'); }catch(e){} });
+                } catch(e) {}
+                var probeEl = document.getElementById('sinluz-ficha-probe');
+                if (probeEl) {
+                  try { if (typeof setSelected === 'function') setSelected(probeEl); else { probeEl.classList.add('selected'); } } catch(e){}
+                  // Disparar mouseenter para que aplique atributos y muestre equipadas
+                  try { probeEl.dispatchEvent(new Event('mouseenter')); } catch(e){}
+                }
+              } catch(e){}
+            }, 120);
+          }
+        } catch(e){}
+      }
        else if (menu === 'estadisticas' || menu === 'levelup') {
         // Mostrar solo la pantalla LevelUp (overlay minimalista)
         // Oculta todo lo demás (ya hecho arriba) y muestra el overlay
@@ -1481,8 +1620,14 @@
       mostrarSoloMenu('inicio');
 
       // INICIALIZAR THREE.JS DESDE EL MENÚ INICIO (preload + render oculto)
-      // Esto permitirá que los modelos comiencen a cargarse mientras el usuario está en "inicio".
-      initThreeJS();
+      // Esto intentará inicializar ThreeJS si la función ya fue definida.
+      try {
+        if (typeof initThreeJS === 'function') {
+          try { initThreeJS(); } catch(e) { console.warn('initThreeJS failed:', e); }
+        } else {
+          console.warn('initThreeJS not available yet; skipping initialization');
+        }
+      } catch(e) { console.warn('initThreeJS guard error', e); }
 
       // --- EVENTOS DE MENÚ INICIO ---
       document.getElementById('btn-identificar').addEventListener('click', async function() {
@@ -1531,7 +1676,9 @@
 
       // --- NUEVO: Botón "Guardar" te lleva al menú inicio ---
       document.getElementById('btn-guardar').addEventListener('click', function() {
-        mostrarSoloMenu('inicio');
+        // Ir al menú inicio primero (actualiza la UI), luego cerrar sesión/limpiar estado
+        try { mostrarSoloMenu('inicio'); } catch(e) {}
+        setTimeout(function(){ try { if (typeof resetAppState === 'function') resetAppState(); } catch(e) {} }, 0);
       });
 
       // --- NUEVO: Botón "Estadísticas" abre el Menú Estadísticas ---
@@ -1650,6 +1797,59 @@
           // No navegar al menú principal. Mantener overlay abierto.
         });
       }
+      // Add-button: create a new Sinluz under usuario/<usuario>/Sinluz N
+      try {
+        const addFicha = document.getElementById('sinluz-ficha-add');
+        if (addFicha) {
+          addFicha.addEventListener('click', async function(){
+            try {
+              const usuario = document.getElementById('usuario-inicio').value.trim();
+              if (!usuario) { mostrarMensaje('Introduce un usuario antes de crear Sinluz', false); return; }
+              const db = getDatabase();
+              const usuarioRef = ref(db, `usuario/${usuario}`);
+              const snap = await get(usuarioRef);
+              const datos = (snap && snap.exists()) ? snap.val() : {};
+
+              // Normalize existing keys to find highest index
+              let maxIdx = 0;
+              // If legacy array exists under datos.Sinluz, count its length
+              if (Array.isArray(datos.Sinluz)) {
+                maxIdx = Math.max(maxIdx, datos.Sinluz.length);
+              }
+              Object.keys(datos || {}).forEach(k => {
+                const m = k.match(/Sinluz\s*(\d+)/i) || k.match(/Sinluz(\d+)/i);
+                if (m && m[1]) {
+                  const n = parseInt(m[1], 10);
+                  if (!isNaN(n)) maxIdx = Math.max(maxIdx, n);
+                }
+              });
+
+              const nextIdx = maxIdx + 1;
+              const newKey = `Sinluz ${nextIdx}`;
+              const fechaArg = new Date().toLocaleString('es-AR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone:'America/Argentina/Buenos_Aires' }).replace(',', '');
+              const atributosPorDefecto = { Nivel:1, Vigor:10, Mente:10, Resistencia:10, Fuerza:10, Destreza:10, Inteligencia:10, Fe:10, Arcano:10 };
+              const defaultSinluz = { Nombre: newKey, Yelmo:'', Armadura:'', Guanteletes:'', Botas:'', owner: usuario, lastEdited: fechaArg, Atributos: atributosPorDefecto };
+
+              await set(ref(db, `usuario/${usuario}/${newKey}`), defaultSinluz);
+              mostrarMensaje('Sinluz creado: ' + newKey, true);
+              // Re-render the list and attempt to auto-select the newly created ficha
+              await actualizarMenuSeleccionVisual();
+              try {
+                const list = document.getElementById('sinluz-fichas-list');
+                const el = list && list.querySelector(`[data-sinluz-key="${newKey}"]`);
+                // try both dataset and attribute selectors
+                const el2 = el || list && list.querySelector(`[data-sinluz-key='${newKey}']`) || document.getElementById('sinluz_' + (newKey.replace(/\s+/g,'_')));
+                if (el2) { el2.click(); } else {
+                  // fallback: select probe if first
+                  const probe = document.getElementById('sinluz-ficha-probe');
+                  if (probe && probe.dataset.sinluzKey === newKey) probe.click();
+                }
+              } catch(e) {}
+            } catch(e) { console.error('Error creando Sinluz:', e); mostrarMensaje('Error creando Sinluz: '+e, false); }
+          });
+        }
+      } catch(e) { console.error('Error attaching addFicha handler', e); }
+
         (function(){
           var activeFonditoId = null;
           // Cálculo de runas necesarias para un nivel futuro
@@ -1659,10 +1859,35 @@
           function updateRunasDisplay(nivelFuturo) {
             try {
               // Mostrar las runas necesarias para subir AL SIGUIENTE nivel
-              var targetLevel = (typeof nivelFuturo === 'number' && !isNaN(nivelFuturo)) ? (nivelFuturo + 1) : (parseInt(nivelFuturo, 10) + 1);
+              // Si el Nivel futuro es menor a 1, mostrar "Nivel imp."
+              var parsed = (typeof nivelFuturo === 'number' && !isNaN(nivelFuturo)) ? nivelFuturo : parseInt(nivelFuturo, 10);
+              var el = document.getElementById('stat-number-28');
+              if (!isNaN(parsed) && parsed < 1) {
+                if (el) el.textContent = 'Nivel imp.';
+                return;
+              }
+              // Mapeo específico para niveles futuros 1..10 (valores proporcionados)
+              var mapping = {
+                1: 673,
+                2: 689,
+                3: 706,
+                4: 723,
+                5: 740,
+                6: 757,
+                7: 775,
+                8: 793,
+                9: 811,
+                10: 829
+              };
+
+              if (!isNaN(parsed) && mapping.hasOwnProperty(parsed)) {
+                if (el) el.textContent = mapping[parsed];
+                return;
+              }
+
+              var targetLevel = (!isNaN(parsed)) ? (parsed + 1) : (isNaN(parsed) ? 1 : (parsed + 1));
               if (isNaN(targetLevel) || targetLevel < 1) targetLevel = 1;
               var runas = runasNecesarias(targetLevel);
-              var el = document.getElementById('stat-number-28');
               if (el) el.textContent = runas;
             } catch (e) { /* silent */ }
           }
@@ -1673,9 +1898,11 @@
               if (!numSpan) return;
               var val = parseInt(numSpan.textContent, 10);
               if (isNaN(val)) val = parseInt(numSpan.getAttribute('data-default') || '0', 10) || 0;
-              var minVal = parseInt(numSpan.getAttribute('data-default') || numSpan.textContent, 10);
+              // Respect data-min/data-max if provided, otherwise fall back to previous behavior
+              var explicitMinAttr = numSpan.getAttribute('data-min');
+              var minVal = !isNaN(parseInt(explicitMinAttr, 10)) ? parseInt(explicitMinAttr, 10) : parseInt(numSpan.getAttribute('data-default') || numSpan.textContent, 10);
               if (isNaN(minVal)) minVal = 0;
-              var maxVal = 99;
+              var maxVal = parseInt(numSpan.getAttribute('data-max') || '99', 10);
               // Obtener los íconos asociados (pueden ser dos: left y right)
               var icons = Array.from(document.querySelectorAll('.mas-menos[data-fondito="' + idx + '"]'));
               icons.forEach(function(ic){
@@ -1742,8 +1969,10 @@
                 const t = (v - p1.v) / (p2.v - p1.v);
                 return Math.round(p1.pv + t * (p2.pv - p1.pv));
               }
-            }
           }
+          // Actualizar badges de "equipado" tras cambiar menú/visibilidad
+          try { if (typeof updateEquipadoBadgesVisibility === 'function') updateEquipadoBadgesVisibility(); } catch(e) {}
+        }
 
           // Actualiza los PV actual y futuro según los valores de Vigor
           function updatePVFromVigor() {
@@ -2697,10 +2926,15 @@ function bonusGeneralRes(attrLevel) {
                 if (!numSpan) return;
                 var oldVal = parseInt(numSpan.textContent, 10);
                 if (isNaN(oldVal)) oldVal = 0;
-                var minVal = parseInt(numSpan.getAttribute('data-default') || numSpan.textContent, 10);
+                // Respect explicit data-min/data-max when present; otherwise fall back to data-default/textContent and 99
+                var explicitMin = numSpan.getAttribute('data-min');
+                var minVal = !isNaN(parseInt(explicitMin, 10)) ? parseInt(explicitMin, 10) : parseInt(numSpan.getAttribute('data-default') || numSpan.textContent, 10);
+                var maxVal = parseInt(numSpan.getAttribute('data-max') || '99', 10);
+                if (isNaN(minVal)) minVal = 0;
+                if (isNaN(maxVal)) maxVal = 99;
                 var newVal = oldVal + (isRight ? 1 : -1);
                 if (newVal < minVal) newVal = minVal;
-                if (newVal > 99) newVal = 99;
+                if (newVal > maxVal) newVal = maxVal;
                 if (newVal === oldVal) return;
                 // marca la hora de la última acción para evitar dobles por click
                 try { lastActionTimes.set(img, Date.now()); } catch(e) {}
@@ -2714,9 +2948,13 @@ function bonusGeneralRes(attrLevel) {
                     var nivelOld = parseInt(nivelSpan.textContent, 10);
                     if (isNaN(nivelOld)) nivelOld = parseInt(nivelSpan.getAttribute('data-default') || '11', 10) || 11;
                     var nivelNew = nivelOld + delta;
-                    var nivelMin = parseInt(nivelSpan.getAttribute('data-default') || nivelOld, 10) || 11;
+                    var explicitNivelMin = nivelSpan.getAttribute('data-min');
+                    var nivelMin = !isNaN(parseInt(explicitNivelMin, 10)) ? parseInt(explicitNivelMin, 10) : parseInt(nivelSpan.getAttribute('data-default') || nivelOld, 10) || 11;
+                    var nivelMax = parseInt(nivelSpan.getAttribute('data-max') || '713', 10);
+                    if (isNaN(nivelMin)) nivelMin = 11;
+                    if (isNaN(nivelMax)) nivelMax = 713;
                     if (nivelNew < nivelMin) nivelNew = nivelMin;
-                    if (nivelNew > 713) nivelNew = 713;
+                    if (nivelNew > nivelMax) nivelNew = nivelMax;
                     nivelSpan.textContent = nivelNew;
                     try { updateRunasDisplay(nivelNew); } catch(e) {}
                     try { updateFutureStatsFromLevel(nivelNew); } catch(e) {}
@@ -2930,241 +3168,102 @@ function bonusGeneralRes(attrLevel) {
     }
 
     // --- EVENTOS DE MENÚ SELECCIÓN ---
-    // Deja SOLO este bloque para los botones btn-cargar-1, btn-cargar-2, btn-cargar-3:
-
-    document.getElementById('btn-cargar-1').onclick = async function() {
-      sinluzSeleccionado = 'Sinluz1';
-      const usuario = document.getElementById('usuario-inicio').value.trim();
-      if (usuario) {
+    // Helper: carga y aplica un Sinluz dado su key (ej. 'Sinluz 1' o 'Sinluz1')
+    async function cargarSinluzByKey(sinKey) {
+      try {
+        const usuario = document.getElementById('usuario-inicio').value.trim();
+        if (!usuario || !sinKey) return false;
         const db = getDatabase();
-        const usuarioRef = ref(db, 'usuario/' + usuario + '/Sinluz1');
-        try {
-          const snapshot = await get(usuarioRef);
-          let yelmo = "", armadura = "", guanteletes = "", botas = "";
-          if (snapshot.exists()) {
-            const datos = snapshot.val();
-            yelmo = datos.Yelmo || "";
-            armadura = datos.Armadura || "";
-            guanteletes = datos.Guanteletes || "";
-            botas = datos.Botas || "";
-            // Si existen Atributos para este Sinluz, aplicarlos a la UI
-            try { aplicarAtributosAUI(datos.Atributos || null); } catch(e) {}
-          }
-          // Ranura H
-          const imgH = obtenerImagenPorNombre("h", yelmo);
-          let prevH = document.getElementById('equipada-h');
-          if (prevH) prevH.remove();
-          equipadas.h = null;
-          if (imgH) {
-            mostrarEquipada("h", imgH);
-          }
-          // Ranura A
-          const imgA = obtenerImagenPorNombre("a", armadura);
-          let prevA = document.getElementById('equipada-a');
-          if (prevA) prevA.remove();
-          equipadas.a = null;
-          if (imgA) {
-            mostrarEquipada("a", imgA);
-          }
-          // Ranura G
-          const imgG = obtenerImagenPorNombre("g", guanteletes);
-          let prevG = document.getElementById('equipada-g');
-          if (prevG) prevG.remove();
-          equipadas.g = null;
-          if (imgG) {
-            mostrarEquipada("g", imgG);
-          }
-          // Ranura L
-          const imgL = obtenerImagenPorNombre("l", botas);
-          let prevL = document.getElementById('equipada-l');
-          if (prevL) prevL.remove();
-          equipadas.l = null;
-          if (imgL) {
-            mostrarEquipada("l", imgL);
-          }
-          setTimeout(function() {
-            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
-              mostrarColumnaCPrincipal("ranura-h");
-            }
-          }, 0);
-        } catch (e) {
-          let prevH = document.getElementById('equipada-h');
-          if (prevH) prevH.remove();
-          equipadas.h = null;
-          let prevA = document.getElementById('equipada-a');
-          if (prevA) prevA.remove();
-          equipadas.a = null;
-          let prevG = document.getElementById('equipada-g');
-          if (prevG) prevG.remove();
-          equipadas.g = null;
-          let prevL = document.getElementById('equipada-l');
-          if (prevL) prevL.remove();
-          equipadas.l = null;
-          setTimeout(function() {
-            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
-              mostrarColumnaCPrincipal("ranura-h");
-            }
-          }, 0);
-        }
-      }
-      mostrarSoloMenu('principal');
-    };
+        const usuarioRef = ref(db, `usuario/${usuario}/${sinKey}`);
+        const snapshot = await get(usuarioRef);
+        if (!snapshot.exists()) return false;
+        const datos = snapshot.val() || {};
+        sinluzSeleccionado = sinKey;
+        const yelmo = datos.Yelmo || "";
+        const armadura = datos.Armadura || "";
+        const guanteletes = datos.Guanteletes || "";
+        const botas = datos.Botas || "";
+        // Si existen Atributos para este Sinluz, aplicarlos a la UI
+        try { aplicarAtributosAUI(datos.Atributos || null); } catch(e) {}
 
-    document.getElementById('btn-cargar-2').onclick = async function() {
-      sinluzSeleccionado = 'Sinluz2';
-      const usuario = document.getElementById('usuario-inicio').value.trim();
-      if (usuario) {
-        const db = getDatabase();
-        const usuarioRef = ref(db, 'usuario/' + usuario + '/Sinluz2');
-        try {
-          const snapshot = await get(usuarioRef);
-          let yelmo = "", armadura = "", guanteletes = "", botas = "";
-          if (snapshot.exists()) {
-            const datos = snapshot.val();
-            yelmo = datos.Yelmo || "";
-            armadura = datos.Armadura || "";
-            guanteletes = datos.Guanteletes || "";
-            botas = datos.Botas || "";
-            // Si existen Atributos para este Sinluz, aplicarlos a la UI
-            try { aplicarAtributosAUI(datos.Atributos || null); } catch(e) {}
-          }
-          // Ranura H
-          const imgH = obtenerImagenPorNombre("h", yelmo);
-          let prevH = document.getElementById('equipada-h');
-          if (prevH) prevH.remove();
-          equipadas.h = null;
-          if (imgH) {
-            mostrarEquipada("h", imgH);
-          }
-          // Ranura A
-          const imgA = obtenerImagenPorNombre("a", armadura);
-          let prevA = document.getElementById('equipada-a');
-          if (prevA) prevA.remove();
-          equipadas.a = null;
-          if (imgA) {
-            mostrarEquipada("a", imgA);
-          }
-          // Ranura G
-          const imgG = obtenerImagenPorNombre("g", guanteletes);
-          let prevG = document.getElementById('equipada-g');
-          if (prevG) prevG.remove();
-          equipadas.g = null;
-          if (imgG) {
-            mostrarEquipada("g", imgG);
-          }
-          // Ranura L
-          const imgL = obtenerImagenPorNombre("l", botas);
-          let prevL = document.getElementById('equipada-l');
-          if (prevL) prevL.remove();
-          equipadas.l = null;
-          if (imgL) {
-            mostrarEquipada("l", imgL);
-          }
-          setTimeout(function() {
-            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
-              mostrarColumnaCPrincipal("ranura-h");
-            }
-          }, 0);
-        } catch (e) {
-          let prevH = document.getElementById('equipada-h');
-          if (prevH) prevH.remove();
-          equipadas.h = null;
-          let prevA = document.getElementById('equipada-a');
-          if (prevA) prevA.remove();
-          equipadas.a = null;
-          let prevG = document.getElementById('equipada-g');
-          if (prevG) prevG.remove();
-          equipadas.g = null;
-          let prevL = document.getElementById('equipada-l');
-          if (prevL) prevL.remove();
-          equipadas.l = null;
-          setTimeout(function() {
-            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
-              mostrarColumnaCPrincipal("ranura-h");
-            }
-          }, 0);
-        }
-      }
-      mostrarSoloMenu('principal');
-    };
+        // Ranura H
+        const imgH = obtenerImagenPorNombre("h", yelmo);
+        let prevH = document.getElementById('equipada-h'); if (prevH) prevH.remove(); equipadas.h = null;
+        if (imgH) mostrarEquipada("h", imgH);
+        // Ranura A
+        const imgA = obtenerImagenPorNombre("a", armadura);
+        let prevA = document.getElementById('equipada-a'); if (prevA) prevA.remove(); equipadas.a = null;
+        if (imgA) mostrarEquipada("a", imgA);
+        // Ranura G
+        const imgG = obtenerImagenPorNombre("g", guanteletes);
+        let prevG = document.getElementById('equipada-g'); if (prevG) prevG.remove(); equipadas.g = null;
+        if (imgG) mostrarEquipada("g", imgG);
+        // Ranura L
+        const imgL = obtenerImagenPorNombre("l", botas);
+        let prevL = document.getElementById('equipada-l'); if (prevL) prevL.remove(); equipadas.l = null;
+        if (imgL) mostrarEquipada("l", imgL);
 
-    document.getElementById('btn-cargar-3').onclick = async function() {
-      sinluzSeleccionado = 'Sinluz3';
-      const usuario = document.getElementById('usuario-inicio').value.trim();
-      if (usuario) {
-        const db = getDatabase();
-        const usuarioRef = ref(db, 'usuario/' + usuario + '/Sinluz3');
-        try {
-          const snapshot = await get(usuarioRef);
-          let yelmo = "", armadura = "", guanteletes = "", botas = "";
-          if (snapshot.exists()) {
-            const datos = snapshot.val();
-            yelmo = datos.Yelmo || "";
-            armadura = datos.Armadura || "";
-            guanteletes = datos.Guanteletes || "";
-            botas = datos.Botas || "";
-            // Si existen Atributos para este Sinluz, aplicarlos a la UI
-            try { aplicarAtributosAUI(datos.Atributos || null); } catch(e) {}
+        setTimeout(function() {
+          if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+            mostrarColumnaCPrincipal("ranura-h");
           }
-          // Ranura H
-          const imgH = obtenerImagenPorNombre("h", yelmo);
-          let prevH = document.getElementById('equipada-h');
-          if (prevH) prevH.remove();
-          equipadas.h = null;
-          if (imgH) {
-            mostrarEquipada("h", imgH);
+        }, 0);
+        return true;
+      } catch (e) {
+        // En caso de error, limpiar equipadas
+        try { let prevH = document.getElementById('equipada-h'); if (prevH) prevH.remove(); equipadas.h = null; } catch(e){}
+        try { let prevA = document.getElementById('equipada-a'); if (prevA) prevA.remove(); equipadas.a = null; } catch(e){}
+        try { let prevG = document.getElementById('equipada-g'); if (prevG) prevG.remove(); equipadas.g = null; } catch(e){}
+        try { let prevL = document.getElementById('equipada-l'); if (prevL) prevL.remove(); equipadas.l = null; } catch(e){}
+        setTimeout(function() {
+          if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
+            mostrarColumnaCPrincipal("ranura-h");
           }
-          // Ranura A
-          const imgA = obtenerImagenPorNombre("a", armadura);
-          let prevA = document.getElementById('equipada-a');
-          if (prevA) prevA.remove();
-          equipadas.a = null;
-          if (imgA) {
-            mostrarEquipada("a", imgA);
-          }
-          // Ranura G
-          const imgG = obtenerImagenPorNombre("g", guanteletes);
-          let prevG = document.getElementById('equipada-g');
-          if (prevG) prevG.remove();
-          equipadas.g = null;
-          if (imgG) {
-            mostrarEquipada("g", imgG);
-          }
-          // Ranura L
-          const imgL = obtenerImagenPorNombre("l", botas);
-          let prevL = document.getElementById('equipada-l');
-          if (prevL) prevL.remove();
-          equipadas.l = null;
-          if (imgL) {
-            mostrarEquipada("l", imgL);
-          }
-          setTimeout(function() {
-            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
-              mostrarColumnaCPrincipal("ranura-h");
-            }
-          }, 0);
-        } catch (e) {
-          let prevH = document.getElementById('equipada-h');
-          if (prevH) prevH.remove();
-          equipadas.h = null;
-          let prevA = document.getElementById('equipada-a');
-          if (prevA) prevA.remove();
-          equipadas.a = null;
-          let prevG = document.getElementById('equipada-g');
-          if (prevG) prevG.remove();
-          equipadas.g = null;
-          let prevL = document.getElementById('equipada-l');
-          if (prevL) prevL.remove();
-          equipadas.l = null;
-          setTimeout(function() {
-            if (typeof mostrarColumnaCPrincipal === "function" && ultimaRanuraSeleccionada === "ranura-h") {
-              mostrarColumnaCPrincipal("ranura-h");
-            }
-          }, 0);
-        }
+        }, 0);
+        return false;
       }
-      mostrarSoloMenu('principal');
-    };
+    }
+
+    // Helper: intenta cargar por una lista de keys preferidas, si no encuentra ninguna, carga la primera Sinluz disponible
+    async function cargarSinluzPreferida(preferredKeys) {
+      const usuario = document.getElementById('usuario-inicio').value.trim();
+      if (!usuario) return false;
+      // Probar keys preferidas
+      for (let k of preferredKeys) {
+        if (await cargarSinluzByKey(k)) return true;
+      }
+      // Si no encontró, leer el nodo usuario y elegir la primera clave Sinluz*
+      try {
+        const db = getDatabase();
+        const usuarioRef = ref(db, `usuario/${usuario}`);
+        const snapshot = await get(usuarioRef);
+        if (!snapshot.exists()) return false;
+        const datos = snapshot.val() || {};
+        // buscar claves que coincidan con Sinluz 1 / Sinluz1 / SinluzX
+        const keys = Object.keys(datos || {});
+        const match = keys.find(s => /^Sinluz\s*\d+$/i.test(s) || /^Sinluz\d+$/i.test(s));
+        if (match) return await cargarSinluzByKey(match);
+      } catch(e) {}
+      return false;
+    }
+
+    (function(){
+      const b1 = document.getElementById('btn-cargar-1');
+      if (b1) b1.onclick = async function() {
+        await cargarSinluzPreferida(['Sinluz 1','Sinluz1']);
+        mostrarSoloMenu('principal');
+      };
+      const b2 = document.getElementById('btn-cargar-2');
+      if (b2) b2.onclick = async function() {
+        await cargarSinluzPreferida(['Sinluz 2','Sinluz2']);
+        mostrarSoloMenu('principal');
+      };
+      const b3 = document.getElementById('btn-cargar-3');
+      if (b3) b3.onclick = async function() {
+        await cargarSinluzPreferida(['Sinluz 3','Sinluz3']);
+        mostrarSoloMenu('principal');
+      };
+    })();
     // Variable seleccionada
     var seleccionado = "";
 
@@ -3213,6 +3312,8 @@ function bonusGeneralRes(attrLevel) {
       } else {
         tipoMenuSecundario = "";
       }
+      // Actualizar visibilidad de badges de "equipado" según el tipo de menú
+      try { if (typeof updateEquipadoBadgesVisibility === 'function') updateEquipadoBadgesVisibility(); } catch(e) {}
     }
 
     // Función para mostrar imágenes según ranura
@@ -3254,6 +3355,42 @@ function bonusGeneralRes(attrLevel) {
       imgs.forEach(function(img) {
         if (img.src && img.src !== window.location.href) img.style.display = "block";
       });
+      // Añadir badge "equipado" SOLO en el menú de almacén (armaduras)
+      try {
+        // tipo es la ranura actual ('h','a','g','l' o 'mano')
+        for (var i = 0; i < imgs.length; i++) {
+          try {
+            var wrapper = document.getElementById('almacen-' + (i + 1));
+            // limpiar badge previo
+            var prev = document.getElementById('equipado-badge-almacen-' + (i + 1));
+            if (prev) prev.remove();
+            // Solo mostrar badge para armaduras (ranuras h,a,g,l)
+            if (['h','a','g','l'].includes(tipo)) {
+              var ranuraKey = tipo;
+              var equipSrc = equipadas[ranuraKey];
+              if (equipSrc && imgs[i] && imgs[i].src) {
+                var equipFile = ('' + equipSrc).split('/').pop();
+                var imgFile = ('' + imgs[i].src).split('/').pop();
+                if (equipFile && imgFile && equipFile === imgFile) {
+                  // crear badge
+                  var badge = document.createElement('img');
+                  badge.src = 'equipado.png';
+                  badge.id = 'equipado-badge-almacen-' + (i + 1);
+                  badge.className = 'equipado-badge-almacen';
+                  badge.style.position = 'absolute';
+                  badge.style.top = '5px';
+                  badge.style.left = '5px';
+                  badge.style.height = '20px';
+                  badge.style.width = 'auto';
+                  badge.style.zIndex = '35';
+                  // appendar al wrapper del almacen
+                  if (wrapper) wrapper.appendChild(badge);
+                }
+              }
+            }
+          } catch(e){}
+        }
+      } catch(e){}
     }
 
     // Estado para saber qué menú mostrar
@@ -3596,13 +3733,34 @@ function volverMenuRanuras() {
         img.style.width = '100%';
         img.style.height = '100%';
         img.style.objectFit = 'contain';
-        img.style.zIndex = '30';
+        img.style.zIndex = '5';
         wrapper.appendChild(img);
+        // Ensure any leftover badge tied to the ranura is removed (we only show badges in almacenes)
+        try { var prevBadge = document.getElementById('equipado-badge-' + ranura); if (prevBadge) prevBadge.remove(); } catch(e){}
         equipadas[ranura] = imgSrc;
 
         // Actualiza todos los modelos 3D siempre que cambie cualquier ranura
         actualizarModelos3D();
       }
+    }
+
+    // Actualiza visibilidad de badges "equipado" en los paneles de almacen según el tipo de menú secundario
+    function updateEquipadoBadgesVisibility() {
+      try {
+        var mostrar = (tipoMenuSecundario === 'menú armaduras');
+        // Controlar badges en los wrappers de almacen (1..3)
+        for (var i = 1; i <= 3; i++) {
+          try {
+            var badgeId = 'equipado-badge-almacen-' + i;
+            var badge = document.getElementById(badgeId);
+            if (!badge) continue;
+            // mostrar solo si estamos en menú armaduras
+            badge.style.display = mostrar ? 'block' : 'none';
+          } catch(e){}
+        }
+        // Además, limpiar cualquier badge viejo ligado a ranuras (por si existen)
+        ['h','a','g','l','mano_izq','mano_der'].forEach(function(r){ try { var b = document.getElementById('equipado-badge-' + r); if (b) b.remove(); } catch(e){} });
+      } catch(e){}
     }
 
     // Intercambia los valores de las ranuras Mano Der y Mano Izq (excepto ubicación e imagen de ranura)
@@ -3711,6 +3869,9 @@ function volverMenuRanuras() {
             try { updateEstadoDisplay(); } catch(e){}
           }
         } catch(e){}
+        // Refrescar badges en el almacen (para que aparezcan/actualicen tras equipar)
+        try { if (typeof setAlmacenImages === 'function') setAlmacenImages(menuActual); } catch(e){}
+        try { if (typeof updateEquipadoBadgesVisibility === 'function') updateEquipadoBadgesVisibility(); } catch(e){}
       }
     }
 
@@ -4286,6 +4447,25 @@ function volverMenuRanuras() {
 
   // La tecla F: cuando Estado está abierto -> abre/cierra Totales; cuando Totales está abierto -> cierra Totales y cierra Estado (muestra defensas);
   // en cualquier otro estado, mantiene el comportamiento anterior (abrir/cerrar Estado).
+  // Extraer la acción de la tecla F a una función reutilizable para click del nuevo botón 'efe'
+  function doFAction() {
+    try {
+      if (menuTotalesVisible) {
+        toggleMenuTotales(false);
+        if (menuEstadoVisible) toggleMenuEstado(false);
+        menuTotalesVisible = false;
+        return;
+      }
+      if (menuEstadoVisible && !menuTotalesVisible) {
+        toggleMenuTotales(true);
+        menuTotalesVisible = true;
+        return;
+      }
+      menuEstadoVisible = !menuEstadoVisible;
+      toggleMenuEstado(menuEstadoVisible);
+    } catch(e) { console.error('doFAction error', e); }
+  }
+
   document.addEventListener('keydown', function(e){
     try {
       if (!e || !e.key) return;
@@ -4300,28 +4480,39 @@ function volverMenuRanuras() {
           var t = (active.tagName || '').toLowerCase();
           if (t === 'input' || t === 'textarea' || active.isContentEditable) return;
         }
-
-        if (menuTotalesVisible) {
-          // cerrar Totales y mostrar el menú defensas (cerrar Estado por completo)
-          toggleMenuTotales(false);
-          if (menuEstadoVisible) toggleMenuEstado(false);
-          menuTotalesVisible = false;
-          return;
-        }
-
-        if (menuEstadoVisible && !menuTotalesVisible) {
-          // abrir Totales (Estado queda conceptualmente abierto pero la mayor parte de sus elementos se ocultan)
-          toggleMenuTotales(true);
-          menuTotalesVisible = true;
-          return;
-        }
-
-        // fallback: comportamiento original (abrir/cerrar Estado)
-        menuEstadoVisible = !menuEstadoVisible;
-        toggleMenuEstado(menuEstadoVisible);
+        doFAction();
       }
     } catch(ex) { console.error(ex); }
   });
+
+  // Click handlers para los botones añadidos: desequipar/volver y efe
+  try {
+    var dvContainer = document.getElementById('desequipar-volver-container');
+    if (dvContainer) {
+      dvContainer.addEventListener('click', function(){
+        try {
+          var img = document.getElementById('desequipar-volver-img');
+          if (!img) return;
+          var src = (img.src || '').split('/').pop().toLowerCase();
+          if (src === 'esc.png') {
+            volverMenuRanuras();
+            return;
+          }
+          // Si no es esc.png, no hacemos nada (la tecla R sigue funcionando para desequipar)
+        } catch(e){}
+      });
+      // Enter/Space keyboard activation
+      dvContainer.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dvContainer.click(); } });
+    }
+  } catch(e) {}
+
+  try {
+    var efeContainer = document.getElementById('btn-efe-container');
+    if (efeContainer) {
+      efeContainer.addEventListener('click', function(){ doFAction(); });
+      efeContainer.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doFAction(); } });
+    }
+  } catch(e) {}
 
   // Lee los valores actuales de los stats derivados y suma atributos de las piezas equipadas
   function readTotalesVars() {
@@ -5171,83 +5362,841 @@ function obtenerImagenPorNombre(tipo, nombre) {
   return "";
 }
 
-// Elimina imágenes equipadas sobre una sola copia de ranura y sinluz
-function limpiarEquipadaCopiaPorRanura(tipo, idx) {
-  const imgId = `equipada-copia-${tipo}-${idx}`;
-  const prev = document.getElementById(imgId);
+// note: copia-based ranura overlays were removed; we only use overlays inside/above
+// `ms-ranura-*`. Previous helper functions handling `ranura-*-copia-*` were removed
+// to avoid keeping unused code paths.
+
+// Limpia imagen equipada mostrada sobre los elementos `ms-ranura-*`
+function limpiarEquipadaEnMs(tipo) {
+  const id = `equipada-ms-${tipo}`;
+  const prev = document.getElementById(id);
   if (prev) prev.remove();
+  try {
+    if (typeof equipadas !== 'undefined' && equipadas) {
+      // clear the slot in the 3D state and update models
+      equipadas[tipo] = null;
+      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e){}
+    }
+  } catch(e) {}
 }
 
-// Muestra imagen equipada sobre la copia de ranura
-function mostrarEquipadaCopia(tipo, idx, imgSrc) {
-  limpiarEquipadaCopiaPorRanura(tipo, idx);
-  let ranuraId = "";
-  if (tipo === "h") ranuraId = `ranura-h-copia-${idx}`;
-  if (tipo === "a") ranuraId = `ranura-a-copia-${idx}`;
-  if (tipo === "g") ranuraId = `ranura-g-copia-${idx}`;
-  if (tipo === "l") ranuraId = `ranura-l-copia-${idx}`;
-  const ranuraElem = document.getElementById(ranuraId);
-  if (ranuraElem && imgSrc) {
-    const img = document.createElement("img");
+// Muestra imagen equipada sobre el elemento `ms-ranura-{tipo}` y ajusta tamaño a su estilo
+function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
+  try {
+    limpiarEquipadaEnMs(tipo);
+    const msId = 'ms-ranura-' + tipo;
+    const ranuraElem = document.getElementById(msId);
+    if (!ranuraElem || !imgSrc) return;
+    const parent = ranuraElem.parentNode || document.body;
+    // Ensure the parent can be a positioning context for absolute children
+    try {
+      const pStyle = window.getComputedStyle(parent);
+      if (!pStyle || pStyle.position === 'static') parent.style.position = parent.style.position || 'relative';
+    } catch(e) {}
+
+    const parentRect = parent.getBoundingClientRect ? parent.getBoundingClientRect() : { left:0, top:0 };
+    const ranRect = ranuraElem.getBoundingClientRect ? ranuraElem.getBoundingClientRect() : null;
+    // Debugging: log calls so we can inspect in console
+    try { console.debug('mostrarEquipadaEnMsRanura', tipo, imgSrc, { parentRect, ranRect }); } catch(e) {}
+
+    const img = document.createElement('img');
     img.src = imgSrc;
-    img.id = `equipada-copia-${tipo}-${idx}`;
-    img.style.position = "absolute";
-    img.style.top = ranuraElem.style.top || ranuraElem.style.top;
-    img.style.left = ranuraElem.style.left || ranuraElem.style.left;
-    img.style.width = ranuraElem.style.width || "100px";
-    img.style.height = ranuraElem.style.height || "100px";
-    img.style.zIndex = "2250";
-    img.style.pointerEvents = "none";
-    img.style.objectFit = "contain";
-    // Ajusta posición si ranura usa right o transform
-    if (ranuraElem.style.right) img.style.right = ranuraElem.style.right;
-    if (ranuraElem.style.transform) img.style.transform = ranuraElem.style.transform;
-    // Inserta en el mismo contenedor que ranuraElem
-    ranuraElem.parentNode.appendChild(img);
-  }
+    img.id = `equipada-ms-${tipo}`;
+    img.style.position = 'absolute';
+    img.style.pointerEvents = 'none';
+    img.style.objectFit = 'contain';
+    img.style.display = 'block';
+    img.style.zIndex = '9999';
+    // If we have bounding rects, position in pixels relative to the parent container
+    if (ranRect && parentRect) {
+      // Reduce size by 10% for selection-menu overlays and center inside the ranura
+      const SCALE = 0.9;
+      const newW = Math.max(1, Math.round(ranRect.width * SCALE));
+      const newH = Math.max(1, Math.round(ranRect.height * SCALE));
+      const offsetX = Math.round((ranRect.width - newW) / 2);
+      const offsetY = Math.round((ranRect.height - newH) / 2);
+      const left = Math.max(0, ranRect.left - parentRect.left + offsetX);
+      const top = Math.max(0, ranRect.top - parentRect.top + offsetY);
+      img.style.left = left + 'px';
+      img.style.top = top + 'px';
+      img.style.width = newW + 'px';
+      img.style.height = newH + 'px';
+    } else {
+      // Fallback to inline styles if getBoundingClientRect unavailable
+      if (ranuraElem.style.left) img.style.left = ranuraElem.style.left;
+      if (ranuraElem.style.top) img.style.top = ranuraElem.style.top;
+      img.style.width = ranuraElem.style.width || '48px';
+      img.style.height = ranuraElem.style.height || '48px';
+    }
+    parent.appendChild(img);
+    // Keep 3D scene in sync: set equipadas and update models
+    try {
+      if (typeof equipadas !== 'undefined' && equipadas) {
+        equipadas[tipo] = imgSrc;
+        // Ensure Three.js is initialized and sized for visibility
+        try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e) {}
+        try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e) {}
+        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+      }
+    } catch(e) {}
+  } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
+
+// Global helper: ensure a `setSelected` function is available for handlers
+// Some selection handlers (defined earlier) call `setSelected` expecting it
+// to be globally available. Provide a safe implementation to avoid
+// ReferenceError and to keep selection visual behaviour consistent.
+window.setSelected = function(el) {
+  try {
+    if (!el) return;
+    const list = document.getElementById('sinluz-fichas-list');
+    if (list) {
+      try { list.querySelectorAll('.sinluz-ficha.selected').forEach(x => x.classList.remove('selected')); } catch(e){}
+    }
+    try { if (el.classList && !el.classList.contains('selected')) el.classList.add('selected'); } catch(e){}
+    try { window.sinluzSeleccionado = el.dataset && el.dataset.sinluzKey ? el.dataset.sinluzKey : (el.id || el); } catch(e){}
+  } catch(e) { console.error('setSelected helper error', e); }
+};
 
 // Actualiza los valores visuales del menú selección para los Sinluz cargados
 async function actualizarMenuSeleccionVisual() {
   const usuario = document.getElementById('usuario-inicio').value.trim();
   if (!usuario) return;
   const db = getDatabase();
-  const usuarioRef = ref(db, 'usuario/' + usuario);
   try {
+    const usuarioRef = ref(db, 'usuario/' + usuario);
     const snapshot = await get(usuarioRef);
-    // Limpia todas las imágenes equipadas sobre las copias de ranura antes de mostrar nuevas
-    [1,2,3].forEach(idx => {
-      ["h","a","g","l"].forEach(tipo => limpiarEquipadaCopiaPorRanura(tipo, idx));
-    });
+
+    // Limpia copias de equipadas sobre ranuras antiguas y las mostradas en el panel ms
+    try {
+      ["h","a","g","l"].forEach(function(t){ try { limpiarEquipadaEnMs(t); } catch(e){} });
+    } catch(e){}
+
+    // Build a map of Sinluz entries. Accept either object keys (Sinluz 1 / Sinluz1)
+    // or an array stored under `Sinluz` (legacy). We normalize to an object { 'Sinluz N': data }
+    const sinluzMap = {};
     if (snapshot.exists()) {
-      const datos = snapshot.val();
-      // Para cada Sinluz (1,2,3)
-      [1,2,3].forEach(idx => {
-        const sinluzKey = 'Sinluz' + idx;
-        const sinluz = datos[sinluzKey] || {};
-        // Actualiza input de nombre
-        const input = document.getElementById('nombre-sinluz-' + idx);
-        if (input) {
-          input.value = sinluz.Nombre || "";
+      const datos = snapshot.val() || {};
+      if (Array.isArray(datos.Sinluz) && datos.Sinluz.length > 0) {
+        datos.Sinluz.forEach((entry, i) => {
+          const key = `Sinluz ${i+1}`;
+          sinluzMap[key] = entry || {};
+        });
+      }
+      // Also include direct keys like Sinluz1 or "Sinluz 1"
+      Object.keys(datos).forEach(k => {
+        if (/^Sinluz\s*\d+$/i.test(k) || /^Sinluz\d+$/i.test(k)) {
+          sinluzMap[k.replace(/Sinluz(\d+)/i, 'Sinluz $1')] = datos[k] || {};
         }
-        // Muestra imagen equipada sobre copia de ranura H
-        const imgH = obtenerImagenPorNombre("h", sinluz.Yelmo || "");
-        if (imgH) mostrarEquipadaCopia("h", idx, imgH);
-        // Muestra imagen equipada sobre copia de ranura A
-        const imgA = obtenerImagenPorNombre("a", sinluz.Armadura || "");
-        if (imgA) mostrarEquipadaCopia("a", idx, imgA);
-        // Muestra imagen equipada sobre copia de ranura G
-        const imgG = obtenerImagenPorNombre("g", sinluz.Guanteletes || "");
-        if (imgG) mostrarEquipadaCopia("g", idx, imgG);
-        // Muestra imagen equipada sobre copia de ranura L
-        const imgL = obtenerImagenPorNombre("l", sinluz.Botas || "");
-        if (imgL) mostrarEquipadaCopia("l", idx, imgL);
       });
     }
+
+    // CACHE: prefijo para almacenar atributos en localStorage por usuario+sinluz
+    const cachePrefix = 'sinluz_cache_' + usuario + '_';
+    try {
+      // If there is cached data for any sinluz, attach it for quick display
+      Object.keys(sinluzMap).forEach(k => {
+        try {
+          const cached = localStorage.getItem(cachePrefix + k);
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              // Support both legacy cache (attrs directly) and new shape {atributos, equipImages}
+              if (parsed && typeof parsed === 'object' && ('atributos' in parsed || 'equipImages' in parsed)) {
+                sinluzMap[k].__cachedAtributos = parsed.atributos || parsed.atributos === null ? parsed.atributos : null;
+                // also attach cached equip images if present
+                if (parsed.equipImages) sinluzMap[k].__cachedEquipadas = parsed.equipImages;
+              } else {
+                // legacy: parsed contains atributos directly
+                sinluzMap[k].__cachedAtributos = parsed;
+              }
+            } catch(e) { /* ignore parse errors */ }
+          }
+        } catch(e) {}
+      });
+    } catch(e) {}
+    try {
+      // Store fresh atributos and equipped-image hints into cache for quick next access
+      Object.keys(sinluzMap).forEach(k => {
+        try {
+          const attrs = (sinluzMap[k] && (sinluzMap[k].Atributos || sinluzMap[k])) || null;
+          // derive equip image names from stored equipment fields if present
+          const s = sinluzMap[k] || {};
+          const yelmo = (s && (s.Yelmo || s.YelmoNombre)) ? (s.Yelmo || s.YelmoNombre) : '';
+          const armadura = (s && s.Armadura) ? s.Armadura : '';
+          const guanteletes = (s && s.Guanteletes) ? s.Guanteletes : '';
+          const botas = (s && s.Botas) ? s.Botas : '';
+          const equipImages = {
+            h: obtenerImagenPorNombre('h', yelmo) || null,
+            a: obtenerImagenPorNombre('a', armadura) || null,
+            g: obtenerImagenPorNombre('g', guanteletes) || null,
+            l: obtenerImagenPorNombre('l', botas) || null
+          };
+          if (attrs) {
+            try { localStorage.setItem(cachePrefix + k, JSON.stringify({ atributos: attrs, equipImages: equipImages })); } catch(e) {}
+          }
+        } catch(e) {}
+      });
+    } catch(e) {}
+
+    // Render fichas: keep probe and add button, remove other ficha nodes
+    const list = document.getElementById('sinluz-fichas-list');
+    if (!list) return;
+    const probe = document.getElementById('sinluz-ficha-probe');
+    const addBtn = document.getElementById('sinluz-ficha-add');
+    // Remove existing clones except probe and addBtn
+    Array.from(list.children).forEach(ch => {
+      if (ch === probe || ch === addBtn) return;
+      try { ch.remove(); } catch(e){}
+    });
+
+    // Sort keys by numeric index
+    const keys = Object.keys(sinluzMap).sort((a,b) => {
+      const na = parseInt((a.match(/\d+/)||[])[0]||0,10);
+      const nb = parseInt((b.match(/\d+/)||[])[0]||0,10);
+      return na - nb;
+    });
+
+    // Helper to sanitize DOM ids
+    const sanitizeId = (k)=> (k+'').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'');
+
+    // Ensure a single global attributes display exists in the selection menu
+    function ensureGlobalAttrsDisplay() {
+      try {
+        const parent = document.getElementById('menu-seleccion-extra');
+        if (!parent) return null;
+        if (document.getElementById('sinluz-atributos-display')) return document.getElementById('sinluz-atributos-display');
+        const container = document.createElement('div');
+        container.id = 'sinluz-atributos-display';
+        container.style.position = 'absolute';
+        container.style.zIndex = '2216';
+        // We'll place children using absolute positions computed from the existing labels
+        const keys = ['Vigor','Mente','Resistencia','Fuerza','Destreza','Inteligencia','Fe','Arcano'];
+        keys.forEach((k, i) => {
+          const ref = document.getElementById('ms-text-' + (i+1));
+          const span = document.createElement('span');
+          span.id = 'sinluz-attr-value-' + k.toLowerCase();
+          span.className = 'sinluz-attr-value';
+          span.style.position = 'absolute';
+          span.style.color = '#D0D0D0';
+          span.style.fontFamily = "FuentePersonalizada, sans-serif";
+          span.style.fontSize = '1em';
+          span.textContent = '-';
+          if (ref && ref.getBoundingClientRect) {
+            try {
+              const parentRect = parent.getBoundingClientRect();
+              const r = ref.getBoundingClientRect();
+              // Keep left computed as before (relative to the ms-text left plus offset)
+              const left = Math.max(0, r.left - parentRect.left) + 138;
+              // Set top explicitly equal to the ms-text element top (relative to parent)
+              const top = Math.max(0, r.top - parentRect.top);
+              span.style.top = (top) + 'px';
+              span.style.left = (left) + 'px';
+            } catch(e) {
+              span.style.top = (10 + i * 22) + 'px';
+              span.style.left = '140px';
+            }
+          } else {
+            span.style.top = (10 + i * 22) + 'px';
+            span.style.left = '140px';
+          }
+          container.appendChild(span);
+        });
+        parent.appendChild(container);
+        return container;
+      } catch(e) { console.error('ensureGlobalAttrsDisplay error', e); return null; }
+    }
+
+    function updateGlobalAttrsDisplay(atributos) {
+      try {
+        if (!atributos) {
+          // clear
+          ensureGlobalAttrsDisplay();
+          document.querySelectorAll('.sinluz-attr-value').forEach(s => s.textContent = '-');
+          return;
+        }
+        ensureGlobalAttrsDisplay();
+        const keys = ['Vigor','Mente','Resistencia','Fuerza','Destreza','Inteligencia','Fe','Arcano'];
+        keys.forEach((k, i) => {
+          const el = document.getElementById('sinluz-attr-value-' + k.toLowerCase());
+          const v = (atributos && typeof atributos[k] !== 'undefined') ? atributos[k] : ((atributos && typeof atributos[k.toLowerCase()] !== 'undefined') ? atributos[k.toLowerCase()] : '');
+          if (el) {
+            el.textContent = (v === '' || typeof v === 'undefined' || v === null) ? '-' : v;
+            // Also ensure top aligns with the corresponding ms-text-N element on every update
+            try {
+              const ref = document.getElementById('ms-text-' + (i+1));
+              const parent = document.getElementById('menu-seleccion-extra');
+              if (ref && parent && ref.getBoundingClientRect) {
+                const pr = parent.getBoundingClientRect();
+                const rr = ref.getBoundingClientRect();
+                el.style.top = Math.max(0, rr.top - pr.top) + 'px';
+                // keep left as previously computed
+              }
+            } catch(e) {}
+          }
+        });
+      } catch(e) { console.error('updateGlobalAttrsDisplay error', e); }
+    }
+
+    // Exponer funciones para que scripts externos (no-module) puedan forzar la
+    // actualización de los atributos mostrados en el menú selección.
+    try {
+      window.ensureGlobalAttrsDisplay = ensureGlobalAttrsDisplay;
+      window.updateGlobalAttrsDisplay = updateGlobalAttrsDisplay;
+    } catch (e) { /* silencioso si no es posible exponer */ }
+
+    // If there are any Sinluz keys, bind the probe to the first key and create clones for the rest
+    if (keys.length > 0) {
+      const firstKey = keys.shift();
+      const firstData = sinluzMap[firstKey] || {};
+      try {
+        probe.dataset.sinluzKey = firstKey;
+        const probeName = document.getElementById('probe-nombre-input');
+        const probeNivel = document.getElementById('probe-nivel-span');
+        const probeLast = document.getElementById('probe-last-span');
+        const probeOwner = document.getElementById('probe-owner-span');
+        if (probeName) probeName.value = firstData.Nombre || firstKey;
+        if (probeNivel) probeNivel.textContent = (firstData && firstData.Atributos && firstData.Atributos.Nivel) ? firstData.Atributos.Nivel : (firstData.Nivel || 1);
+        if (probeLast) probeLast.textContent = firstData.lastEdited || '';
+        if (probeOwner) probeOwner.textContent = firstData.owner || usuario;
+
+        // ensure probe name input is read-only (inmodificable)
+        if (probeName) { probeName.readOnly = true; probeName.disabled = false; probeName.tabIndex = 0; probeName.style.pointerEvents = 'auto'; probeName.style.zIndex='2240'; }
+
+        // Update the single global attributes display (one place in the selection menu)
+        try {
+          const initialAttrs = firstData.__cachedAtributos || firstData.Atributos || firstData;
+          updateGlobalAttrsDisplay(initialAttrs);
+        } catch(e) {}
+
+        const onProbeSelect = async function(){
+          try {
+            setSelected(probe);
+            // Clear any previous overlays immediately when selection changes
+            try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+            const cacheKey = cachePrefix + firstKey;
+            // ensure sinData variable exists for UI updates regardless of cache path
+            let sinData = firstData;
+            // If we have cached atributos, show them immediately for snappy UI
+            try {
+              const cached = localStorage.getItem(cacheKey);
+              if (cached) {
+                try {
+                  const parsed = JSON.parse(cached);
+                  aplicarAtributosAUI(parsed);
+                  try { updateGlobalAttrsDisplay(parsed); } catch(e){}
+                } catch(e) {}
+              }
+            } catch(e) {}
+
+                // Use cached atributos only (fast). Fall back to Firebase ONLY if cache miss.
+                try {
+                  const cached2 = localStorage.getItem(cacheKey);
+                  if (cached2) {
+                    try {
+                      const parsed2 = JSON.parse(cached2);
+                      // parsed2 may be either raw atributos (legacy) or {atributos, equipImages}
+                      const attrs2 = (parsed2 && parsed2.atributos) ? parsed2.atributos : parsed2;
+                      if (attrs2) aplicarAtributosAUI(attrs2);
+                      try { updateGlobalAttrsDisplay(attrs2); } catch(e){}
+                      // use parsed2 as sinData-like for subsequent UI updates
+                      sinData = (parsed2 && parsed2.atributos) ? Object.assign({}, attrs2, { __cached: true }) : parsed2;
+                      // If cached includes equipImages, show overlays immediately
+                      try {
+                        const eq = parsed2 && parsed2.equipImages ? parsed2.equipImages : null;
+                        if (eq) {
+                          try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+                          if (eq.h) mostrarEquipadaEnMsRanura('h', eq.h);
+                          if (eq.a) mostrarEquipadaEnMsRanura('a', eq.a);
+                          if (eq.g) mostrarEquipadaEnMsRanura('g', eq.g);
+                          if (eq.l) mostrarEquipadaEnMsRanura('l', eq.l);
+                        }
+                      } catch(e){}
+                    } catch(e) { /* parse error: fall through to fetch */ }
+                  } else {
+                    const snap = await get(ref(db, `usuario/${usuario}/${firstKey}`));
+                    sinData = snap && snap.exists() ? snap.val() : firstData;
+                    console.debug('onProbeSelect loaded sinData for', firstKey, sinData);
+                    // Accept Atributos in either `Atributos` or top-level (legacy)
+                    if (sinData) {
+                      const attrs = sinData.Atributos || sinData;
+                      aplicarAtributosAUI(attrs);
+                      try { updateGlobalAttrsDisplay(attrs); } catch(e) {}
+                      // Store atributos + equipImages in cache for next time
+                      try {
+                        const yelmo = (sinData && sinData.Yelmo) ? sinData.Yelmo : ((sinData && sinData.YelmoNombre) ? sinData.YelmoNombre : '');
+                        const armadura = (sinData && sinData.Armadura) ? sinData.Armadura : '';
+                        const guanteletes = (sinData && sinData.Guanteletes) ? sinData.Guanteletes : '';
+                        const botas = (sinData && sinData.Botas) ? sinData.Botas : '';
+                        const equipImages = {
+                          h: obtenerImagenPorNombre('h', yelmo) || null,
+                          a: obtenerImagenPorNombre('a', armadura) || null,
+                          g: obtenerImagenPorNombre('g', guanteletes) || null,
+                          l: obtenerImagenPorNombre('l', botas) || null
+                        };
+                        localStorage.setItem(cacheKey, JSON.stringify({ atributos: attrs, equipImages: equipImages }));
+                      } catch(e) {}
+                    }
+                  }
+                } catch(e) { console.error('Error aplicando cache/fetch onProbeSelect', e); }
+            if (probeNivel) probeNivel.textContent = (sinData && sinData.Atributos && sinData.Atributos.Nivel) ? sinData.Atributos.Nivel : (sinData && sinData.Nivel ? sinData.Nivel : probeNivel.textContent);
+            if (probeLast) probeLast.textContent = (typeof sinData !== 'undefined' && sinData && sinData.lastEdited) ? sinData.lastEdited : (firstData.lastEdited || '');
+            if (probeOwner) probeOwner.textContent = (typeof sinData !== 'undefined' && sinData && sinData.owner) ? sinData.owner : (firstData.owner || usuario);
+            window.sinluzSeleccionado = firstKey;
+            // Mostrar imágenes equipadas en el menú selección (asegura datos recientes)
+            try {
+              const snap2 = await get(ref(db, `usuario/${usuario}/${firstKey}`));
+              const sdata = snap2 && snap2.exists() ? snap2.val() : firstData;
+              const yelmo = (sdata && sdata.Yelmo) ? sdata.Yelmo : ((sdata && sdata.YelmoNombre) ? sdata.YelmoNombre : '');
+              const armadura = (sdata && sdata.Armadura) ? sdata.Armadura : '';
+              const guanteletes = (sdata && sdata.Guanteletes) ? sdata.Guanteletes : '';
+              const botas = (sdata && sdata.Botas) ? sdata.Botas : '';
+              try {
+                // Clear any previous overlays for all slots first
+                try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+                const imgH = obtenerImagenPorNombre('h', yelmo);
+                const imgA = obtenerImagenPorNombre('a', armadura);
+                const imgG = obtenerImagenPorNombre('g', guanteletes);
+                const imgL = obtenerImagenPorNombre('l', botas);
+                if (imgH) mostrarEquipadaEnMsRanura('h', imgH);
+                if (imgA) mostrarEquipadaEnMsRanura('a', imgA);
+                if (imgG) mostrarEquipadaEnMsRanura('g', imgG);
+                if (imgL) mostrarEquipadaEnMsRanura('l', imgL);
+              } catch(e){}
+            } catch(e) { console.error('Error mostrando equipadas en probe', e); }
+          } catch(e) { console.error('Error seleccionando probe Sinluz', e); }
+        };
+        probe.addEventListener('mouseenter', onProbeSelect);
+        probe.addEventListener('click', async function(evt){
+          try { await onProbeSelect(); } catch(e){}
+          try { await cargarSinluzByKey(firstKey); } catch(e){}
+          try { mostrarSoloMenu('principal'); } catch(e){}
+        });
+
+        if (probeName) {
+          // When interacting with the probe name, also treat it as selection so atributos appear
+          probeName.addEventListener('click', onProbeSelect);
+          probeName.addEventListener('change', async function(){
+            try {
+              const newName = probeName.value || firstKey;
+              const fechaArg = new Date().toLocaleString('es-AR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone:'America/Argentina/Buenos_Aires' }).replace(',', '');
+              await set(ref(db, `usuario/${usuario}/${firstKey}/Nombre`), newName);
+              await set(ref(db, `usuario/${usuario}/${firstKey}/lastEdited`), fechaArg);
+              if (probeLast) probeLast.textContent = fechaArg;
+              mostrarMensaje('Nombre guardado', true);
+            } catch(e) { console.error(e); mostrarMensaje('Error guardando nombre: '+e, false); }
+          });
+        }
+      } catch(e) { console.error('Error binding probe to first Sinluz', e); }
+    }
+
+    // For remaining keys, create clones as before but avoid copying dynamic probe children
+    for (const key of keys) {
+      const data = sinluzMap[key] || {};
+      // Clone only the outer container to keep layout but skip children
+      const clone = probe.cloneNode(false);
+      // Ensure cloned node does NOT inherit the 'selected' class from the probe
+      try { if (clone.classList && clone.classList.contains && clone.classList.contains('selected')) clone.classList.remove('selected'); } catch(e) {}
+      clone.id = 'sinluz_' + sanitizeId(key);
+      clone.dataset.sinluzKey = key;
+
+      // Copy decorative images (keep visual look) but skip dynamic probe inputs/spans
+      try {
+        Array.from(probe.querySelectorAll('img')).forEach(function(img){
+          try { clone.appendChild(img.cloneNode(true)); } catch(e){}
+        });
+      } catch(e) {}
+
+      // Copy the fixed "Nivel" label from the probe so clones show the text
+      try {
+        const protoNivelLabel = probe.querySelector('.sinluz-ficha-nivel');
+        if (protoNivelLabel) clone.appendChild(protoNivelLabel.cloneNode(true));
+      } catch(e) {}
+
+      // Now create the ficha-specific interactive elements (name, nivel, last, owner)
+      const protoName = document.getElementById('probe-nombre-input');
+      const protoNivel = document.getElementById('probe-nivel-span');
+      const protoLast = document.getElementById('probe-last-span');
+      const protoOwner = document.getElementById('probe-owner-span');
+
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = data.Nombre || key;
+      nameInput.placeholder = key;
+      nameInput.className = 'sinluz-name-input';
+      if (protoName && protoName.style && protoName.style.cssText) nameInput.style.cssText = protoName.style.cssText;
+      else {
+        nameInput.style.background = 'transparent';
+        nameInput.style.border = 'none';
+        nameInput.style.color = '#D0D0D0';
+        nameInput.style.fontFamily = "FuentePersonalizada, sans-serif";
+        nameInput.style.fontSize = '1em';
+        nameInput.style.textAlign = 'right';
+        nameInput.style.width = '160px';
+        nameInput.style.position = 'absolute';
+        nameInput.style.right = '18px';
+        nameInput.style.top = '12px';
+        nameInput.style.zIndex = '2230';
+      }
+
+      const nivelSpan = document.createElement('span');
+      nivelSpan.className = 'sinluz-level-span';
+      nivelSpan.textContent = (data && data.Atributos && data.Atributos.Nivel) ? data.Atributos.Nivel : (data.Nivel || 1);
+      if (protoNivel && protoNivel.style && protoNivel.style.cssText) nivelSpan.style.cssText = protoNivel.style.cssText;
+      else {
+        nivelSpan.style.position = 'absolute';
+        nivelSpan.style.right = '18px';
+        nivelSpan.style.top = '34px';
+        nivelSpan.style.width = '60px';
+        nivelSpan.style.textAlign = 'right';
+        nivelSpan.style.color = '#D0D0D0';
+        nivelSpan.style.fontFamily = "FuentePersonalizada, sans-serif";
+        nivelSpan.style.zIndex = '2230';
+      }
+
+      const lastSpan = document.createElement('span');
+      lastSpan.textContent = data.lastEdited || '';
+      if (protoLast && protoLast.style && protoLast.style.cssText) lastSpan.style.cssText = protoLast.style.cssText;
+      else { lastSpan.style.position = 'absolute'; lastSpan.style.right = '18px'; lastSpan.style.top = '54px'; lastSpan.style.fontSize = '0.7em'; lastSpan.style.color = '#A0A0A0'; lastSpan.style.zIndex='2230'; }
+
+      const ownerSpan = document.createElement('span');
+      ownerSpan.textContent = data.owner || usuario;
+      if (protoOwner && protoOwner.style && protoOwner.style.cssText) ownerSpan.style.cssText = protoOwner.style.cssText;
+      else { ownerSpan.style.position = 'absolute'; ownerSpan.style.right = '18px'; ownerSpan.style.top = '68px'; ownerSpan.style.fontSize = '0.7em'; ownerSpan.style.color = '#B0A68F'; ownerSpan.style.zIndex='2230'; }
+
+      // Make sure the input is present but read-only (inmodificable) and positioned like the probe
+      nameInput.tabIndex = 0;
+      nameInput.style.pointerEvents = 'auto';
+      nameInput.style.zIndex = '2240';
+      nameInput.readOnly = true;
+      nameInput.disabled = false;
+      nameInput.style.userSelect = 'text';
+      nameInput.autocomplete = 'off';
+      nameInput.setAttribute('aria-label', 'Nombre Sinluz ' + key);
+      nameInput.addEventListener('focus', function(){ try{ console.debug('sinluz name focus', key); }catch(e){} });
+      nameInput.addEventListener('keydown', function(ev){ try{ console.debug('sinluz name keydown', key, ev.key); }catch(e){} });
+
+      clone.appendChild(nameInput);
+      clone.appendChild(nivelSpan);
+      clone.appendChild(lastSpan);
+      clone.appendChild(ownerSpan);
+
+      // Insert clone before add button
+      list.insertBefore(clone, addBtn);
+
+      const onSelectSinluz = async function(){
+        try{
+          setSelected(clone);
+          // Clear previous overlays immediately when selection changes
+          try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+            try{
+            const cacheKey = cachePrefix + key;
+            // ensure sinData exists regardless of cache path
+            let sinData = data;
+            // Apply cached attributes immediately if present. If not cached, fetch once and cache.
+            try {
+              const cached = localStorage.getItem(cacheKey);
+              if (cached) {
+                try {
+                  const parsed = JSON.parse(cached);
+                  const attrsParsed = (parsed && parsed.atributos) ? parsed.atributos : parsed;
+                  if (attrsParsed) aplicarAtributosAUI(attrsParsed);
+                  try { updateGlobalAttrsDisplay(attrsParsed); } catch(e){}
+                  sinData = (parsed && parsed.atributos) ? Object.assign({}, attrsParsed, { __cached: true }) : parsed;
+                  // If equipImages cached, immediately show overlays
+                  try {
+                    const eq = parsed && parsed.equipImages ? parsed.equipImages : null;
+                    if (eq) {
+                      try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+                      if (eq.h) mostrarEquipadaEnMsRanura('h', eq.h);
+                      if (eq.a) mostrarEquipadaEnMsRanura('a', eq.a);
+                      if (eq.g) mostrarEquipadaEnMsRanura('g', eq.g);
+                      if (eq.l) mostrarEquipadaEnMsRanura('l', eq.l);
+                    }
+                  } catch(e){}
+                } catch(e) { /* parse error -> fallback to fetch */ }
+              } else {
+                const snap = await get(ref(db, `usuario/${usuario}/${key}`));
+                sinData = snap && snap.exists() ? snap.val() : data;
+                console.debug('onSelectSinluz loaded sinData for', key, sinData);
+                if (sinData) {
+                  const attrs = sinData.Atributos || sinData;
+                  aplicarAtributosAUI(attrs);
+                  try { updateGlobalAttrsDisplay(attrs); } catch(e) {}
+                  // cache atributos + equipImages
+                  try {
+                    const yelmo = (sinData && sinData.Yelmo) ? sinData.Yelmo : '';
+                    const armadura = (sinData && sinData.Armadura) ? sinData.Armadura : '';
+                    const guanteletes = (sinData && sinData.Guanteletes) ? sinData.Guanteletes : '';
+                    const botas = (sinData && sinData.Botas) ? sinData.Botas : '';
+                    const equipImages = {
+                      h: obtenerImagenPorNombre('h', yelmo) || null,
+                      a: obtenerImagenPorNombre('a', armadura) || null,
+                      g: obtenerImagenPorNombre('g', guanteletes) || null,
+                      l: obtenerImagenPorNombre('l', botas) || null
+                    };
+                    localStorage.setItem(cacheKey, JSON.stringify({ atributos: attrs, equipImages: equipImages }));
+                  } catch(e) {}
+                }
+              }
+            } catch(e) { console.error('Error applying cache/fetch onSelectSinluz', e); }
+            // Update UI fields
+            try { nivelSpan.textContent = (sinData && sinData.Atributos && sinData.Atributos.Nivel) ? sinData.Atributos.Nivel : (sinData && sinData.Nivel) ? sinData.Nivel : nivelSpan.textContent; } catch(e){}
+            lastSpan.textContent = (typeof sinData !== 'undefined' && sinData && sinData.lastEdited) ? sinData.lastEdited : (data.lastEdited || '');
+            window.sinluzSeleccionado = key;
+            // Mostrar imágenes equipadas en el menú selección (asegura datos recientes)
+            try {
+              const snap2 = await get(ref(db, `usuario/${usuario}/${key}`));
+              const sdata = snap2 && snap2.exists() ? snap2.val() : data;
+              const yelmo = (sdata && sdata.Yelmo) ? sdata.Yelmo : '';
+              const armadura = (sdata && sdata.Armadura) ? sdata.Armadura : '';
+              const guanteletes = (sdata && sdata.Guanteletes) ? sdata.Guanteletes : '';
+              const botas = (sdata && sdata.Botas) ? sdata.Botas : '';
+              try {
+                // Clear previous overlays first
+                try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+                const imgH = obtenerImagenPorNombre('h', yelmo);
+                const imgA = obtenerImagenPorNombre('a', armadura);
+                const imgG = obtenerImagenPorNombre('g', guanteletes);
+                const imgL = obtenerImagenPorNombre('l', botas);
+                if (imgH) mostrarEquipadaEnMsRanura('h', imgH);
+                if (imgA) mostrarEquipadaEnMsRanura('a', imgA);
+                if (imgG) mostrarEquipadaEnMsRanura('g', imgG);
+                if (imgL) mostrarEquipadaEnMsRanura('l', imgL);
+              } catch(e){}
+            } catch(e) { console.error('Error mostrando equipadas en clone select', e); }
+          } catch(e) { console.error('Error leyendo Sinluz al seleccionar', e); }
+        } catch(e){}
+      };
+      clone.addEventListener('mouseenter', onSelectSinluz);
+      clone.addEventListener('click', async function(evt){
+        try { await onSelectSinluz(); } catch(e){}
+        try { await cargarSinluzByKey(key); } catch(e){}
+        try { mostrarSoloMenu('principal'); } catch(e){}
+      });
+
+      // Make interacting with the name input also trigger selection so atributos are applied
+      nameInput.addEventListener('click', onSelectSinluz);
+
+      // Also ensure clicking the whole clone focuses the input for easier editing
+      clone.addEventListener('click', function(){ try{ nameInput.focus(); }catch(e){} });
+
+      nameInput.addEventListener('change', async function(){
+        try{
+          const newName = nameInput.value || key;
+          const fechaArg = new Date().toLocaleString('es-AR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone:'America/Argentina/Buenos_Aires' }).replace(',', '');
+          await set(ref(db, `usuario/${usuario}/${key}/Nombre`), newName);
+          await set(ref(db, `usuario/${usuario}/${key}/lastEdited`), fechaArg);
+          lastSpan.textContent = fechaArg;
+          mostrarMensaje('Nombre guardado', true);
+        } catch(e) { console.error(e); mostrarMensaje('Error guardando nombre: '+e, false); }
+      });
+    }
+
   } catch (error) {
-    // Opcional: mostrar error visual
-    console.error("Error al leer datos del usuario:", error);
+    console.error('Error al leer datos del usuario:', error);
   }
+
+  // Asegura que la barra personalizada se actualice tras cargar los Sinluz
+  try { if (typeof setupSinluzScrollbar === 'function') setupSinluzScrollbar(); } catch(e) {}
+
+  // Función global auxiliar para seleccionar un Sinluz por su key desde scripts
+  // externos (por ejemplo los listeners que se añaden fuera del módulo). Carga
+  // desde Firebase y actualiza la UI (atributos actuales y display en el menú selección).
+    try {
+    window.selectSinluzFichaGlobal = async function(key) {
+      try {
+        if (!key) return;
+        const usuario = document.getElementById('usuario-inicio')?.value.trim();
+        if (!usuario) return;
+        const cacheKey = 'sinluz_cache_' + usuario + '_' + key;
+        // Try cache first (fast). Only fetch from Firebase if cache miss.
+        try {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              const attrsParsed = (parsed && parsed.atributos) ? parsed.atributos : parsed;
+              if (attrsParsed) aplicarAtributosAUI(attrsParsed);
+              try { if (window.updateGlobalAttrsDisplay) window.updateGlobalAttrsDisplay(attrsParsed); } catch(e) {}
+              try { window.sinluzSeleccionado = key; } catch(e) {}
+              // show cached equip images if available
+              try {
+                const eq = parsed && parsed.equipImages ? parsed.equipImages : null;
+                if (eq) {
+                  try { ['h','a','g','l'].forEach(t => limpiarEquipadaEnMs(t)); } catch(e){}
+                  if (eq.h) mostrarEquipadaEnMsRanura('h', eq.h);
+                  if (eq.a) mostrarEquipadaEnMsRanura('a', eq.a);
+                  if (eq.g) mostrarEquipadaEnMsRanura('g', eq.g);
+                  if (eq.l) mostrarEquipadaEnMsRanura('l', eq.l);
+                }
+              } catch(e){}
+              return;
+            } catch(e) { /* parse error -> fallback to fetch */ }
+          }
+        } catch(e) {}
+
+        const db = getDatabase();
+        const snap = await get(ref(db, `usuario/${usuario}/${key}`));
+        const sinData = snap && snap.exists() ? snap.val() : null;
+        const attrs = sinData ? (sinData.Atributos || sinData) : null;
+        try { aplicarAtributosAUI(attrs); } catch(e) {}
+        try { if (window.updateGlobalAttrsDisplay) window.updateGlobalAttrsDisplay(attrs); } catch(e) {}
+        // marcar globalmente qué Sinluz está seleccionado
+        try { window.sinluzSeleccionado = key; } catch(e) {}
+        // cache for next time (include equipImages if available)
+        try {
+          if (attrs) {
+            const yelmo = (sinData && sinData.Yelmo) ? sinData.Yelmo : ((sinData && sinData.YelmoNombre) ? sinData.YelmoNombre : '');
+            const armadura = (sinData && sinData.Armadura) ? sinData.Armadura : '';
+            const guanteletes = (sinData && sinData.Guanteletes) ? sinData.Guanteletes : '';
+            const botas = (sinData && sinData.Botas) ? sinData.Botas : '';
+            const equipImages = {
+              h: obtenerImagenPorNombre('h', yelmo) || null,
+              a: obtenerImagenPorNombre('a', armadura) || null,
+              g: obtenerImagenPorNombre('g', guanteletes) || null,
+              l: obtenerImagenPorNombre('l', botas) || null
+            };
+            localStorage.setItem(cacheKey, JSON.stringify({ atributos: attrs, equipImages: equipImages }));
+          }
+        } catch(e) {}
+      } catch(e) { console.error('selectSinluzFichaGlobal error', e); }
+    };
+  } catch(e) {}
+
+  // NOTE: resetAppState is implemented globally below (to ensure it's callable
+  // from event handlers outside this async function). The original nested
+  // implementation was removed to avoid scope issues.
+}
+
+// Global: reinicia el estado de la aplicación al volver al menú inicio
+function resetAppState() {
+  try {
+    // Clear usuario input
+    try { var u = document.getElementById('usuario-inicio'); if (u) u.value = ''; } catch(e) {}
+
+    // Limpiar Sinluz seleccionado
+    try { sinluzSeleccionado = null; } catch(e) {}
+
+    // Limpiar inputs de nombre de Sinluz
+    try { ['1','2','3'].forEach(function(idx){ var inp = document.getElementById('nombre-sinluz-' + idx); if (inp) inp.value = ''; }); } catch(e) {}
+
+    // Eliminar imágenes equipadas en el main (equipada-h/a/g/l y manos si existen)
+    try {
+      ['h','a','g','l','mano_izq','mano_der'].forEach(function(k){
+        try { var el = document.getElementById('equipada-' + k); if (el && el.parentNode) el.parentNode.removeChild(el); } catch(e){}
+      });
+      // eliminar imágenes creadas sobre copias de ranura (ya no usadas)
+      try { Array.from(document.querySelectorAll('[id^="equipada-copia-"]')).forEach(function(n){ try{ n.remove(); }catch(e){} }); } catch(e) {}
+      // eliminar imágenes creadas sobre ms-ranura
+      try { Array.from(document.querySelectorAll('[id^="equipada-ms-"]')).forEach(function(n){ try{ n.remove(); }catch(e){} }); } catch(e) {}
+    } catch(e) {}
+
+    // Limpiar el objeto equipadas
+    try {
+      if (typeof equipadas === 'undefined' || !equipadas) window.equipadas = { h: null, a: null, g: null, l: null, mano_izq: null, mano_der: null };
+      else {
+        equipadas.h = null; equipadas.a = null; equipadas.g = null; equipadas.l = null; equipadas.mano_izq = null; equipadas.mano_der = null;
+      }
+    } catch(e) {}
+
+    // Intentar limpiar las copias en el menú selección con la utilidad existente
+    try {
+      // copia-based cleanup removed: no-op (we still remove any leftover elements by selector)
+    } catch(e) {}
+
+    // Ocultar overlays dorados
+    try { document.querySelectorAll('.almacen-dorado').forEach(function(d){ try { d.style.opacity = '0'; } catch(e){} }); } catch(e) {}
+    try { if (ranuraDoradoActual) { try { ranuraDoradoActual.style.opacity = '0'; } catch(e){} ranuraDoradoActual = null; } } catch(e) {}
+
+    // Resetear última ranura seleccionada y mostrar columna por defecto
+    try { ultimaRanuraSeleccionada = 'ranura-h'; try { setSeleccionado('Cabeza','ranura-h'); } catch(e){} try { mostrarColumnaCPrincipal(ultimaRanuraSeleccionada); } catch(e){} } catch(e) {}
+
+    // Borrar estado relacionado con Estado/Totales en memoria
+    try { delete window.estadoVars; delete window.__estadoHipotetico; delete window.__almacenDoradoIdx; } catch(e) {}
+
+    // Actualizar modelos 3D para reflejar que no hay equipadas
+    try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+
+    // Intentar cerrar sesión si Auth está disponible
+    try {
+      if (typeof getAuth === 'function' && typeof signOut === 'function') {
+        try { signOut(getAuth()).catch(function(){}); } catch(e){}
+      }
+    } catch(e) {}
+
+    // Limpiar atributos del menú LevelUp (flecha-numero, mas-menos, fondito, runas, Aplomo)
+    try {
+      // Resetear valores futuros (flecha-numero) a su valor por defecto (data-default) o vacío
+      try {
+        document.querySelectorAll('.flecha-numero').forEach(function(span){
+          try {
+            var def = span.getAttribute('data-default');
+            if (typeof def !== 'undefined' && def !== null) span.textContent = def;
+            else span.textContent = '';
+            span.style.color = '#D0D0D0';
+          } catch(e){}
+        });
+      } catch(e){}
+
+      // Ocultar y desactivar los botones mas-menos
+      try { document.querySelectorAll('.mas-menos').forEach(function(m){ try{ m.style.display = 'none'; m.style.pointerEvents = 'none'; m.style.filter = ''; } catch(e){} }); } catch(e){}
+
+      // Resetear filtros/estados de fondito 1..27
+      try { for (var _fi = 1; _fi <= 27; _fi++) { try { var _f = document.getElementById('fondito-' + _fi); if (_f) _f.style.filter = 'brightness(50%)'; } catch(e){} } } catch(e){}
+
+      // Asegurar Aplomo = 40 en actual y futuro
+      try { var _apl = document.getElementById('stat-number-13'); if (_apl) _apl.textContent = '40'; } catch(e){}
+      try { var _aplF = document.querySelector('.flecha-numero[data-fondito="13"]'); if (_aplF) { _aplF.textContent = '40'; _aplF.style.color = '#D0D0D0'; } } catch(e){}
+      try { if (typeof enforceAplomo40 === 'function') enforceAplomo40(); } catch(e){}
+
+      // Limpiar runas / nivel futuro (flecha 27 y stat-number-28)
+      try { var _run = document.getElementById('stat-number-28'); if (_run) _run.textContent = ''; } catch(e){}
+      try { var _f27 = document.querySelector('.flecha-numero[data-fondito="27"]'); if (_f27) { var d = _f27.getAttribute('data-default'); _f27.textContent = (d || ''); _f27.style.color = '#D0D0D0'; } } catch(e){}
+      // Además: resetear los valores "actuales" del menú LevelUp a los valores por defecto
+      // Atributos 1..8 deben quedar en 10, Nivel (stat-number-27) en 1
+      try {
+        for (var a = 1; a <= 8; a++) {
+          try { var sa = document.getElementById('stat-number-' + a); if (sa) sa.textContent = '1'; } catch(e){}
+        }
+        try { var lvl = document.getElementById('stat-number-27'); if (lvl) lvl.textContent = '1'; } catch(e){}
+
+        // Recalcular valores derivados actuales (PV, PC, Estamina, Carga, Descubrimiento, Aplomo)
+        try { if (typeof updatePVFromVigor === 'function') updatePVFromVigor(); } catch(e) {}
+        try { if (typeof updatePCFromMente === 'function') updatePCFromMente(); } catch(e) {}
+        try { if (typeof updateStaminaFromResistencia === 'function') updateStaminaFromResistencia(); } catch(e) {}
+        try { if (typeof updateDiscoveryFromArcano === 'function') updateDiscoveryFromArcano(); } catch(e) {}
+        try { if (typeof enforceAplomo40 === 'function') enforceAplomo40(); } catch(e) {}
+
+        // Recalcular las estadísticas derivadas 15..26 usando statsFinalesConAtributos
+        try {
+          var attrs = {
+            vigor: parseInt((document.getElementById('stat-number-1') || {}).textContent, 10) || 1,
+            mente: parseInt((document.getElementById('stat-number-2') || {}).textContent, 10) || 1,
+            resistencia: parseInt((document.getElementById('stat-number-3') || {}).textContent, 10) || 1,
+            fuerza: parseInt((document.getElementById('stat-number-4') || {}).textContent, 10) || 1,
+            inteligencia: parseInt((document.getElementById('stat-number-5') || {}).textContent, 10) || 1,
+            destreza: parseInt((document.getElementById('stat-number-6') || {}).textContent, 10) || 1,
+            fe: parseInt((document.getElementById('stat-number-7') || {}).textContent, 10) || 1,
+            arcano: parseInt((document.getElementById('stat-number-8') || {}).textContent, 10) || 1
+          };
+          var curNivel = parseInt((document.getElementById('stat-number-27') || {}).textContent, 10) || 1;
+          var s = (typeof statsFinalesConAtributos === 'function') ? statsFinalesConAtributos(curNivel, attrs) : (typeof statsFinales === 'function' ? statsFinales(curNivel, attrs.vigor) : null);
+          if (s) {
+            var map = {15:'fis',16:'con',17:'cor',18:'per',19:'mag',20:'fuego',21:'rayo',22:'sag',23:'inmunidad',24:'robustez',25:'concentracion',26:'vitalidad'};
+            Object.keys(map).forEach(function(idx){ try { var elm = document.getElementById('stat-number-' + idx); if (elm) { var k = map[idx]; elm.textContent = (typeof s[k] !== 'undefined' ? s[k] : ''); } } catch(e){} });
+          }
+        } catch(e) {}
+
+        // Limpiar cualquier indicador residual en stat-number 9..12/14 que no fueron recalculados
+        try { for (var z = 9; z <= 26; z++) { if (!document.getElementById('stat-number-' + z)) continue; } } catch(e) {}
+      } catch(e) {}
+    } catch(e) {}
+
+    // Limpiar cualquier columna C residual
+    try { if (typeof limpiarColumnaC === 'function') limpiarColumnaC(); } catch(e) {}
+
+  } catch(e) { console.error('resetAppState error', e); }
 }
 
 // --- THREE.JS INTEGRACIÓN PARA MODELO 3D DE CABEZA ---
@@ -5621,9 +6570,107 @@ function actualizarModelos3D() {
     }
   }
 }
+    (function(){
+      function get(id){return document.getElementById(id);}
+      const track = get('scroll-vacio');
+      const thumb = get('scroll-barra');
+      const list = get('sinluz-fichas-list');
+
+      function updateThumb(){
+        if(!track || !thumb || !list) return;
+        if(list.scrollHeight <= list.clientHeight){
+          thumb.style.display = 'none';
+          track.style.display = 'none';
+          return;
+        }
+        const trackRect = track.getBoundingClientRect();
+        const thumbH = Math.max(24, Math.round((list.clientHeight / list.scrollHeight) * trackRect.height));
+        thumb.style.height = thumbH + 'px';
+        const maxThumbTravel = trackRect.height - thumbH;
+        const ratio = list.scrollTop / (list.scrollHeight - list.clientHeight || 1);
+        const thumbTop = trackRect.top + window.scrollY + Math.round(ratio * maxThumbTravel);
+        thumb.style.top = thumbTop + 'px';
+      }
+
+      function setupSinluzScrollbar(){
+        if(!track || !thumb || !list) return;
+        const fichas = list.querySelectorAll('.sinluz-ficha');
+        if(fichas.length > 3){
+          track.style.display = 'block';
+          thumb.style.display = 'block';
+          list.style.overflowY = 'auto';
+          updateThumb();
+        } else {
+          track.style.display = 'none';
+          thumb.style.display = 'none';
+          list.style.overflowY = 'hidden';
+          list.scrollTop = 0;
+        }
+      }
+
+      // Drag support for thumb
+      let dragging = false;
+      let dragOffset = 0;
+      function onThumbMouseDown(e){ dragging = true; dragOffset = e.clientY - thumb.getBoundingClientRect().top; e.preventDefault(); }
+      function onDocMouseMove(e){ if(!dragging) return; const trackRect = track.getBoundingClientRect(); let y = e.clientY - trackRect.top - dragOffset; y = Math.max(0, Math.min(y, trackRect.height - thumb.clientHeight)); const ratio = y / (trackRect.height - thumb.clientHeight || 1); list.scrollTop = ratio * (list.scrollHeight - list.clientHeight); updateThumb(); }
+      function onDocMouseUp(){ dragging = false; }
+
+      if(thumb){ thumb.addEventListener('mousedown', onThumbMouseDown); document.addEventListener('mousemove', onDocMouseMove); document.addEventListener('mouseup', onDocMouseUp); }
+
+      // Sync thumb while scrolling
+      if(list) list.addEventListener('scroll', updateThumb);
+      window.addEventListener('resize', updateThumb);
+
+      // Observe changes in the list (fichas added/removed) and update
+      if(list){
+        const mo = new MutationObserver(()=>{ setupSinluzScrollbar(); });
+        mo.observe(list, { childList:true, subtree:true });
+      }
+
+      // Expose to global for manual calls if needed
+      window.setupSinluzScrollbar = setupSinluzScrollbar;
+
+      // Init on DOM ready
+      if(document.readyState === 'complete' || document.readyState === 'interactive'){
+        setTimeout(setupSinluzScrollbar, 50);
+      } else {
+        document.addEventListener('DOMContentLoaded', ()=> setTimeout(setupSinluzScrollbar, 50));
+      }
+    })();
   </script>
 
   <!-- Elimina los scripts globales de Three.js y GLTFLoader -->
+  <style>
+    /* Hide native scrollbars for the sinluz list so our custom track/thumb are used */
+    #sinluz-fichas-list {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+    #sinluz-fichas-list::-webkit-scrollbar { width: 0; height: 0; }
+    /* Ensure the list can still scroll (JS toggles overflow-y). */
+    /* end scroll CSS */
+    /* Ficha hover/selected visual */
+    .sinluz-ficha{
+      transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .sinluz-ficha:hover{ background-color: #2A2820; border-color: #7D786D; }
+    .sinluz-ficha.selected{ background-color: #2A2820 !important; border-color: #7D786D !important; }
+    /* Quitar contorno/borde de los inputs de nombre dentro de las fichas */
+    .sinluz-name-input,
+    .sinluz-name-input-probe {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+    .sinluz-name-input:focus,
+    .sinluz-name-input-probe:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+  </style>
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script> -->
 
   <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script> -->
@@ -5631,3 +6678,157 @@ function actualizarModelos3D() {
 
 
     
+  <script>
+    (function(){
+      const list = document.getElementById('sinluz-fichas-list');
+      if (!list) return;
+
+      // --- Selección por hover (persistente hasta hover en otra ficha) ---
+      function clearSelected(){
+        list.querySelectorAll('.sinluz-ficha.selected').forEach(el => el.classList.remove('selected'));
+      }
+
+      function setSelected(el){
+        if (!el) return;
+        clearSelected();
+        el.classList.add('selected');
+        // optional: store selected id globally (prefer data-sinluz-key for Firebase mapping)
+        try { window.sinluzSeleccionado = el.dataset && el.dataset.sinluzKey ? el.dataset.sinluzKey : (el.id || el); } catch(e){}
+      }
+
+      // Attach listeners to current fichas
+      function attachFichaListeners(){
+        const fichas = Array.from(list.querySelectorAll('.sinluz-ficha'));
+        fichas.forEach(f => {
+          f.addEventListener('mouseenter', function(){
+            setSelected(f);
+            try {
+              const key = f.dataset && f.dataset.sinluzKey ? f.dataset.sinluzKey : null;
+              if (key && typeof window.selectSinluzFichaGlobal === 'function') window.selectSinluzFichaGlobal(key);
+            } catch(e) {}
+          });
+          // also update on click for accessibility
+          f.addEventListener('click', function(){
+            setSelected(f);
+            try {
+              const key = f.dataset && f.dataset.sinluzKey ? f.dataset.sinluzKey : null;
+              if (key && typeof window.selectSinluzFichaGlobal === 'function') window.selectSinluzFichaGlobal(key);
+            } catch(e) {}
+          });
+        });
+        // Default: select first ficha if exists
+        if (fichas.length > 0 && !list.querySelector('.sinluz-ficha.selected')){
+          setSelected(fichas[0]);
+        }
+      }
+
+      attachFichaListeners();
+
+      // Observe additions/removals to reattach listeners
+      const mo = new MutationObserver((muts)=>{ attachFichaListeners(); });
+      mo.observe(list, { childList:true, subtree:true });
+
+      // --- Add-button: clone the probe ficha when clicked ---
+      const addBtn = list.querySelector('#sinluz-ficha-add');
+      if(addBtn){
+        addBtn.addEventListener('click', async function(){
+          console.log('Add Sinluz: click');
+          // Create a new Sinluz in Firebase under usuario/<usuario>/Sinluz ID "Sinluz N"
+          try{
+            const usuario = document.getElementById('usuario-inicio').value.trim();
+            console.log('Add Sinluz: usuario=', usuario);
+            if(!usuario){ mostrarMensaje('Ingresa un usuario primero.', false); return; }
+            const db = getDatabase();
+            // Read current keys to determine next index
+            const userSnap = await get(ref(db, `usuario/${usuario}`));
+            let nextIndex = 1;
+            if(userSnap && userSnap.exists()){
+              const data = userSnap.val();
+              // Accept both array under data.Sinluz or object keys like Sinluz1 / "Sinluz 1" / Sinluz
+              const keys = Object.keys(data || {});
+              // Count existing Sinluz keys (pattern "Sinluz" with or without space)
+              const sinluzKeys = keys.filter(k => /^Sinluz\s*\d+$/i.test(k) || /^Sinluz\d+$/i.test(k));
+              if(sinluzKeys.length > 0){
+                // find max numeric index
+                const nums = sinluzKeys.map(k => { const m = k.match(/\d+/); return m ? parseInt(m[0],10) : 0; });
+                nextIndex = Math.max(1, Math.max(...nums) + 1);
+              } else if(Array.isArray(data.Sinluz) && data.Sinluz.length > 0){
+                nextIndex = data.Sinluz.length + 1;
+              }
+            }
+            const newKey = `Sinluz ${nextIndex}`;
+            // Prepare default object
+            const fechaArg = new Date().toLocaleString('es-AR', {
+              year: 'numeric', month: '2-digit', day: '2-digit',
+              hour: '2-digit', minute: '2-digit', second: '2-digit', hour12:false,
+              timeZone: 'America/Argentina/Buenos_Aires'
+            }).replace(',', '');
+            const defaultSinluz = {
+              Nombre: newKey,
+              Yelmo: "",
+              Armadura: "",
+              Guanteletes: "",
+              Botas: "",
+              owner: usuario,
+              lastEdited: fechaArg,
+              Atributos: {
+                Nivel: 1, Vigor: 10, Mente: 10, Resistencia: 10, Fuerza: 10, Destreza: 10, Inteligencia: 10, Fe: 10, Arcano: 10
+              }
+            };
+            await set(ref(db, `usuario/${usuario}/${newKey}`), defaultSinluz);
+            console.log('Add Sinluz: created', newKey);
+            mostrarMensaje('Sinluz creado: ' + newKey, true);
+            // Re-render the list from DB
+            try{ await actualizarMenuSeleccionVisual(); } catch(e){}
+            // Try to select the newly created ficha and apply atributos
+            try{
+              const listEl = document.getElementById('sinluz-fichas-list');
+              const newFicha = listEl ? listEl.querySelector(`[data-sinluz-key="${newKey}"]`) : null;
+              if(newFicha){
+                // trigger selection handler (mouseenter/click will apply atributos)
+                newFicha.dispatchEvent(new Event('mouseenter'));
+                newFicha.dispatchEvent(new Event('click'));
+              }
+            } catch(e){ console.warn('Add Sinluz: could not auto-select new ficha', e); }
+            // Show selection menu (ensure visible)
+            try{ mostrarSoloMenu('seleccion'); } catch(e){}
+          } catch(err) {
+            console.error('Error creando Sinluz:', err);
+            mostrarMensaje('Error creando Sinluz: ' + err, false);
+          }
+        });
+      }
+
+      // --- Drag-to-scroll for the list (click+drag anywhere on list/ficha) ---
+      let isDragging = false;
+      let dragStartY = 0;
+      let startScrollTop = 0;
+
+      list.addEventListener('mousedown', function(e){
+        // don't start drag if user clicked on the thumb (handled elsewhere) or on an interactive element
+        const targetId = (e.target && e.target.id) || '';
+        if (targetId === 'scroll-barra' || targetId === 'scroll-vacio') return;
+        isDragging = true;
+        dragStartY = e.clientY;
+        startScrollTop = list.scrollTop;
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', function(e){
+        if(!isDragging) return;
+        const dy = e.clientY - dragStartY;
+        list.scrollTop = startScrollTop - dy;
+      });
+
+      document.addEventListener('mouseup', function(){
+        if(isDragging){ isDragging = false; document.body.style.userSelect = ''; }
+      });
+
+      // Expose helper
+      window.selectFirstSinluzFicha = function(){ const f = list.querySelector('.sinluz-ficha'); if(f) setSelected(f); };
+    })();
+  </script>
+
+
+
