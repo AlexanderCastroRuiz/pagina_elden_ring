@@ -2449,42 +2449,12 @@ function obtenerEquipStateDesdeMS() {
     const state = { h: null, a: null, g: null, l: null };
     types.forEach(t => {
       try {
-        // Preferir la imagen overlay `equipada-ms-*` (creada por mostrarEquipadaEnMsRanura),
-        // porque las `ms-ranura-*` son los sprites de ranura (p. ej. "ranura-a.png").
-        // Si no existe overlay, entonces usar el `ms-ranura-*` como fallback.
-        var overlay = document.getElementById('equipada-ms-' + t);
-        if (overlay && overlay.src) {
-          state[t] = overlay.src;
-        } else {
-          var slot = document.getElementById('ms-ranura-' + t);
-          if (slot && slot.src) state[t] = slot.src;
-        }
+        const el = document.getElementById('equipada-ms-' + t);
+        if (el && el.src) state[t] = el.src;
       } catch(e) {}
     });
     return state;
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
-}
-
-// Lee el estado de equipamiento (nombres de imagen) desde Firebase para una
-// ficha Sinluz concreta. Devuelve un objeto {h,a,g,l} con nombres o null.
-async function obtenerEquipStateDesdeFirebase(usuario, sinluzKey) {
-  try {
-    if (!usuario || !sinluzKey) return { h: null, a: null, g: null, l: null };
-    const db = getDatabase();
-    const snap = await get(ref(db, `usuario/${usuario}/${sinluzKey}`));
-    if (!snap || !snap.exists()) return { h: null, a: null, g: null, l: null };
-    const datos = snap.val() || {};
-    const yelmo = datos.Yelmo || datos.YelmoNombre || '';
-    const armadura = datos.Armadura || '';
-    const guanteletes = datos.Guanteletes || '';
-    const botas = datos.Botas || '';
-    return {
-      h: obtenerImagenPorNombre('h', yelmo) || null,
-      a: obtenerImagenPorNombre('a', armadura) || null,
-      g: obtenerImagenPorNombre('g', guanteletes) || null,
-      l: obtenerImagenPorNombre('l', botas) || null
-    };
-  } catch (e) { console.error('obtenerEquipStateDesdeFirebase error', e); return { h: null, a: null, g: null, l: null }; }
 }
 
 function actualizarModelos3DConEstado(equipState) {
@@ -5492,6 +5462,67 @@ function obtenerImagenPorNombre(tipo, nombre) {
   return "";
 }
 
+// Construye el estado de equipamiento (h,a,g,l) a partir de la ficha Sinluz
+// seleccionada leyendo la caché local o Firebase y actualiza los modelos 3D.
+async function actualizarModelos3DDesdeSinluzSeleccionado(keyArg) {
+  try {
+    const key = keyArg || window.sinluzSeleccionado;
+    if (!key) return;
+    const usuario = (document.getElementById('usuario-inicio') || {}).value;
+    if (!usuario) return;
+    const cacheKey = 'sinluz_cache_' + usuario + '_' + key;
+
+    // Try cache first
+    let equipImages = null;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        equipImages = parsed && parsed.equipImages ? parsed.equipImages : null;
+      }
+    } catch (e) { /* ignore cache errors */ }
+
+    // If no cache, fetch from Firebase
+    if (!equipImages) {
+      try {
+        const db = getDatabase();
+        const snap = await get(ref(db, `usuario/${usuario}/${key}`));
+        const sdata = snap && snap.exists() ? snap.val() : null;
+        const yelmo = (sdata && (sdata.Yelmo || sdata.YelmoNombre)) ? (sdata.Yelmo || sdata.YelmoNombre) : '';
+        const armadura = (sdata && sdata.Armadura) ? sdata.Armadura : '';
+        const guanteletes = (sdata && sdata.Guanteletes) ? sdata.Guanteletes : '';
+        const botas = (sdata && sdata.Botas) ? sdata.Botas : '';
+        equipImages = {
+          h: obtenerImagenPorNombre('h', yelmo) || null,
+          a: obtenerImagenPorNombre('a', armadura) || null,
+          g: obtenerImagenPorNombre('g', guanteletes) || null,
+          l: obtenerImagenPorNombre('l', botas) || null
+        };
+      } catch (e) { equipImages = { h: null, a: null, g: null, l: null }; }
+    }
+
+    const state = { h: equipImages && equipImages.h ? equipImages.h : null,
+                    a: equipImages && equipImages.a ? equipImages.a : null,
+                    g: equipImages && equipImages.g ? equipImages.g : null,
+                    l: equipImages && equipImages.l ? equipImages.l : null };
+
+    // Mantener sincronizado el objeto global `equipadas` para el resto de la app
+    try {
+      if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null };
+      window.equipadas.h = state.h;
+      window.equipadas.a = state.a;
+      window.equipadas.g = state.g;
+      window.equipadas.l = state.l;
+    } catch(e) {}
+
+    if (typeof actualizarModelos3DConEstado === 'function') {
+      try { actualizarModelos3DConEstado(state); } catch(e) {}
+    }
+    // También actualizar la ruta principal que usa `equipadas`
+    try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+  } catch(e) { console.error('actualizarModelos3DDesdeSinluzSeleccionado error', e); }
+}
+
 // note: copia-based ranura overlays were removed; we only use overlays inside/above
 // `ms-ranura-*`. Previous helper functions handling `ranura-*-copia-*` were removed
 // to avoid keeping unused code paths.
@@ -5504,17 +5535,9 @@ function limpiarEquipadaEnMs(tipo) {
   try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
   // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
   try {
-    if (typeof actualizarModelos3DConEstado === 'function') {
-      const usuario = document.getElementById('usuario-inicio') ? document.getElementById('usuario-inicio').value.trim() : '';
-      if (usuario && window.sinluzSeleccionado) {
-        obtenerEquipStateDesdeFirebase(usuario, window.sinluzSeleccionado)
-          .then(state => actualizarModelos3DConEstado(state))
-          .catch(err => {
-            try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
-          });
-      } else {
-        try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
-      }
+    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      const state = obtenerEquipStateDesdeMS();
+      actualizarModelos3DConEstado(state);
     }
     // También actualizar la lógica principal que usa `equipadas`
     try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
@@ -5574,17 +5597,9 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
     try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof actualizarModelos3DConEstado === 'function') {
-        const usuario = document.getElementById('usuario-inicio') ? document.getElementById('usuario-inicio').value.trim() : '';
-        if (usuario && window.sinluzSeleccionado) {
-          obtenerEquipStateDesdeFirebase(usuario, window.sinluzSeleccionado)
-            .then(state => actualizarModelos3DConEstado(state))
-            .catch(err => {
-              try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
-            });
-        } else {
-          try { if (typeof obtenerEquipStateDesdeMS === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e){}
-        }
+      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+        const state = obtenerEquipStateDesdeMS();
+        actualizarModelos3DConEstado(state);
       }
       // También actualizar la lógica principal que usa `equipadas` para evitar desincronías
       try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
@@ -5914,6 +5929,7 @@ async function actualizarMenuSeleccionVisual() {
                 if (imgL) mostrarEquipadaEnMsRanura('l', imgL);
               } catch(e){}
             } catch(e) { console.error('Error mostrando equipadas en probe', e); }
+            try { await actualizarModelos3DDesdeSinluzSeleccionado(firstKey); } catch(e) {}
           } catch(e) { console.error('Error seleccionando probe Sinluz', e); }
         };
         probe.addEventListener('mouseenter', onProbeSelect);
