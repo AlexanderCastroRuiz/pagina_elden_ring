@@ -2461,9 +2461,19 @@ function obtenerEquipStateDesdeMS() {
     types.forEach(t => {
       try {
         const el = document.getElementById('equipada-ms-' + t);
-        if (el && el.src) state[t] = el.src;
-      } catch(e) {}
+        if (el && el.src) {
+          state[t] = el.src;
+        } else if (window && window.equipadas && window.equipadas[t]) {
+          // fallback to previously stored equipadas
+          state[t] = window.equipadas[t];
+        } else {
+          state[t] = null;
+        }
+      } catch(e) {
+        try { state[t] = (window && window.equipadas && window.equipadas[t]) || null; } catch(e) { state[t] = null; }
+      }
     });
+    try { console.debug('obtenerEquipStateDesdeMS ->', state); } catch(e) {}
     return state;
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
 }
@@ -6617,6 +6627,8 @@ function actualizarModelos3D() {
   if (!scene || !renderer) return;
   const container = document.getElementById('threejs-container');
 
+  try { console.debug('actualizarModelos3D called - window.equipadas =', window.equipadas); } catch(e) {}
+
   function mostrarModelo(nombre, ruta) {
     if (!modelos3D[nombre]) {
       cargarModeloGLB(ruta, nombre);
@@ -6685,32 +6697,31 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura L ---
-  if (!equipadas.l) {
-    mostrarModelo('piernas', './Piernas.glb');
-    ocultarModelo('L_Raging_Wolf');
-    ocultarModelo('L_Alberich');
-    ocultarModelo('L_Preceptor');
-  } else {
-    ocultarModelo('piernas');
-    const imgL = equipadas.l.split('/').pop();
-    if (imgL === 'wolf-l.png') {
-      mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
-    } else if (imgL === 'carian-l.png') {
-      mostrarModelo('L_Alberich', './L_Alberich.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Preceptor');
-    } else if (imgL === 'samurai-l.png') {
-      mostrarModelo('L_Preceptor', './L_Preceptor.glb');
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
+  try {
+    const lRaw = (window && window.equipadas && window.equipadas.l) ? window.equipadas.l : equipadas.l;
+    if (!lRaw) {
+      console.debug('actualizarModelos3D - L: no equip, showing piernas');
+      mostrarModelo('piernas', './Piernas.glb');
+      ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
     } else {
-      ocultarModelo('L_Raging_Wolf');
-      ocultarModelo('L_Alberich');
-      ocultarModelo('L_Preceptor');
+      const imgL = (typeof lRaw === 'string') ? (lRaw.split('/').pop()) : null;
+      console.debug('actualizarModelos3D - L raw=', lRaw, 'basename=', imgL);
+      if (!imgL) {
+        mostrarModelo('piernas', './Piernas.glb');
+        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+      } else if (imgL === 'wolf-l.png') {
+        ocultarModelo('piernas'); mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+      } else if (imgL === 'carian-l.png') {
+        ocultarModelo('piernas'); mostrarModelo('L_Alberich', './L_Alberich.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Preceptor');
+      } else if (imgL === 'samurai-l.png') {
+        ocultarModelo('piernas'); mostrarModelo('L_Preceptor', './L_Preceptor.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich');
+      } else {
+        console.debug('actualizarModelos3D - L image not matched, fallback to piernas');
+        mostrarModelo('piernas', './Piernas.glb');
+        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+      }
     }
-  }
+  } catch(e) { console.error('actualizarModelos3D L-slot error', e); }
 }
     (function(){
       function get(id){return document.getElementById(id);}
