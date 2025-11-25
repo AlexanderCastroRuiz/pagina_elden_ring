@@ -1474,31 +1474,36 @@
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
-        // (async) actualizar visual del menú selección
-        try { actualizarMenuSeleccionVisual(); } catch(e){}
-  // Inicializar/mostrar el entorno 3D dentro del menú selección (tercer tercio)
-          try {
-            // Asegura ThreeJS inicializado
-            try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e) { console.warn('initThreeJS error in seleccion', e); }
-            // Mostrar el canvas dentro del contenedor del menú selección
-            const sel3 = document.getElementById('threejs-seleccion-container');
-            if (sel3) {
-              sel3.style.display = 'block';
-              try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container'); } catch(e) { console.warn('moveThreeRendererTo failed', e); }
-              try { updateThreeSize(); } catch(e) {}
-            }
-            // Sincronizar estado de equipadas usando la misma función que usan los ms-ranura-*
-            if (typeof obtenerEquipStateDesdeMS === 'function') {
-              try {
-                const state = obtenerEquipStateDesdeMS() || { h: null, a: null, g: null, l: null };
-                // actualizar el objeto global `equipadas` para que `actualizarModelos3D` lo use
-                try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
-                if (typeof actualizarModelos3D === 'function') actualizarModelos3D();
-              } catch(e) { console.error('Error sincronizando equipadas en seleccion', e); }
-            } else {
-              try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-            }
-          } catch(e) { console.error('Error inicializando 3D en menu seleccion', e); }
+          // Esperar a que la visual del menú selección se actualice antes de inicializar 3D
+          (async function(){
+            try {
+              await actualizarMenuSeleccionVisual();
+            } catch(e){ /* ignore visual errors but continue */ }
+
+            // Inicializar/mostrar el entorno 3D dentro del menú selección (tercer tercio)
+            try {
+              // Asegura ThreeJS inicializado
+              try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e) { console.warn('initThreeJS error in seleccion', e); }
+              // Mostrar el canvas dentro del contenedor del menú selección
+              const sel3 = document.getElementById('threejs-seleccion-container');
+              if (sel3) {
+                sel3.style.display = 'block';
+                try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container'); } catch(e) { console.warn('moveThreeRendererTo failed', e); }
+                try { updateThreeSize(); } catch(e) {}
+              }
+              // Sincronizar estado de equipadas usando la misma función que usan los ms-ranura-*
+              if (typeof obtenerEquipStateDesdeMS === 'function') {
+                try {
+                  const state = obtenerEquipStateDesdeMS() || { h: null, a: null, g: null, l: null };
+                  // actualizar el objeto global `equipadas` para que `actualizarModelos3D` lo use
+                  try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
+                  if (typeof actualizarModelos3D === 'function') actualizarModelos3D();
+                } catch(e) { console.error('Error sincronizando equipadas en seleccion', e); }
+              } else {
+                try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+              }
+            } catch(e) { console.error('Error inicializando 3D en menu seleccion', e); }
+          })();
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -5480,12 +5485,13 @@ function limpiarEquipadaEnMs(tipo) {
   try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
   // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
   try {
-    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+    if (typeof obtenerEquipStateDesdeMS === 'function') {
       const state = obtenerEquipStateDesdeMS();
-      actualizarModelos3DConEstado(state);
+      try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
+      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+    } else {
+      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
     }
-    // También actualizar la lógica principal que usa `equipadas`
-    try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
   } catch(e) { /* silencioso */ }
 }
 
@@ -5542,12 +5548,13 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
     try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
+      if (typeof obtenerEquipStateDesdeMS === 'function') {
         const state = obtenerEquipStateDesdeMS();
-        actualizarModelos3DConEstado(state);
+        try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
+        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+      } else {
+        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
       }
-      // También actualizar la lógica principal que usa `equipadas` para evitar desincronías
-      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
     } catch(e) { /* silencioso */ }
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
