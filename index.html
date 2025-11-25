@@ -6928,6 +6928,8 @@ function actualizarModelos3D() {
     ocultarModelo('H_Raging_Wolf');
     ocultarModelo('H_Alberich');
     ocultarModelo('H_Preceptor');
+    ocultarModelo('H_Caria');
+    ocultarModelo('H_Vagabond');
   } else {
     ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
     const imgH = equipadas.h.split('/').pop();
@@ -6935,18 +6937,37 @@ function actualizarModelos3D() {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
       ocultarModelo('H_Alberich');
       ocultarModelo('H_Preceptor');
+      ocultarModelo('H_Caria');
+      ocultarModelo('H_Vagabond');
     } else if (imgH === 'alberich-h.png') {
       mostrarModelo('H_Alberich', './H_Alberich.glb');
       ocultarModelo('H_Raging_Wolf');
       ocultarModelo('H_Preceptor');
+      ocultarModelo('H_Caria');
+      ocultarModelo('H_Vagabond');
     } else if (imgH === 'preceptor-h.png') {
       mostrarModelo('H_Preceptor', './H_Preceptor.glb');
       ocultarModelo('H_Raging_Wolf');
       ocultarModelo('H_Alberich');
+      ocultarModelo('H_Caria');
+      ocultarModelo('H_Vagabond');
+    } else if (imgH === 'cariank-h.png') {
+      mostrarModelo('H_Caria', './H_Caria.glb');
+      ocultarModelo('H_Raging_Wolf');
+      ocultarModelo('H_Alberich');
+      ocultarModelo('H_Preceptor');
+      ocultarModelo('H_Vagabond');
+    } else if (imgH === 'vagabond-h.png') {
+      mostrarModelo('H_Vagabond', './H_Vagabond.glb');
+      ocultarModelo('H_Raging_Wolf');
+      ocultarModelo('H_Alberich');
+      ocultarModelo('H_Preceptor');
     } else {
       ocultarModelo('H_Raging_Wolf');
       ocultarModelo('H_Alberich');
       ocultarModelo('H_Preceptor');
+      ocultarModelo('H_Caria');
+      ocultarModelo('H_Vagabond');
     }
   }
 
@@ -6956,6 +6977,8 @@ function actualizarModelos3D() {
     ocultarModelo('A_Raging_Wolf');
     ocultarModelo('A_Alberich');
     ocultarModelo('A_Preceptor');
+    ocultarModelo('A_Caria');
+    ocultarModelo('A_Vagabond');
   } else {
     ocultarModelo('pecho');
     const imgA = equipadas.a.split('/').pop();
@@ -6963,18 +6986,37 @@ function actualizarModelos3D() {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
       ocultarModelo('A_Alberich');
       ocultarModelo('A_Preceptor');
+      ocultarModelo('A_Caria');
+      ocultarModelo('A_Vagabond');
     } else if (imgA === 'carian-a.png') {
       mostrarModelo('A_Alberich', './A_Alberich.glb');
       ocultarModelo('A_Raging_Wolf');
       ocultarModelo('A_Preceptor');
+      ocultarModelo('A_Caria');
+      ocultarModelo('A_Vagabond');
     } else if (imgA === 'samurai-a.png') {
       mostrarModelo('A_Preceptor', './A_Preceptor.glb');
       ocultarModelo('A_Raging_Wolf');
       ocultarModelo('A_Alberich');
+      ocultarModelo('A_Caria');
+      ocultarModelo('A_Vagabond');
+    } else if (imgA === 'cariank-a.png') {
+      mostrarModelo('A_Caria', './A_Caria.glb');
+      ocultarModelo('A_Raging_Wolf');
+      ocultarModelo('A_Alberich');
+      ocultarModelo('A_Preceptor');
+      ocultarModelo('A_Vagabond');
+    } else if (imgA === 'vagabond-a.png') {
+      mostrarModelo('A_Vagabond', './A_Vagabond.glb');
+      ocultarModelo('A_Raging_Wolf');
+      ocultarModelo('A_Alberich');
+      ocultarModelo('A_Preceptor');
     } else {
       ocultarModelo('A_Raging_Wolf');
       ocultarModelo('A_Alberich');
       ocultarModelo('A_Preceptor');
+      ocultarModelo('A_Caria');
+      ocultarModelo('A_Vagabond');
     }
   }
 
@@ -6984,6 +7026,8 @@ function actualizarModelos3D() {
     ocultarModelo('G_Raging_Wolf');
     ocultarModelo('G_Alberich');
     ocultarModelo('G_Preceptor');
+    ocultarModelo('G_Caria');
+    ocultarModelo('G_Vagabond');
   } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
     ocultarModelo('manos');
     mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
@@ -6994,14 +7038,31 @@ function actualizarModelos3D() {
       mostrarModelo('G_Alberich', './G_Alberich.glb');
       ocultarModelo('G_Raging_Wolf');
       ocultarModelo('G_Preceptor');
+      ocultarModelo('G_Caria');
+      ocultarModelo('G_Vagabond');
     } else if (imgG === 'preceptor-g.png') {
       mostrarModelo('G_Preceptor', './G_Preceptor.glb');
       ocultarModelo('G_Raging_Wolf');
       ocultarModelo('G_Alberich');
+      ocultarModelo('G_Caria');
+      ocultarModelo('G_Vagabond');
+    } else if (imgG === 'cariank-g.png') {
+      mostrarModelo('G_Caria', './G_Caria.glb');
+      ocultarModelo('G_Raging_Wolf');
+      ocultarModelo('G_Alberich');
+      ocultarModelo('G_Preceptor');
+      ocultarModelo('G_Vagabond');
+    } else if (imgG === 'vagabond-g.png') {
+      mostrarModelo('G_Vagabond', './G_Vagabond.glb');
+      ocultarModelo('G_Raging_Wolf');
+      ocultarModelo('G_Alberich');
+      ocultarModelo('G_Preceptor');
     } else {
       ocultarModelo('G_Raging_Wolf');
       ocultarModelo('G_Alberich');
       ocultarModelo('G_Preceptor');
+      ocultarModelo('G_Caria');
+      ocultarModelo('G_Vagabond');
     }
   }
 
@@ -7011,6 +7072,8 @@ function actualizarModelos3D() {
     ocultarModelo('L_Raging_Wolf');
     ocultarModelo('L_Alberich');
     ocultarModelo('L_Preceptor');
+    ocultarModelo('L_Caria');
+    ocultarModelo('L_Vagabond');
   } else {
     ocultarModelo('piernas');
     const imgL = equipadas.l.split('/').pop();
@@ -7018,18 +7081,37 @@ function actualizarModelos3D() {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
       ocultarModelo('L_Alberich');
       ocultarModelo('L_Preceptor');
+      ocultarModelo('L_Caria');
+      ocultarModelo('L_Vagabond');
     } else if (imgL === 'carian-l.png') {
       mostrarModelo('L_Alberich', './L_Alberich.glb');
       ocultarModelo('L_Raging_Wolf');
       ocultarModelo('L_Preceptor');
+      ocultarModelo('L_Caria');
+      ocultarModelo('L_Vagabond');
     } else if (imgL === 'samurai-l.png') {
       mostrarModelo('L_Preceptor', './L_Preceptor.glb');
       ocultarModelo('L_Raging_Wolf');
       ocultarModelo('L_Alberich');
+      ocultarModelo('L_Caria');
+      ocultarModelo('L_Vagabond');
+    } else if (imgL === 'cariank-l.png') {
+      mostrarModelo('L_Caria', './L_Caria.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
+      ocultarModelo('L_Vagabond');
+    } else if (imgL === 'vagabond-l.png') {
+      mostrarModelo('L_Vagabond', './L_Vagabond.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
     } else {
       ocultarModelo('L_Raging_Wolf');
       ocultarModelo('L_Alberich');
       ocultarModelo('L_Preceptor');
+      ocultarModelo('L_Caria');
+      ocultarModelo('L_Vagabond');
     }
   }
 }
