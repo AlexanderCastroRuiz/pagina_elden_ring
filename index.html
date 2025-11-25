@@ -533,7 +533,7 @@
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
     <!-- Contenedor 3D específico para el menú selección (tercer tercio de la pantalla) -->
-    <div id="threejs-seleccion-container" style="display:none; position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2050; pointer-events:auto; background:transparent;"></div>
+    <div id="threejs-seleccion-container" style="display:none; position:absolute; right:0; top:-20px; width:33.33vw; height:100vh; z-index:2050; pointer-events:auto; background:transparent;"></div>
     <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
@@ -6592,6 +6592,20 @@ function actualizarModelos3D() {
   if (!scene || !renderer) return;
   const container = document.getElementById('threejs-container');
 
+  // Determine equip state: use menu-selection overlays when renderer is shown inside the selection container,
+  // otherwise fall back to global `equipadas`.
+  var currentEquip = (typeof equipadas !== 'undefined') ? equipadas : { h:null,a:null,g:null,l:null };
+  try {
+    var selCont = document.getElementById('threejs-seleccion-container');
+    var inSelection = false;
+    if (selCont && selCont.style && selCont.style.display !== 'none') inSelection = true;
+    if (renderer && renderer.domElement && renderer.domElement.parentNode && renderer.domElement.parentNode.id === 'threejs-seleccion-container') inSelection = true;
+    if (inSelection && typeof obtenerEquipStateDesdeMS === 'function') {
+      var msState = obtenerEquipStateDesdeMS();
+      if (msState) currentEquip = msState;
+    }
+  } catch(e) { /* silent */ }
+
   function mostrarModelo(nombre, ruta) {
     if (!modelos3D[nombre]) {
       cargarModeloGLB(ruta, nombre);
@@ -6607,12 +6621,12 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura H ---
-  if (!equipadas.h) {
+  if (!currentEquip.h) {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
   } else {
     ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if (equipadas.h.split('/').pop() === 'wolf-h.png') {
+    if ((currentEquip.h + '').split('/').pop() === 'wolf-h.png') {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
     } else {
       ocultarModelo('H_Raging_Wolf');
@@ -6620,14 +6634,14 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura A ---
-  if (!equipadas.a) {
+  if (!currentEquip.a) {
     mostrarModelo('pecho', './Pecho.glb');
     ocultarModelo('A_Raging_Wolf');
     ocultarModelo('A_Alberich');
     ocultarModelo('A_Preceptor');
   } else {
     ocultarModelo('pecho');
-    const imgA = equipadas.a.split('/').pop();
+    const imgA = (currentEquip.a + '').split('/').pop();
     if (imgA === 'wolf-a.png') {
       mostrarModelo('A_Raging_Wolf', './A_Raging_Wolf.glb');
       ocultarModelo('A_Alberich');
@@ -6648,10 +6662,10 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura G ---
-  if (!equipadas.g) {
+  if (!currentEquip.g) {
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
-  } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
+  } else if ((currentEquip.g + '').split('/').pop() === 'wolf-g.png') {
     ocultarModelo('manos');
     mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
   } else {
@@ -6660,14 +6674,14 @@ function actualizarModelos3D() {
   }
 
   // --- Ranura L ---
-  if (!equipadas.l) {
+  if (!currentEquip.l) {
     mostrarModelo('piernas', './Piernas.glb');
     ocultarModelo('L_Raging_Wolf');
     ocultarModelo('L_Alberich');
     ocultarModelo('L_Preceptor');
   } else {
     ocultarModelo('piernas');
-    const imgL = equipadas.l.split('/').pop();
+    const imgL = (currentEquip.l + '').split('/').pop();
     if (imgL === 'wolf-l.png') {
       mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
       ocultarModelo('L_Alberich');
