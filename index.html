@@ -541,8 +541,6 @@
     <input id="nombre-sinluz-3" type="text" placeholder="Sinluz 3" class="sinluz-input" maxlength="15"
       style="display:none; position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
 
-    <!-- Contenedor 3D para el menú selección: mostrado en el tercer tercio (derecha) -->
-    <div id="threejs-seleccion-container" style="position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2199; display:none; pointer-events:auto; background:transparent;"></div>
     <!-- Contenedor recortado para fichas: edita manualmente left/top/width/height para mover y redimensionar -->
     <div id="sinluz-fichas" style="position:absolute; top: 120px; left: 33px; width: 770px; height: 435px; overflow:hidden; z-index:2215;">
       <!-- Lista interna scrollable; el scroll real se activa solo si hay >3 fichas -->
@@ -966,19 +964,29 @@
       <img src="dorado.png" alt="Dorado" class="ranura-dorado">
     </div>
     <!-- Menú de almacen, oculto por defecto -->
-    <div class="almacen-btn-wrapper" id="almacen-1" style="top: 287px; left: 50px; --almacen-size: 100px;">
+    <div class="almacen-btn-wrapper" id="almacen-1" style="top: calc(287px - 50px); left: 50px; --almacen-size: 100px;">
       <img src="almacen.png" alt="Almacen 1" class="almacen-btn">
       <img src="" alt="" class="almacen-img" id="almacen-img-1" style="display:none;">
       <img src="dorado.png" alt="Dorado" class="almacen-dorado">
     </div>
-    <div class="almacen-btn-wrapper" id="almacen-2" style="top: 287px; left: 155px; --almacen-size: 100px;">
+    <div class="almacen-btn-wrapper" id="almacen-2" style="top: calc(287px - 50px); left: 155px; --almacen-size: 100px;">
       <img src="almacen.png" alt="Almacen 2" class="almacen-btn">
       <img src="" alt="" class="almacen-img" id="almacen-img-2" style="display:none;">
       <img src="dorado.png" alt="Dorado" class="almacen-dorado">
     </div>
-    <div class="almacen-btn-wrapper" id="almacen-3" style="top: 287px; left: 260px; --almacen-size: 100px;">
+    <div class="almacen-btn-wrapper" id="almacen-3" style="top: calc(287px - 50px); left: 260px; --almacen-size: 100px;">
       <img src="almacen.png" alt="Almacen 3" class="almacen-btn">
       <img src="" alt="" class="almacen-img" id="almacen-img-3" style="display:none;">
+      <img src="dorado.png" alt="Dorado" class="almacen-dorado">
+    </div>
+    <div class="almacen-btn-wrapper" id="almacen-4" style="top: calc(400px - 50px); left: 102.5px; --almacen-size: 100px;">
+      <img src="almacen.png" alt="Almacen 4" class="almacen-btn">
+      <img src="" alt="" class="almacen-img" id="almacen-img-4" style="display:none;">
+      <img src="dorado.png" alt="Dorado" class="almacen-dorado">
+    </div>
+    <div class="almacen-btn-wrapper" id="almacen-5" style="top: calc(400px - 50px); left: 207.5px; --almacen-size: 100px;">
+      <img src="almacen.png" alt="Almacen 5" class="almacen-btn">
+      <img src="" alt="" class="almacen-img" id="almacen-img-5" style="display:none;">
       <img src="dorado.png" alt="Dorado" class="almacen-dorado">
     </div>
     <!-- Botón Guardar -->
@@ -1474,36 +1482,11 @@
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
-          // Esperar a que la visual del menú selección se actualice antes de inicializar 3D
-          (async function(){
-            try {
-              await actualizarMenuSeleccionVisual();
-            } catch(e){ /* ignore visual errors but continue */ }
-
-            // Inicializar/mostrar el entorno 3D dentro del menú selección (tercer tercio)
-            try {
-              // Asegura ThreeJS inicializado
-              try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e) { console.warn('initThreeJS error in seleccion', e); }
-              // Mostrar el canvas dentro del contenedor del menú selección
-              const sel3 = document.getElementById('threejs-seleccion-container');
-              if (sel3) {
-                sel3.style.display = 'block';
-                try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container'); } catch(e) { console.warn('moveThreeRendererTo failed', e); }
-                try { updateThreeSize(); } catch(e) {}
-              }
-              // Sincronizar estado de equipadas usando la misma función que usan los ms-ranura-*
-              if (typeof obtenerEquipStateDesdeMS === 'function') {
-                try {
-                  const state = obtenerEquipStateDesdeMS() || { h: null, a: null, g: null, l: null };
-                  // actualizar el objeto global `equipadas` para que `actualizarModelos3D` lo use
-                  try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
-                  if (typeof actualizarModelos3D === 'function') actualizarModelos3D();
-                } catch(e) { console.error('Error sincronizando equipadas en seleccion', e); }
-              } else {
-                try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-              }
-            } catch(e) { console.error('Error inicializando 3D en menu seleccion', e); }
-          })();
+        // (async) actualizar visual del menú selección
+        try { actualizarMenuSeleccionVisual(); } catch(e){}
+// Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
+        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -1578,8 +1561,8 @@
         updateThreeSize();
         // Restaurar el renderer al contenedor principal (columna B)
         try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container'); } catch(e) {}
-        // Ocultar el contenedor 3D de selección si existe (cuando volvemos al principal)
-        try { var sel3 = document.getElementById('threejs-seleccion-container'); if (sel3) sel3.style.display = 'none'; } catch(e) {}
+        // Ocultar el contenedor 3D de selección si existe
+        // Contenedor 3D de selección eliminado previamente; no hay nada que ocultar aquí.
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
 
@@ -2461,19 +2444,9 @@ function obtenerEquipStateDesdeMS() {
     types.forEach(t => {
       try {
         const el = document.getElementById('equipada-ms-' + t);
-        if (el && el.src) {
-          state[t] = el.src;
-        } else if (window && window.equipadas && window.equipadas[t]) {
-          // fallback to previously stored equipadas
-          state[t] = window.equipadas[t];
-        } else {
-          state[t] = null;
-        }
-      } catch(e) {
-        try { state[t] = (window && window.equipadas && window.equipadas[t]) || null; } catch(e) { state[t] = null; }
-      }
+        if (el && el.src) state[t] = el.src;
+      } catch(e) {}
     });
-    try { console.debug('obtenerEquipStateDesdeMS ->', state); } catch(e) {}
     return state;
   } catch(e) { return { h:null,a:null,g:null,l:null }; }
 }
@@ -3397,6 +3370,10 @@ function bonusGeneralRes(attrLevel) {
     const imagenNombre = {
       "carian-a.png": "Vestido de Alberich",
       "carian-l.png": "Pantalones de Alberich",
+      "alberich-h.png": "Sombrero puntiagudo de Alberich",
+      "alberich-g.png": "Brazales de Alberich",
+      "preceptor-h.png": "Gran sombrero del preceptor",
+      "preceptor-g.png": "Guantes del preceptor",
       "samurai-a.png": "Vestido de preceptor",
       "samurai-l.png": "Pantalones de preceptor",
       "wolf-a.png": "Armadura de Lobo Furioso",
@@ -3442,7 +3419,9 @@ function bonusGeneralRes(attrLevel) {
       var imgs = [
         document.getElementById("almacen-img-1"),
         document.getElementById("almacen-img-2"),
-        document.getElementById("almacen-img-3")
+        document.getElementById("almacen-img-3"),
+        document.getElementById("almacen-img-4"),
+        document.getElementById("almacen-img-5")
       ];
       // Oculta todas las imágenes primero
       imgs.forEach(function(img) {
@@ -3453,24 +3432,34 @@ function bonusGeneralRes(attrLevel) {
 
       if (tipo === "h") {
         imgs[0].src = "wolf-h.png";      imgs[0].alt = "Wolf H";
-        imgs[1].src = "carian-h.png";    imgs[1].alt = "Carian H";
-        imgs[2].src = "samurai-h.png";   imgs[2].alt = "Samurai H";
+        imgs[1].src = "alberich-h.png";    imgs[1].alt = "Alberich H";
+        imgs[2].src = "preceptor-h.png";   imgs[2].alt = "Preceptor H";
+        imgs[3].src = "cariank-h.png";   imgs[3].alt = "Caria H";
+        imgs[4].src = "vagabond-h.png";  imgs[4].alt = "Vagabond H";
       } else if (tipo === "a") {
         imgs[0].src = "wolf-a.png";      imgs[0].alt = "Wolf A";
         imgs[1].src = "carian-a.png";    imgs[1].alt = "Carian A";
         imgs[2].src = "samurai-a.png";   imgs[2].alt = "Samurai A";
+        imgs[3].src = "cariank-a.png";   imgs[3].alt = "Caria A";
+        imgs[4].src = "vagabond-a.png";  imgs[4].alt = "Vagabond A";
       } else if (tipo === "g") {
         imgs[0].src = "wolf-g.png";      imgs[0].alt = "Wolf G";
-        imgs[1].src = "carian-g.png";    imgs[1].alt = "Carian G";
-        imgs[2].src = "samurai-g.png";   imgs[2].alt = "Samurai G";
+        imgs[1].src = "alberich-g.png";    imgs[1].alt = "Alberich G";
+        imgs[2].src = "preceptor-g.png";   imgs[2].alt = "Preceptor G";
+        imgs[3].src = "cariank-g.png";   imgs[3].alt = "Caria G";
+        imgs[4].src = "vagabond-g.png";  imgs[4].alt = "Vagabond G";
       } else if (tipo === "l") {
         imgs[0].src = "wolf-l.png";      imgs[0].alt = "Wolf L";
         imgs[1].src = "carian-l.png";    imgs[1].alt = "Carian L";
         imgs[2].src = "samurai-l.png";   imgs[2].alt = "Samurai L";
+        imgs[3].src = "cariank-l.png";   imgs[3].alt = "Caria L";
+        imgs[4].src = "vagabond-l.png";  imgs[4].alt = "Vagabond L";
       } else if (tipo === "mano") {
         imgs[0].src = "bandit-s.png";    imgs[0].alt = "Bandit S";
         imgs[1].src = "night-flame.png"; imgs[1].alt = "Night Flame";
         imgs[2].src = "uchigatana.png";  imgs[2].alt = "Uchigatana";
+        imgs[3].src = "";                imgs[3].alt = "";
+        imgs[4].src = "";                imgs[4].alt = "";
       }
       // Muestra las imágenes
       imgs.forEach(function(img) {
@@ -3526,6 +3515,8 @@ function bonusGeneralRes(attrLevel) {
       document.getElementById('almacen-1').style.display = 'block';
       document.getElementById('almacen-2').style.display = 'block';
       document.getElementById('almacen-3').style.display = 'block';
+      document.getElementById('almacen-4').style.display = 'block';
+      document.getElementById('almacen-5').style.display = 'block';
       // Actualiza imágenes según ranura
       setAlmacenImages(tipo);
       menuActual = tipo;
@@ -3540,7 +3531,9 @@ function actualizarDesequiparVolver() {
   if (
     document.getElementById('almacen-1').style.display === 'block' ||
     document.getElementById('almacen-2').style.display === 'block' ||
-    document.getElementById('almacen-3').style.display === 'block'
+    document.getElementById('almacen-3').style.display === 'block' ||
+    document.getElementById('almacen-4').style.display === 'block' ||
+    document.getElementById('almacen-5').style.display === 'block'
   ) {
     img.src = "esc.png";
     txt.textContent = "Volver";
@@ -3559,8 +3552,10 @@ function volverMenuRanuras() {
   document.getElementById('almacen-1').style.display = 'none';
   document.getElementById('almacen-2').style.display = 'none';
   document.getElementById('almacen-3').style.display = 'none';
+  document.getElementById('almacen-4').style.display = 'none';
+  document.getElementById('almacen-5').style.display = 'none';
   // Oculta las imágenes de almacen
-  ["almacen-img-1", "almacen-img-2", "almacen-img-3"].forEach(function(id){
+  ["almacen-img-1", "almacen-img-2", "almacen-img-3", "almacen-img-4", "almacen-img-5"].forEach(function(id){
     var img = document.getElementById(id);
     if (img) img.style.display = "none";
   });
@@ -3630,6 +3625,8 @@ function volverMenuRanuras() {
     document.getElementById("almacen-1").addEventListener("click", function() { equiparAlmacen(0); });
     document.getElementById("almacen-2").addEventListener("click", function() { equiparAlmacen(1); });
     document.getElementById("almacen-3").addEventListener("click", function() { equiparAlmacen(2); });
+    document.getElementById("almacen-4").addEventListener("click", function() { equiparAlmacen(3); });
+    document.getElementById("almacen-5").addEventListener("click", function() { equiparAlmacen(4); });
 
     // Efecto dorado en almacen
     function setAlmacenDorado(wrapperId) {
@@ -3660,6 +3657,12 @@ function volverMenuRanuras() {
     document.getElementById("almacen-3").addEventListener("mouseenter", function() {
       setAlmacenDorado("almacen-3");
     });
+    document.getElementById("almacen-4").addEventListener("mouseenter", function() {
+      setAlmacenDorado("almacen-4");
+    });
+    document.getElementById("almacen-5").addEventListener("mouseenter", function() {
+      setAlmacenDorado("almacen-5");
+    });
 
 
 
@@ -3671,6 +3674,12 @@ function volverMenuRanuras() {
       e.preventDefault(); volverMenuRanuras();
     });
     document.getElementById('almacen-3').addEventListener("contextmenu", function(e){
+      e.preventDefault(); volverMenuRanuras();
+    });
+    document.getElementById('almacen-4').addEventListener("contextmenu", function(e){
+      e.preventDefault(); volverMenuRanuras();
+    });
+    document.getElementById('almacen-5').addEventListener("contextmenu", function(e){
       e.preventDefault(); volverMenuRanuras();
     });
 
@@ -3698,6 +3707,41 @@ function volverMenuRanuras() {
           vitalidad: 8,
           peso: 4.4, 
           postura: 7,
+        }
+        ,
+        {
+          nombre: "Sombrero puntiagudo de Alberich",
+          fisico: 1.6,
+          golpe: 1.5,
+          tajo: 1.5,
+          puncion: 1.5,
+          magico: 5.5,
+          sagrado: 2.3,
+          electrico: 2.3,
+          fuego: 2.4,
+          inmunidad: 12,
+          robustez: 8,
+          concentracion: 44,
+          vitalidad: 15,
+          peso: 2.0,
+          postura: 11,
+        },
+        {
+          nombre: "Gran sombrero del preceptor",
+          fisico: 1.7,
+          golpe: 1.2,
+          tajo: 1.2,
+          puncion: 1.5,
+          magico: 5.7,
+          sagrado: 2.0,
+          electrico: 2.0,
+          fuego: 2.1,
+          inmunidad: 13,
+          robustez: 7,
+          concentracion: 40,
+          vitalidad: 15,
+          peso: 2.0,
+          postura: 13,
         }
       ],
       a: [
@@ -3772,6 +3816,40 @@ function volverMenuRanuras() {
           peso: 3.4, 
           postura: 4,
         },
+            {
+              nombre: "Brazales de Alberich",
+              fisico: 0.8,
+              golpe: 0.7,
+              tajo: 0.7,
+              puncion: 0.5,
+              magico: 4.9,
+              sagrado: 2.1,
+              electrico: 3.0,
+              fuego: 2.0,
+              inmunidad: 12,
+              robustez: 8,
+              concentracion: 44,
+              vitalidad: 15,
+              peso: 1.5,
+              postura: 8,
+            },
+            {
+              nombre: "Guantes del preceptor",
+              fisico: 1.0,
+              golpe: 1.0,
+              tajo: 1.0,
+              puncion: 1.3,
+              magico: 5.3,
+              sagrado: 2.6,
+              electrico: 2.6,
+              fuego: 2.7,
+              inmunidad: 15,
+              robustez: 10,
+              concentracion: 38,
+              vitalidad: 16,
+              peso: 1.8,
+              postura: 13,
+            }
       ],
       l: [
         {
@@ -3870,7 +3948,7 @@ function volverMenuRanuras() {
       try {
         var mostrar = (tipoMenuSecundario === 'menú armaduras');
         // Controlar badges en los wrappers de almacen (1..3)
-        for (var i = 1; i <= 3; i++) {
+        for (var i = 1; i <= 5; i++) {
           try {
             var badgeId = 'equipado-badge-almacen-' + i;
             var badge = document.getElementById(badgeId);
@@ -4930,9 +5008,9 @@ function volverMenuRanuras() {
       if (tipo === "menú armaduras") {
         // Detecta el tipo de ranura según menuActual o ultimaRanuraSeleccionada
         let tipoRanura = menuActual || (ultimaRanuraSeleccionada ? ultimaRanuraSeleccionada.split('-')[1] : null);
-        if (tipoRanura === "h")      { src = ["wolf-h.png","carian-h.png","samurai-h.png"][idx]; ranura = "h"; }
+        if (tipoRanura === "h")      { src = ["wolf-h.png","alberich-h.png","preceptor-h.png"][idx]; ranura = "h"; }
         else if (tipoRanura === "a") { src = ["wolf-a.png","carian-a.png","samurai-a.png"][idx]; ranura = "a"; }
-        else if (tipoRanura === "g") { src = ["wolf-g.png","carian-g.png","samurai-g.png"][idx]; ranura = "g"; }
+        else if (tipoRanura === "g") { src = ["wolf-g.png","alberich-g.png","preceptor-g.png"][idx]; ranura = "g"; }
         else if (tipoRanura === "l") { src = ["wolf-l.png","carian-l.png","samurai-l.png"][idx]; ranura = "l"; }
       } else if (tipo === "menú armas") {
         src = ["bandit-s.png","night-flame.png","uchigatana.png"][idx];
@@ -4995,7 +5073,7 @@ function volverMenuRanuras() {
         let tipo = wrapperId.split('-')[1];
         let imgSrc = equipadas[tipo];
         if (imgSrc) {
-          if (tipo === "h") idx = ["wolf-h.png","carian-h.png","samurai-h.png"].indexOf(imgSrc.split('/').pop());
+          if (tipo === "h") idx = ["wolf-h.png","alberich-h.png","preceptor-h.png"].indexOf(imgSrc.split('/').pop());
           else if (tipo === "a") idx = ["wolf-a.png","carian-a.png","samurai-a.png"].indexOf(imgSrc.split('/').pop());
           else if (tipo === "g") idx = ["wolf-g.png","carian-g.png","samurai-g.png"].indexOf(imgSrc.split('/').pop());
           else if (tipo === "l") idx = ["wolf-l.png","carian-l.png","samurai-l.png"].indexOf(imgSrc.split('/').pop());
@@ -5101,6 +5179,20 @@ function volverMenuRanuras() {
         try { evaluarComparacionAlmacenParaEstado(2); } catch(e){}
       } else {
         mostrarColumnaC(tipoMenuSecundario, 2);
+      }
+    });
+    document.getElementById("almacen-4").addEventListener("mouseenter", function() {
+      if (menuEstadoVisible && tipoMenuSecundario === 'menú armaduras') {
+        try { evaluarComparacionAlmacenParaEstado(3); } catch(e){}
+      } else {
+        mostrarColumnaC(tipoMenuSecundario, 3);
+      }
+    });
+    document.getElementById("almacen-5").addEventListener("mouseenter", function() {
+      if (menuEstadoVisible && tipoMenuSecundario === 'menú armaduras') {
+        try { evaluarComparacionAlmacenParaEstado(4); } catch(e){}
+      } else {
+        mostrarColumnaC(tipoMenuSecundario, 4);
       }
     });
 
@@ -5460,11 +5552,15 @@ const imagenPorArmadura = {
 // Mapeo de yelmo a imagen
 const imagenPorYelmo = {
   "Yelmo de Lobo Furioso": "wolf-h.png",
+  "Sombrero puntiagudo de Alberich": "alberich-h.png",
+  "Gran sombrero del preceptor": "preceptor-h.png",
 };
 
 // Mapeo de guanteletes a imagen
 const imagenPorGuanteletes = {
   "Guanteletes de Lobo Furioso": "wolf-g.png",
+  "Brazales de Alberich": "alberich-g.png",
+  "Guantes del preceptor": "preceptor-g.png",
 };
 
 // Mapeo de botas a imagen
@@ -5495,13 +5591,12 @@ function limpiarEquipadaEnMs(tipo) {
   try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = null; } catch(e) {}
   // Después de limpiar la imagen en la ranura de selección, actualizar modelos 3D
   try {
-    if (typeof obtenerEquipStateDesdeMS === 'function') {
+    if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
       const state = obtenerEquipStateDesdeMS();
-      try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
-      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-    } else {
-      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+      actualizarModelos3DConEstado(state);
     }
+    // También actualizar la lógica principal que usa `equipadas`
+    try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
   } catch(e) { /* silencioso */ }
 }
 
@@ -5558,13 +5653,12 @@ function mostrarEquipadaEnMsRanura(tipo, imgSrc) {
     try { if (!window.equipadas) window.equipadas = { h:null,a:null,g:null,l:null,mano_izq:null,mano_der:null }; window.equipadas[tipo] = imgSrc; } catch(e) {}
     // Sincronizar modelos 3D del contenedor de selección con el estado actual de las ranuras MS
     try {
-      if (typeof obtenerEquipStateDesdeMS === 'function') {
+      if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') {
         const state = obtenerEquipStateDesdeMS();
-        try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
-        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-      } else {
-        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+        actualizarModelos3DConEstado(state);
       }
+      // También actualizar la lógica principal que usa `equipadas` para evitar desincronías
+      try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
     } catch(e) { /* silencioso */ }
   } catch (e) { console.error('mostrarEquipadaEnMsRanura error', e); }
 }
@@ -6526,8 +6620,12 @@ function preloadAllModels() {
     {ruta: './A_Raging_Wolf.glb', nombre: 'A_Raging_Wolf'},
     {ruta: './A_Alberich.glb', nombre: 'A_Alberich'},
     {ruta: './A_Preceptor.glb', nombre: 'A_Preceptor'},
+    {ruta: './H_Alberich.glb', nombre: 'H_Alberich'},
+    {ruta: './H_Preceptor.glb', nombre: 'H_Preceptor'},
     {ruta: './Manos.glb', nombre: 'manos'},
     {ruta: './G_Raging_Wolf.glb', nombre: 'G_Raging_Wolf'},
+    {ruta: './G_Alberich.glb', nombre: 'G_Alberich'},
+    {ruta: './G_Preceptor.glb', nombre: 'G_Preceptor'},
     {ruta: './Piernas.glb', nombre: 'piernas'},
     {ruta: './L_Raging_Wolf.glb', nombre: 'L_Raging_Wolf'},
     {ruta: './L_Alberich.glb', nombre: 'L_Alberich'},
@@ -6627,8 +6725,6 @@ function actualizarModelos3D() {
   if (!scene || !renderer) return;
   const container = document.getElementById('threejs-container');
 
-  try { console.debug('actualizarModelos3D called - window.equipadas =', window.equipadas); } catch(e) {}
-
   function mostrarModelo(nombre, ruta) {
     if (!modelos3D[nombre]) {
       cargarModeloGLB(ruta, nombre);
@@ -6647,12 +6743,27 @@ function actualizarModelos3D() {
   if (!equipadas.h) {
     mostrarModelo('cabeza', './Cabeza.glb');
     ocultarModelo('H_Raging_Wolf');
+    ocultarModelo('H_Alberich');
+    ocultarModelo('H_Preceptor');
   } else {
     ocultarModelo('cabeza'); // Oculta siempre si hay algo equipado
-    if (equipadas.h.split('/').pop() === 'wolf-h.png') {
+    const imgH = equipadas.h.split('/').pop();
+    if (imgH === 'wolf-h.png') {
       mostrarModelo('H_Raging_Wolf', './H_Raging_Wolf.glb');
+      ocultarModelo('H_Alberich');
+      ocultarModelo('H_Preceptor');
+    } else if (imgH === 'alberich-h.png') {
+      mostrarModelo('H_Alberich', './H_Alberich.glb');
+      ocultarModelo('H_Raging_Wolf');
+      ocultarModelo('H_Preceptor');
+    } else if (imgH === 'preceptor-h.png') {
+      mostrarModelo('H_Preceptor', './H_Preceptor.glb');
+      ocultarModelo('H_Raging_Wolf');
+      ocultarModelo('H_Alberich');
     } else {
       ocultarModelo('H_Raging_Wolf');
+      ocultarModelo('H_Alberich');
+      ocultarModelo('H_Preceptor');
     }
   }
 
@@ -6688,40 +6799,56 @@ function actualizarModelos3D() {
   if (!equipadas.g) {
     mostrarModelo('manos', './Manos.glb');
     ocultarModelo('G_Raging_Wolf');
+    ocultarModelo('G_Alberich');
+    ocultarModelo('G_Preceptor');
   } else if (equipadas.g.split('/').pop() === 'wolf-g.png') {
     ocultarModelo('manos');
     mostrarModelo('G_Raging_Wolf', './G_Raging_Wolf.glb');
   } else {
     ocultarModelo('manos');
-    ocultarModelo('G_Raging_Wolf');
+    const imgG = equipadas.g.split('/').pop();
+    if (imgG === 'alberich-g.png') {
+      mostrarModelo('G_Alberich', './G_Alberich.glb');
+      ocultarModelo('G_Raging_Wolf');
+      ocultarModelo('G_Preceptor');
+    } else if (imgG === 'preceptor-g.png') {
+      mostrarModelo('G_Preceptor', './G_Preceptor.glb');
+      ocultarModelo('G_Raging_Wolf');
+      ocultarModelo('G_Alberich');
+    } else {
+      ocultarModelo('G_Raging_Wolf');
+      ocultarModelo('G_Alberich');
+      ocultarModelo('G_Preceptor');
+    }
   }
 
   // --- Ranura L ---
-  try {
-    const lRaw = (window && window.equipadas && window.equipadas.l) ? window.equipadas.l : equipadas.l;
-    if (!lRaw) {
-      console.debug('actualizarModelos3D - L: no equip, showing piernas');
-      mostrarModelo('piernas', './Piernas.glb');
-      ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
+  if (!equipadas.l) {
+    mostrarModelo('piernas', './Piernas.glb');
+    ocultarModelo('L_Raging_Wolf');
+    ocultarModelo('L_Alberich');
+    ocultarModelo('L_Preceptor');
+  } else {
+    ocultarModelo('piernas');
+    const imgL = equipadas.l.split('/').pop();
+    if (imgL === 'wolf-l.png') {
+      mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
+    } else if (imgL === 'carian-l.png') {
+      mostrarModelo('L_Alberich', './L_Alberich.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Preceptor');
+    } else if (imgL === 'samurai-l.png') {
+      mostrarModelo('L_Preceptor', './L_Preceptor.glb');
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
     } else {
-      const imgL = (typeof lRaw === 'string') ? (lRaw.split('/').pop()) : null;
-      console.debug('actualizarModelos3D - L raw=', lRaw, 'basename=', imgL);
-      if (!imgL) {
-        mostrarModelo('piernas', './Piernas.glb');
-        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
-      } else if (imgL === 'wolf-l.png') {
-        ocultarModelo('piernas'); mostrarModelo('L_Raging_Wolf', './L_Raging_Wolf.glb'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
-      } else if (imgL === 'carian-l.png') {
-        ocultarModelo('piernas'); mostrarModelo('L_Alberich', './L_Alberich.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Preceptor');
-      } else if (imgL === 'samurai-l.png') {
-        ocultarModelo('piernas'); mostrarModelo('L_Preceptor', './L_Preceptor.glb'); ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich');
-      } else {
-        console.debug('actualizarModelos3D - L image not matched, fallback to piernas');
-        mostrarModelo('piernas', './Piernas.glb');
-        ocultarModelo('L_Raging_Wolf'); ocultarModelo('L_Alberich'); ocultarModelo('L_Preceptor');
-      }
+      ocultarModelo('L_Raging_Wolf');
+      ocultarModelo('L_Alberich');
+      ocultarModelo('L_Preceptor');
     }
-  } catch(e) { console.error('actualizarModelos3D L-slot error', e); }
+  }
 }
     (function(){
       function get(id){return document.getElementById(id);}
