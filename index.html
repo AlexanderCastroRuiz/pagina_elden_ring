@@ -532,8 +532,6 @@
     <img id="rectangulo-copia-1" src="rectangulo.png" alt="Rectángulo copia 1" style="position: absolute; top: 110px; left: 23px; width: 800px; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-2" src="rectangulo.png" alt="Rectángulo copia 2" style="display:none; position: absolute; top: 110px; left: 50vw; transform: translateX(-50%); width: auto; height: 460px; z-index: 2200;">
     <img id="rectangulo-copia-3" src="rectangulo.png" alt="Rectángulo copia 3" style="display:none; position: absolute; top: 110px; right: 23px; width: auto; height: 460px; z-index: 2200;">
-    <!-- Contenedor 3D para el menú selección (tercer tercio / columna derecha) -->
-    <div id="threejs-container-seleccion" style="display:none; position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2299; pointer-events:none; background:transparent;"></div>
 <!-- Copias de ranura eliminadas (reemplazadas por overlays dentro de ms-ranura-*) -->
     <!-- Contenedor de texto para Sinluz (antiguos inputs ocultos) -->
     <input id="nombre-sinluz-1" type="text" placeholder="Sinluz 1" class="sinluz-input" maxlength="15"
@@ -543,6 +541,8 @@
     <input id="nombre-sinluz-3" type="text" placeholder="Sinluz 3" class="sinluz-input" maxlength="15"
       style="display:none; position: absolute; top: 87px; right: 210px; transform: translateX(50%); min-width: 40px; max-width: 300px; z-index: 2210; font-size: 1em; font-family: 'FuentePersonalizada', sans-serif; text-align: center; padding:6px 10px;">
 
+    <!-- Contenedor 3D para el menú selección: mostrado en el tercer tercio (derecha) -->
+    <div id="threejs-seleccion-container" style="position:absolute; right:0; top:0; width:33.33vw; height:100vh; z-index:2199; display:none; pointer-events:auto; background:transparent;"></div>
     <!-- Contenedor recortado para fichas: edita manualmente left/top/width/height para mover y redimensionar -->
     <div id="sinluz-fichas" style="position:absolute; top: 120px; left: 33px; width: 770px; height: 435px; overflow:hidden; z-index:2215;">
       <!-- Lista interna scrollable; el scroll real se activa solo si hay >3 fichas -->
@@ -1474,24 +1474,31 @@
         document.getElementById('menu-inicio').style.display = 'flex';
       } else if (menu === 'seleccion') {
         document.getElementById('menu-seleccion').style.display = 'flex';
-        // Mostrar el contenedor 3D del menú selección (tercer tercio)
-        try {
-          // Asegurar inicialización de ThreeJS
-          if (typeof initThreeJS === 'function') initThreeJS();
-          // Mover el canvas del renderer al contenedor específico de selección
-          try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container-seleccion'); } catch(e) {}
-          // Hacer visible el contenedor para que calcule tamaños correctamente
-          const selCont = document.getElementById('threejs-container-seleccion');
-          if (selCont) selCont.style.display = 'block';
-          // Ajustar tamaño del renderer al nuevo contenedor
-          try { if (typeof updateThreeSize === 'function') updateThreeSize(); } catch(e) {}
-        } catch(e) { console.warn('Error al preparar contenedor 3D de selección', e); }
-
         // (async) actualizar visual del menú selección
         try { actualizarMenuSeleccionVisual(); } catch(e){}
-        // Asegurar que los modelos 3D reflejen las equipadas actuales (y sincronizar con MS)
-        try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
-        try { if (typeof obtenerEquipStateDesdeMS === 'function' && typeof actualizarModelos3DConEstado === 'function') actualizarModelos3DConEstado(obtenerEquipStateDesdeMS()); } catch(e) {}
+  // Inicializar/mostrar el entorno 3D dentro del menú selección (tercer tercio)
+          try {
+            // Asegura ThreeJS inicializado
+            try { if (typeof initThreeJS === 'function') initThreeJS(); } catch(e) { console.warn('initThreeJS error in seleccion', e); }
+            // Mostrar el canvas dentro del contenedor del menú selección
+            const sel3 = document.getElementById('threejs-seleccion-container');
+            if (sel3) {
+              sel3.style.display = 'block';
+              try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-seleccion-container'); } catch(e) { console.warn('moveThreeRendererTo failed', e); }
+              try { updateThreeSize(); } catch(e) {}
+            }
+            // Sincronizar estado de equipadas usando la misma función que usan los ms-ranura-*
+            if (typeof obtenerEquipStateDesdeMS === 'function') {
+              try {
+                const state = obtenerEquipStateDesdeMS() || { h: null, a: null, g: null, l: null };
+                // actualizar el objeto global `equipadas` para que `actualizarModelos3D` lo use
+                try { window.equipadas = Object.assign(window.equipadas || {h:null,a:null,g:null,l:null}, state); } catch(e) {}
+                if (typeof actualizarModelos3D === 'function') actualizarModelos3D();
+              } catch(e) { console.error('Error sincronizando equipadas en seleccion', e); }
+            } else {
+              try { if (typeof actualizarModelos3D === 'function') actualizarModelos3D(); } catch(e) {}
+            }
+          } catch(e) { console.error('Error inicializando 3D en menu seleccion', e); }
         // Si entramos desde el menú principal, forzar que la ficha por defecto sea la probe
         try {
           if (wasMainMenuVisible) {
@@ -1566,8 +1573,8 @@
         updateThreeSize();
         // Restaurar el renderer al contenedor principal (columna B)
         try { if (typeof moveThreeRendererTo === 'function') moveThreeRendererTo('threejs-container'); } catch(e) {}
-        // Ocultar el contenedor 3D de selección si existe
-        // Contenedor 3D de selección eliminado previamente; no hay nada que ocultar aquí.
+        // Ocultar el contenedor 3D de selección si existe (cuando volvemos al principal)
+        try { var sel3 = document.getElementById('threejs-seleccion-container'); if (sel3) sel3.style.display = 'none'; } catch(e) {}
         // Actualiza todos los modelos 3D según estado de cada ranura
         actualizarModelos3D();
 
