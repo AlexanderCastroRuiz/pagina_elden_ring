@@ -4009,6 +4009,24 @@ function volverMenuRanuras() {
           }
         }
 
+        // También soportar Yelmo para Alberich / Preceptor (usar imagenNombre para el texto)
+        if (
+          ranura === "h" &&
+          sinluzSeleccionado
+        ) {
+          try {
+            const usuario = document.getElementById('usuario-inicio').value.trim();
+            if (usuario) {
+              const nombreLegible = (typeof imagenNombre !== 'undefined' && imagenNombre[imgName]) ? imagenNombre[imgName] : null;
+              if (nombreLegible && (imgName === 'alberich-h.png' || imgName === 'preceptor-h.png')) {
+                const db = getDatabase();
+                const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Yelmo`;
+                set(ref(db, sinluzPath), nombreLegible);
+              }
+            }
+          } catch(e) { /* silencioso */ }
+        }
+
         // Actualiza Armadura en la base de datos si corresponde
         if (
           ranura === "a" &&
@@ -4039,6 +4057,24 @@ function volverMenuRanuras() {
             set(ref(db, sinluzPath), "Guanteletes de Lobo Furioso");
           }
 
+        }
+
+        // También soportar Guanteletes para Alberich / Preceptor (usar imagenNombre para el texto)
+        if (
+          ranura === "g" &&
+          sinluzSeleccionado
+        ) {
+          try {
+            const usuario = document.getElementById('usuario-inicio').value.trim();
+            if (usuario) {
+              const nombreLegibleG = (typeof imagenNombre !== 'undefined' && imagenNombre[imgName]) ? imagenNombre[imgName] : null;
+              if (nombreLegibleG && (imgName === 'alberich-g.png' || imgName === 'preceptor-g.png')) {
+                const db = getDatabase();
+                const sinluzPath = `usuario/${usuario}/${sinluzSeleccionado}/Guanteletes`;
+                set(ref(db, sinluzPath), nombreLegibleG);
+              }
+            }
+          } catch(e) { /* silencioso */ }
         }
 
         // Actualiza Botas en la base de datos si corresponde
